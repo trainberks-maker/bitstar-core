@@ -113,6 +113,7 @@ For a fair no-premine launch:
 Current public seed nodes:
 
 - `seed1.bitstarcoin.org:21333` (`134.209.68.145`), NYC1, Ubuntu 24.04 LTS
+- `seed2.bitstarcoin.org:21333` (`134.122.66.31`), FRA1, Ubuntu 24.04 LTS
 
 Seed node DNS records must stay `DNS only`, not proxied through Cloudflare,
 because BitStar P2P traffic uses TCP `21333`, not HTTP/HTTPS.

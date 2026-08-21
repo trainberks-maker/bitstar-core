@@ -160,6 +160,7 @@ public:
 
         vSeeds.clear();
         vSeeds.emplace_back("seed1.bitstarcoin.org.");
+        vSeeds.emplace_back("seed2.bitstarcoin.org.");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,25);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,85);

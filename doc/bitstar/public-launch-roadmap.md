@@ -36,10 +36,12 @@ Status: next.
 - Add DNS seed infrastructure or documented static seed peers.
 - Monitor node height, peers, uptime, and forks.
 
-Current seed node:
+Current seed nodes:
 
 - `seed1.bitstarcoin.org:21333` (`134.209.68.145`), DNS-only Cloudflare record,
   genesis verified, RPC private.
+- `seed2.bitstarcoin.org:21333` (`134.122.66.31`), DNS-only Cloudflare record,
+  genesis verified, RPC private, connected to seed1.
 
 ## Phase 4: Public Tooling
 
