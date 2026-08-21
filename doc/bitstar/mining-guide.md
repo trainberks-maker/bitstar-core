@@ -1,89 +1,180 @@
-# BitStar Mining Guide
+# BitStar Public Mining Guide
 
-This guide documents local bootstrap mining commands. It is not a public mining
-announcement.
+BitStar is a Bitcoin Core based proof-of-work network with no premine. Mining
+must be public, repeatable, and easy to audit. This guide documents the launch
+rules and the commands miners can use to connect to the public seed nodes.
 
-## Status
+## Network Parameters
 
-The current BitStar bootstrap chain is private test data. For a fair no-premine
-launch, public seed nodes should start from genesis and block 1 should be mined
-publicly after the launch instructions are published.
+- Name: BitStar
+- Ticker: BST
+- Maximum supply: 21,000,000 BST
+- Consensus: SHA256d proof of work
+- Target block time: 10 minutes
+- Halving interval: 210,000 blocks
+- Coinbase maturity: 100 confirmations
+- P2P port: 21333
+- Bech32 prefix: `bst1`
+- Genesis hash:
+  `00000c45c905ce3e3beeb9eb534650276947373d3a2a15694b4624a89bce4b49`
+
+## Public Seed Nodes
+
+Use the public seed nodes below when joining the BitStar network:
+
+```text
+seed1.bitstarcoin.org:21333
+seed2.bitstarcoin.org:21333
+```
+
+RPC is private to each node and must not be exposed to the public internet.
+
+## Current Public Chain State
+
+As of August 21, 2026, the public bootstrap chain has one mined block after
+genesis.
+
+- Height: 1
+- Block 1 hash:
+  `00000738ca472e32ea8a6a247de802b4b2b031af610057a0c5158b12fb31b3d4`
+- Block 1 reward address:
+  `bst1q8x4dnwudeq4ke6zkq69we23gx8wdk0rase0hl7`
+
+The block reward follows normal proof-of-work coinbase rules and matures after
+100 confirmations. There is no special allocation or hidden premine wallet.
+
+## Fair Launch Rule
+
+Do not run hidden nonstop mining before public launch coordination. Every mined
+block should be visible on the public network and explorer. A private balance
+created before public miners can join will look like a premine and will hurt
+listing, exchange, and community credibility.
+
+Recommended policy:
+
+- publish source code, binaries, checksums, seeds, and explorer first
+- announce mining instructions publicly before sustained mining
+- mine controlled blocks only when needed for testing or confirmation
+- document any early block rewards transparently
+- never make price, profit, or listing guarantees
+
+## Start A Node
+
+Create or edit `bitstar.conf` on your node and add:
+
+```ini
+server=1
+listen=1
+port=21333
+dnsseed=0
+addnode=seed1.bitstarcoin.org:21333
+addnode=seed2.bitstarcoin.org:21333
+```
+
+On Windows, from the BitStar release folder:
+
+```cmd
+bitstard.exe -server=1 -listen=1 -addnode=seed1.bitstarcoin.org:21333 -addnode=seed2.bitstarcoin.org:21333
+```
+
+Check chain and peer status:
+
+```cmd
+bitstar-cli.exe getblockchaininfo
+bitstar-cli.exe getconnectioncount
+```
 
 ## Create Or Load A Mining Wallet
 
+Wallet commands are only available on wallet-enabled builds. If your node build
+does not include wallet support, generate the receiving address on another
+wallet-enabled BitStar node and mine to that address.
+
+Create a mining wallet:
+
 ```cmd
-bitstar-cli.exe -rpcuser=bitstar -rpcpassword=localtest createwallet miner
+bitstar-cli.exe createwallet miner
 ```
 
 If the wallet already exists:
 
 ```cmd
-bitstar-cli.exe -rpcuser=bitstar -rpcpassword=localtest loadwallet miner
+bitstar-cli.exe loadwallet miner
 ```
 
-## Generate A Mining Address
+Generate a receiving address:
 
 ```cmd
-bitstar-cli.exe -rpcuser=bitstar -rpcpassword=localtest -rpcwallet=miner getnewaddress "" bech32
+bitstar-cli.exe -rpcwallet=miner getnewaddress "" bech32
 ```
 
 BitStar bech32 addresses begin with `bst1`.
 
-## Mine Test Blocks
+## Mine One Controlled Block
 
 Replace the address with your own `bst1...` address:
 
 ```cmd
-bitstar-cli.exe -rpcuser=bitstar -rpcpassword=localtest generatetoaddress 1 bst1... 50000000
+bitstar-cli.exe generatetoaddress 1 bst1... 50000000
 ```
 
-Mine more blocks for local testing:
+Confirm the new height:
 
 ```cmd
-bitstar-cli.exe -rpcuser=bitstar -rpcpassword=localtest generatetoaddress 100 bst1... 50000000
+bitstar-cli.exe getblockcount
 ```
 
-## Check Height And Balance
+Check wallet balances:
 
 ```cmd
-bitstar-cli.exe -rpcuser=bitstar -rpcpassword=localtest getblockcount
-bitstar-cli.exe -rpcuser=bitstar -rpcpassword=localtest -rpcwallet=miner getbalances
+bitstar-cli.exe -rpcwallet=miner getbalances
 ```
 
-Mining rewards mature after 100 confirmations, following Bitcoin-style coinbase
-maturity behavior.
+New coinbase rewards appear as immature until 100 confirmations.
 
-## Send A Test Transaction
+## Helper Scripts
 
-Create a receiving wallet:
+Controlled one-block helper scripts are provided in:
 
-```cmd
-bitstar-cli.exe -rpcuser=bitstar -rpcpassword=localtest createwallet user1
-bitstar-cli.exe -rpcuser=bitstar -rpcpassword=localtest -rpcwallet=user1 getnewaddress "" bech32
+```text
+contrib/bitstar/mining/mine-one-block.sh
+contrib/bitstar/mining/mine-one-block.ps1
 ```
 
-Send using a named fee rate:
+Linux example:
 
-```cmd
-bitstar-cli.exe -rpcuser=bitstar -rpcpassword=localtest -rpcwallet=miner -named sendtoaddress address="bst1..." amount=10 fee_rate=1
+```bash
+BITSTAR_MINING_ADDRESS=bst1... ./contrib/bitstar/mining/mine-one-block.sh
 ```
 
-Mine one more block to confirm:
+Windows PowerShell example:
 
-```cmd
-bitstar-cli.exe -rpcuser=bitstar -rpcpassword=localtest generatetoaddress 1 bst1... 50000000
+```powershell
+.\contrib\bitstar\mining\mine-one-block.ps1 -Address "bst1..."
 ```
 
-## Public Mining Requirements
+The scripts default to one block and refuse larger runs unless explicitly
+overridden. This is intentional: public mining should be coordinated, visible,
+and auditable.
+
+## Public Explorer
+
+Use the explorer to verify chain height, latest blocks, and seed status:
+
+```text
+https://bitstarcoin.org/explorer
+```
+
+## Public Mining Checklist
 
 Before asking the public to mine, BitStar should have:
 
 - public source code
 - public release binaries and checksums
-- clean seed nodes starting from genesis
-- published launch time
-- published genesis hash and ports
-- mining pool compatibility testing
+- at least two stable seed nodes
+- public DNS records for seed nodes
 - block explorer
-- clear no-premine statement
-- clear warning that mining rewards are not investment guarantees
+- documented genesis hash and block 1 hash
+- published mining instructions
+- documented no-premine statement
+- security, legal, and listing readiness review
