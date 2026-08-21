@@ -12,7 +12,11 @@ and a Stratum-compatible solo test pool. It is not yet a final production
 release. The current chain should be described honestly as a bootstrap chain
 until the project completes the release and launch gates below.
 
-As of August 21, 2026, seed1 and seed2 are synchronized at height `5` with best
+See [current-status-audit.md](current-status-audit.md) for the latest
+point-in-time audit of public services, release artifacts, and remaining
+production gaps.
+
+As of August 22, 2026, seed1 and seed2 are synchronized at height `5` with best
 block:
 
 ```text
