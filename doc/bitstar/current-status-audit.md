@@ -144,8 +144,8 @@ Remaining work:
 
 ### 2. Signing And Verification
 
-The project now has checksum verification documentation and helper scripts, but
-it does not yet have signed release manifests.
+The project now has checksum verification documentation, helper scripts, and
+manifest signing scripts, but it does not yet have signed release manifests.
 
 Remaining work:
 

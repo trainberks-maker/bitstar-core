@@ -15,8 +15,13 @@ As of the `v0.1.1-bootstrap` bootstrap release:
 - Linux x86_64 server package exists.
 - SHA256 checksum files and a combined `SHA256SUMS` manifest exist for the
   published packages.
+- Helper scripts exist for checksum verification and for creating/signing the
+  release manifest.
 - Signed `SHA256SUMS` manifest is still pending.
 - Windows Authenticode code signing is still pending.
+
+See [release-signing-policy.md](release-signing-policy.md) for release key
+rules, signing workflow, and production gate requirements.
 
 ## Required Release Files
 
@@ -40,26 +45,26 @@ Optional later artifacts:
 1. Start from a clean repository state.
 2. Tag the exact source commit used for the release.
 3. Build each artifact in a clean environment.
-4. Create a single checksum manifest:
+4. Create a single checksum manifest and detached signature.
+
+On Windows:
 
 ```powershell
-Get-FileHash -Algorithm SHA256 .\BitStar_Windows_v0.1.1-bootstrap.zip |
-  ForEach-Object { "$($_.Hash.ToLower())  $(Split-Path $_.Path -Leaf)" } |
-  Set-Content -Encoding ascii .\SHA256SUMS
+powershell -ExecutionPolicy Bypass -File .\sign-release-manifest.ps1 `
+  -Artifacts ".\BitStar_Windows_v0.1.1-bootstrap.zip,.\BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz" `
+  -GpgKey "<release-key-fingerprint>"
 ```
+
+On Linux:
 
 ```sh
-sha256sum BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz >> SHA256SUMS
+./sign-release-manifest.sh --key "<release-key-fingerprint>" \
+  BitStar_Windows_v0.1.1-bootstrap.zip \
+  BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz
 ```
 
-5. Sign the checksum manifest with the offline release key:
-
-```sh
-gpg --armor --detach-sign --output SHA256SUMS.asc SHA256SUMS
-```
-
-6. Publish the signing key fingerprint in the release notes and website.
-7. Upload artifacts, `SHA256SUMS`, `SHA256SUMS.asc`, and release notes.
+5. Publish the signing key fingerprint in the release notes and website.
+6. Upload artifacts, `SHA256SUMS`, `SHA256SUMS.asc`, and release notes.
 
 Do not store release private keys, wallet files, RPC passwords, deployment
 tokens, or SSH keys in this repository or in release packages.

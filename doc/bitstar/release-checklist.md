@@ -68,9 +68,14 @@ Optional later artifacts:
 - publish the signing key fingerprint
 - publish SHA256 checksums for every artifact
 - sign the checksum file or release manifest
+- use `contrib/bitstar/release/sign-release-manifest.ps1` or
+  `contrib/bitstar/release/sign-release-manifest.sh` to create `SHA256SUMS`
+  and `SHA256SUMS.asc`
 - document verification commands for Windows and Linux users
 - keep [release-verification.md](release-verification.md) current for every
   public release
+- keep [release-signing-policy.md](release-signing-policy.md) current when
+  release key ownership changes
 - keep private signing keys offline
 - label Windows builds as not code-signed until an Authenticode certificate is
   available

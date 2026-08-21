@@ -94,8 +94,9 @@ Definition of done:
 
 Current status: bootstrap binaries exist. The Windows launcher package and
 Linux x86_64 server package are published for `v0.1.1-bootstrap`, with SHA256
-checksum files and helper verification scripts. Signed production release
-artifacts are still pending.
+checksum files, helper verification scripts, and manifest signing helpers.
+Actual signed production release artifacts are still pending until a dedicated
+release signing key is created and `SHA256SUMS.asc` is published.
 
 ### Gate 5: Explorer
 
@@ -178,7 +179,8 @@ Current status: not ready.
 
 1. Keep seed1 and seed2 synchronized and monitored.
 2. Update docs to clearly mark the current network as public bootstrap.
-3. Build a signed release checklist and complete it before any final launch.
+3. Create the dedicated release signing key, publish its fingerprint, and
+   publish `SHA256SUMS.asc` for the current release.
 4. Decide the fair launch path: continue with full disclosure, or reset once for
    a final public launch.
 5. Upgrade the explorer from status-only to block, transaction, and address
