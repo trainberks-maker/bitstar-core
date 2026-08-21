@@ -29,7 +29,7 @@ sudo apt install -y libsqlite3-dev
 ## Clone Source
 
 ```bash
-git clone https://github.com/BitStarCoin/bitstar-core.git
+git clone https://github.com/trainberks-maker/bitstar-core.git
 cd bitstar-core
 ```
 

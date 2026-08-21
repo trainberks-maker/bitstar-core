@@ -27,6 +27,18 @@ bitstard -version
 bitstar-cli -version
 ```
 
+For the bootstrap release, Linux x86_64 binaries are also published on the
+GitHub release page:
+
+```bash
+curl -L -o bitstar-linux.tar.gz \
+  https://github.com/trainberks-maker/bitstar-core/releases/download/v0.1.0-bootstrap/BitStar_Linux_x86_64_v0.1.0-bootstrap.tar.gz
+tar -xzf bitstar-linux.tar.gz
+sudo install -m 0755 BitStar_Linux_x86_64_v0.1.0-bootstrap/bin/bitstard /usr/local/bin/bitstard
+sudo install -m 0755 BitStar_Linux_x86_64_v0.1.0-bootstrap/bin/bitstar-cli /usr/local/bin/bitstar-cli
+sudo install -m 0755 BitStar_Linux_x86_64_v0.1.0-bootstrap/bin/bitstar /usr/local/bin/bitstar
+```
+
 ## Create Service User And Directories
 
 ```bash

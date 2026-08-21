@@ -9,6 +9,7 @@ Status: completed.
 - Public GitHub repository
 - BitStar Core bootstrap commit
 - Windows bootstrap pre-release
+- Linux x86_64 bootstrap package for seed nodes and server nodes
 - Genesis verified
 - Local mining verified
 - Wallet transfer verified
@@ -16,18 +17,20 @@ Status: completed.
 
 ## Phase 2: Clean Public Launch Preparation
 
-Status: next.
+Status: in progress.
 
 - Rebuild from clean source.
 - Run a fresh 3-node rehearsal from genesis.
 - Confirm no private test-chain data is packaged.
 - Publish node, mining, and wallet guides.
 - Publish Linux build and VPS seed node guides.
-- Prepare signed release checksums.
+- Prepare release checksums.
 - Decide exact public launch date and time.
 - Prepare launch announcement with genesis hash, ports, and no-premine policy.
 
 ## Phase 3: Network Infrastructure
+
+Status: in progress.
 
 - Deploy at least two seed nodes on separate VPS hosts.
 - Open P2P port `21333`.

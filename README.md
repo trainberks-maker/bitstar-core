@@ -7,8 +7,8 @@ wallet project.
 ## Official Links
 
 - Website: https://bitstarcoin.org
-- Source: https://github.com/BitStarCoin/bitstar-core
-- Bootstrap release: https://github.com/BitStarCoin/bitstar-core/releases/tag/v0.1.0-bootstrap
+- Source: https://github.com/trainberks-maker/bitstar-core
+- Bootstrap release: https://github.com/trainberks-maker/bitstar-core/releases/tag/v0.1.0-bootstrap
 
 ## Network Summary
 
