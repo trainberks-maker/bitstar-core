@@ -24,9 +24,10 @@ Status: in progress.
 - Confirm no private test-chain data is packaged.
 - Publish node, mining, and wallet guides.
 - Publish Linux build and VPS seed node guides.
+- Publish launch/mining announcement.
 - Prepare release checksums.
 - Decide exact public launch date and time.
-- Prepare launch announcement with genesis hash, ports, and no-premine policy.
+- Prepare broader public distribution for the launch announcement.
 
 ## Phase 3: Network Infrastructure
 
@@ -58,8 +59,11 @@ Public chain status as of August 21, 2026:
 
 - Initial block explorer: https://bitstarcoin.org/explorer
 - Public website: https://bitstarcoin.org
+- Public mining guide: https://bitstarcoin.org/mining
+- Launch announcement: https://bitstarcoin.org/launch
+- Pool compatibility page: https://bitstarcoin.org/pool
 - Public downloads page
-- Mining pool support
+- Mining pool compatibility baseline
 - Linux build guide
 - Reproducible build workflow
 - Release signing keys and verification guide

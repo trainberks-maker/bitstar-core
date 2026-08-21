@@ -8,6 +8,9 @@ wallet project.
 
 - Website: https://bitstarcoin.org
 - Explorer: https://bitstarcoin.org/explorer
+- Mining: https://bitstarcoin.org/mining
+- Launch announcement: https://bitstarcoin.org/launch
+- Pool operators: https://bitstarcoin.org/pool
 - Source: https://github.com/trainberks-maker/bitstar-core
 - Bootstrap release: https://github.com/trainberks-maker/bitstar-core/releases/tag/v0.1.0-bootstrap
 
@@ -34,9 +37,14 @@ This repository is an early bootstrap fork. Local validation has confirmed:
 - reward maturity
 - wallet-to-wallet transfer
 - two-node local synchronization
+- two public seed nodes on TCP `21333`
+- public explorer visibility
+- controlled public mining instructions
+- `getblocktemplate` baseline for pool compatibility
 
-The current local mined chain is test data only. For a public no-premine launch,
-public seed nodes should start from genesis and block 1 should be mined publicly.
+The public bootstrap chain currently has one mined block after genesis. The
+project keeps a no-premine policy: no hidden founder allocation and no private
+nonstop mining before public coordination.
 
 ## Documentation
 
@@ -49,6 +57,8 @@ public seed nodes should start from genesis and block 1 should be mined publicly
 - [VPS seed node guide](doc/bitstar/vps-seed-node-guide.md)
 - [Explorer API service](contrib/bitstar/explorer/README.md)
 - [Mining guide](doc/bitstar/mining-guide.md)
+- [Mining pool compatibility](doc/bitstar/mining-pool-compatibility.md)
+- [Launch and mining announcement](doc/bitstar/launch-mining-announcement.md)
 - [Wallet safety guide](doc/bitstar/wallet-guide.md)
 - [Public launch roadmap](doc/bitstar/public-launch-roadmap.md)
 
@@ -63,6 +73,7 @@ see [COPYING](COPYING).
 
 ## Warning
 
-This is pre-release software. Do not use this build for public mining, merchant
-payments, exchange listing, custody, or production funds until the public launch
-process, review, release signing, and infrastructure are complete.
+This is pre-release software. Do not use this build for merchant payments,
+exchange deposits, custody, or production funds until the public launch process,
+review, release signing, and infrastructure are complete. Mining rewards are
+not investment guarantees.
