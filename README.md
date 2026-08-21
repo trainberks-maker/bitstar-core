@@ -37,6 +37,10 @@ public seed nodes should start from genesis and block 1 should be mined publicly
 - [Fair launch plan](doc/bitstar/fair-launch.md)
 - [Local test report](doc/bitstar/local-test-report.md)
 - [Windows build guide](doc/bitstar/build-windows.md)
+- [Node operator guide](doc/bitstar/node-operator-guide.md)
+- [Mining guide](doc/bitstar/mining-guide.md)
+- [Wallet safety guide](doc/bitstar/wallet-guide.md)
+- [Public launch roadmap](doc/bitstar/public-launch-roadmap.md)
 
 The broader upstream Bitcoin Core developer documentation remains available in
 the [doc](doc) directory.
