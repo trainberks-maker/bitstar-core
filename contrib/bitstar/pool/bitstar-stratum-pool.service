@@ -1,0 +1,25 @@
+[Unit]
+Description=BitStar Stratum solo test pool
+After=network-online.target bitstard.service
+Wants=network-online.target
+Requires=bitstard.service
+
+[Service]
+Type=simple
+User=bitstar
+Group=bitstar
+Environment=BITSTAR_POOL_HOST=0.0.0.0
+Environment=BITSTAR_POOL_PORT=3333
+Environment=BITSTAR_POOL_SHARE_DIFFICULTY=0.00001
+Environment=BITSTAR_DATADIR=/var/lib/bitstar
+Environment=BITSTAR_CONF=/etc/bitstar/bitstar.conf
+ExecStart=/usr/local/bin/bitstar-stratum-pool.py
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/bitstar
+
+[Install]
+WantedBy=multi-user.target

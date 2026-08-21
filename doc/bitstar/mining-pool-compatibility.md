@@ -127,6 +127,26 @@ represents 50 BST.
 - Do not expose RPC port `21332` to the public internet.
 - Do not mine hidden private blocks before public launch coordination.
 
+## Public Test Stratum Endpoint
+
+A minimal solo-style Stratum test pool is provided in:
+
+```text
+contrib/bitstar/pool/
+```
+
+The intended public endpoint is:
+
+```text
+stratum+tcp://pool.bitstarcoin.org:3333
+```
+
+This endpoint is for compatibility testing only. Miners should use a valid
+BitStar address as the worker username. If a valid block is found, the coinbase
+reward is paid directly to that address after normal coinbase maturity. The test
+pool does not custody miner balances and does not implement automatic pooled
+payouts.
+
 ## Compatibility Test Flow
 
 1. Install BitStar Core on a pool test server.
