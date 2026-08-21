@@ -63,6 +63,7 @@ before public coordination.
 - [Public launch roadmap](doc/bitstar/public-launch-roadmap.md)
 - [Production readiness plan](doc/bitstar/production-readiness.md)
 - [Release checklist](doc/bitstar/release-checklist.md)
+- [Operations hardening](doc/bitstar/operations-hardening.md)
 
 The broader upstream Bitcoin Core developer documentation remains available in
 the [doc](doc) directory.

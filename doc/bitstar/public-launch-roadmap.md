@@ -69,6 +69,7 @@ Public chain status as of August 21, 2026:
 - Release signing keys and verification guide
 - Production readiness plan
 - Release checklist
+- Operations hardening checklist
 
 ## Phase 5: Trust And Review
 
