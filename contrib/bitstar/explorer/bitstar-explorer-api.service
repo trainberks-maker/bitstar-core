@@ -1,0 +1,22 @@
+[Unit]
+Description=BitStar Explorer API
+After=network-online.target bitstard.service
+Wants=network-online.target
+Requires=bitstard.service
+
+[Service]
+User=bitstar
+Group=bitstar
+WorkingDirectory=/opt/bitstar-explorer
+ExecStart=/usr/bin/python3 /opt/bitstar-explorer/bitstar-explorer-api.py
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/bitstar
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

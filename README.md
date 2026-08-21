@@ -7,6 +7,7 @@ wallet project.
 ## Official Links
 
 - Website: https://bitstarcoin.org
+- Explorer: https://bitstarcoin.org/explorer
 - Source: https://github.com/trainberks-maker/bitstar-core
 - Bootstrap release: https://github.com/trainberks-maker/bitstar-core/releases/tag/v0.1.0-bootstrap
 
@@ -46,6 +47,7 @@ public seed nodes should start from genesis and block 1 should be mined publicly
 - [Linux build guide](doc/bitstar/build-linux.md)
 - [Node operator guide](doc/bitstar/node-operator-guide.md)
 - [VPS seed node guide](doc/bitstar/vps-seed-node-guide.md)
+- [Explorer API service](contrib/bitstar/explorer/README.md)
 - [Mining guide](doc/bitstar/mining-guide.md)
 - [Wallet safety guide](doc/bitstar/wallet-guide.md)
 - [Public launch roadmap](doc/bitstar/public-launch-roadmap.md)

@@ -48,8 +48,8 @@ Current seed nodes:
 
 ## Phase 4: Public Tooling
 
-- Block explorer
-- Website
+- Initial block explorer: https://bitstarcoin.org/explorer
+- Public website: https://bitstarcoin.org
 - Public downloads page
 - Mining pool support
 - Linux build guide
