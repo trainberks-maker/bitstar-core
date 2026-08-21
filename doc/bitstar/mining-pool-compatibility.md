@@ -135,17 +135,17 @@ A minimal solo-style Stratum test pool is provided in:
 contrib/bitstar/pool/
 ```
 
-The intended public endpoint is:
+The public test endpoint is active:
 
 ```text
 stratum+tcp://pool.bitstarcoin.org:3333
 ```
 
-This endpoint is for compatibility testing only. Miners should use a valid
-BitStar address as the worker username. If a valid block is found, the coinbase
-reward is paid directly to that address after normal coinbase maturity. The test
-pool does not custody miner balances and does not implement automatic pooled
-payouts.
+`pool.bitstarcoin.org` resolves to seed2 at `134.122.66.31`. This endpoint is
+for compatibility testing only. Miners should use a valid BitStar address as the
+worker username. If a valid block is found, the coinbase reward is paid directly
+to that address after normal coinbase maturity. The test pool does not custody
+miner balances and does not implement automatic pooled payouts.
 
 ## Compatibility Test Flow
 
