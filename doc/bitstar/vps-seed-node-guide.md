@@ -108,6 +108,15 @@ For a fair no-premine launch:
 - Publish launch time, genesis hash, ports, source, release checksums, and node
   instructions before public mining begins.
 
+## Official Seed Nodes
+
+Current public seed nodes:
+
+- `seed1.bitstarcoin.org:21333` (`134.209.68.145`), NYC1, Ubuntu 24.04 LTS
+
+Seed node DNS records must stay `DNS only`, not proxied through Cloudflare,
+because BitStar P2P traffic uses TCP `21333`, not HTTP/HTTPS.
+
 ## Information To Record
 
 After the node is live, record:
@@ -120,4 +129,3 @@ sudo -u bitstar bitstar-cli -datadir=/var/lib/bitstar getconnectioncount
 
 Send the public IP address and node status to the release notes before adding
 the node as an official seed.
-
