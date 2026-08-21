@@ -131,3 +131,14 @@ professional explorer until it has:
 Never expose BitStar RPC (`21332/tcp`) to the public internet. Pools, explorers,
 and automation should talk to a local node RPC over `127.0.0.1` or through a
 private network only.
+
+## Installable Baseline
+
+The repository includes an idempotent installer for the baseline hardening in:
+
+```text
+contrib/bitstar/ops/install-ops-hardening.sh
+```
+
+It installs SSH hardening, logrotate, a healthcheck timer, systemd restart
+limits, and a swapfile for memory safety.

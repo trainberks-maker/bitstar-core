@@ -1,0 +1,15 @@
+[Unit]
+Description=BitStar node healthcheck
+After=bitstard.service
+
+[Service]
+Type=oneshot
+User=bitstar
+Group=bitstar
+Environment=BITSTAR_CLI=/usr/local/bin/bitstar-cli
+Environment=BITSTAR_CONF=/etc/bitstar/bitstar.conf
+Environment=BITSTAR_DATADIR=/var/lib/bitstar
+ExecStart=/usr/local/bin/bitstar-healthcheck
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
