@@ -4,6 +4,12 @@ BitStar Core
 BitStar Core is a Bitcoin Core based Proof-of-Work cryptocurrency node and
 wallet project.
 
+## Official Links
+
+- Website: https://bitstarcoin.org
+- Source: https://github.com/BitStarCoin/bitstar-core
+- Bootstrap release: https://github.com/BitStarCoin/bitstar-core/releases/tag/v0.1.0-bootstrap
+
 ## Network Summary
 
 - Name: BitStar
