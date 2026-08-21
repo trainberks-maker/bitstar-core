@@ -11,6 +11,7 @@ Group=bitstar
 Environment=BITSTAR_POOL_HOST=0.0.0.0
 Environment=BITSTAR_POOL_PORT=3333
 Environment=BITSTAR_POOL_SHARE_DIFFICULTY=0.00001
+Environment=BITSTAR_POOL_STATS_FILE=/var/lib/bitstar/pool-stats.json
 Environment=BITSTAR_DATADIR=/var/lib/bitstar
 Environment=BITSTAR_CONF=/etc/bitstar/bitstar.conf
 ExecStart=/usr/local/bin/bitstar-stratum-pool.py

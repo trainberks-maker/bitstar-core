@@ -19,6 +19,7 @@ import itertools
 import json
 import logging
 import os
+from pathlib import Path
 import secrets
 import struct
 import subprocess
@@ -384,15 +385,26 @@ class StratumClient:
         self.jobs[job.job_id] = job
         await self.request("mining.set_difficulty", [float(self.server.share_difficulty)])
         await self.request("mining.notify", job.notify_params(clean_jobs))
-        logging.info(
-            "sent job=%s height=%s worker=%s peer=%s",
-            job.job_id,
-            job.height,
-            self.worker_name,
-            self.peer,
-        )
+        self.server.note_job_sent(self.worker_name, job.height, clean_jobs)
+        if clean_jobs:
+            logging.info(
+                "sent clean job=%s height=%s worker=%s peer=%s",
+                job.job_id,
+                job.height,
+                self.worker_name,
+                self.peer,
+            )
+        else:
+            logging.debug(
+                "sent job=%s height=%s worker=%s peer=%s",
+                job.job_id,
+                job.height,
+                self.worker_name,
+                self.peer,
+            )
 
     async def handle(self) -> None:
+        self.server.note_client_connected()
         logging.info("client connected peer=%s extranonce1=%s", self.peer, self.extranonce1)
         try:
             while line := await self.reader.readline():
@@ -407,6 +419,9 @@ class StratumClient:
             logging.info("client reset connection peer=%s", self.peer)
         finally:
             self.server.clients.discard(self)
+            self.server.note_client_disconnected()
+            if self.authorized:
+                self.server.note_worker_disconnected(self.worker_name)
             self.writer.close()
             with contextlib.suppress(Exception):
                 await self.writer.wait_closed()
@@ -454,24 +469,30 @@ class StratumClient:
             self.server.rpc.script_pub_key_for_address(payout_address)
         except Exception as exc:
             logging.warning("authorization rejected worker=%s peer=%s error=%s", worker_name, self.peer, exc)
+            self.server.note_authorization_rejected(worker_name)
             await self.result(request_id, False)
             return
 
         self.authorized = True
         self.worker_name = worker_name
         self.payout_address = payout_address
+        self.server.note_worker_authorized(worker_name)
         await self.result(request_id, True)
         await self.send_job(clean_jobs=True)
         logging.info("authorized worker=%s payout=%s peer=%s", worker_name, payout_address, self.peer)
 
     async def submit(self, request_id: Any, params: list[Any]) -> None:
+        worker_name = str(params[0]) if params else self.worker_name
+        self.server.note_share_submitted(worker_name)
         if len(params) < 5:
+            self.server.note_invalid_share(worker_name, "missing submit parameters")
             await self.error(request_id, 20, "mining.submit requires worker, job, extranonce2, ntime, nonce")
             return
 
         worker_name, job_id, extranonce2, ntime, nonce = [str(item) for item in params[:5]]
         job = self.jobs.get(job_id)
         if job is None:
+            self.server.note_stale_share(worker_name)
             await self.error(request_id, 21, "stale job")
             return
 
@@ -484,6 +505,7 @@ class StratumClient:
                 header_hash_int = int.from_bytes(header_hash, "little")
                 candidates.append((header_hash_int, header_hash, header, label))
         except Exception as exc:
+            self.server.note_invalid_share(worker_name, str(exc))
             await self.error(request_id, 20, f"invalid share: {exc}")
             return
 
@@ -493,6 +515,7 @@ class StratumClient:
 
         if header_hash_int > job.share_target:
             share_difficulty = Decimal(DIFF1_TARGET) / Decimal(max(header_hash_int, 1))
+            self.server.note_low_difficulty_share(worker_name, share_difficulty, display_hash)
             logging.info(
                 "rejected low-difficulty share worker=%s job=%s diff=%s required=%s best_variant=%s hash=%s peer=%s",
                 worker_name,
@@ -506,6 +529,7 @@ class StratumClient:
             await self.error(request_id, 23, "low difficulty share")
             return
 
+        self.server.note_accepted_share(worker_name, display_hash)
         logging.info(
             "accepted share worker=%s job=%s hash=%s variant=%s peer=%s",
             worker_name,
@@ -516,9 +540,11 @@ class StratumClient:
         )
 
         if header_hash_int <= job.target:
+            self.server.note_candidate_block(worker_name, job.height, display_hash)
             block_hex = job.block_hex_from_header(header, extranonce2)
             try:
                 submit_result = self.server.rpc.submitblock(block_hex)
+                self.server.note_submitblock_result(worker_name, submit_result)
                 logging.warning(
                     "submitted candidate block hash=%s height=%s result=%s variant=%s",
                     display_hash,
@@ -527,6 +553,7 @@ class StratumClient:
                     header_variant,
                 )
             except Exception as exc:
+                self.server.note_submitblock_exception(worker_name, str(exc))
                 logging.exception("submitblock failed hash=%s height=%s error=%s", display_hash, job.height, exc)
                 await self.error(request_id, 22, f"submitblock failed: {exc}")
                 return
@@ -543,6 +570,7 @@ class StratumServer:
         share_difficulty: Decimal,
         extranonce2_size: int,
         refresh_seconds: int,
+        stats_file: str,
     ) -> None:
         self.rpc = rpc
         self.host = host
@@ -553,6 +581,203 @@ class StratumServer:
         self.refresh_seconds = refresh_seconds
         self.clients: set[StratumClient] = set()
         self._client_counter = secrets.randbits(31)
+        self.started_at = time.time()
+        self.stats_file = stats_file
+        self._stats_dirty = True
+        self._last_stats_write = 0.0
+        self.counters: dict[str, int] = {
+            "total_connections": 0,
+            "active_connections_peak": 0,
+            "authorization_rejected": 0,
+            "jobs_sent": 0,
+            "clean_jobs_sent": 0,
+            "submitted_shares": 0,
+            "accepted_shares": 0,
+            "rejected_low_difficulty": 0,
+            "stale_shares": 0,
+            "invalid_shares": 0,
+            "candidate_blocks": 0,
+            "submitblock_success": 0,
+            "submitblock_rejected": 0,
+            "submitblock_failed": 0,
+        }
+        self.workers: dict[str, dict[str, Any]] = {}
+
+    def _worker(self, worker_name: str) -> dict[str, Any]:
+        name = worker_name or "unknown"
+        return self.workers.setdefault(
+            name,
+            {
+                "active_connections": 0,
+                "authorizations": 0,
+                "jobs_sent": 0,
+                "submitted_shares": 0,
+                "accepted_shares": 0,
+                "rejected_low_difficulty": 0,
+                "stale_shares": 0,
+                "invalid_shares": 0,
+                "candidate_blocks": 0,
+                "submitblock_success": 0,
+                "submitblock_rejected": 0,
+                "submitblock_failed": 0,
+                "last_seen_at": None,
+                "last_share_at": None,
+                "last_accepted_share_at": None,
+                "last_share_difficulty": None,
+                "last_share_hash": None,
+                "last_candidate_block": None,
+                "last_error": None,
+            },
+        )
+
+    def mark_stats_dirty(self) -> None:
+        self._stats_dirty = True
+
+    def note_client_connected(self) -> None:
+        self.counters["total_connections"] += 1
+        active = len(self.clients)
+        if active > self.counters["active_connections_peak"]:
+            self.counters["active_connections_peak"] = active
+        self.mark_stats_dirty()
+
+    def note_client_disconnected(self) -> None:
+        self.mark_stats_dirty()
+
+    def note_authorization_rejected(self, worker_name: str) -> None:
+        self.counters["authorization_rejected"] += 1
+        worker = self._worker(worker_name)
+        worker["last_seen_at"] = time.time()
+        worker["last_error"] = "authorization rejected"
+        self.mark_stats_dirty()
+
+    def note_worker_authorized(self, worker_name: str) -> None:
+        worker = self._worker(worker_name)
+        worker["active_connections"] += 1
+        worker["authorizations"] += 1
+        worker["last_seen_at"] = time.time()
+        self.mark_stats_dirty()
+
+    def note_worker_disconnected(self, worker_name: str) -> None:
+        worker = self._worker(worker_name)
+        worker["active_connections"] = max(0, int(worker["active_connections"]) - 1)
+        worker["last_seen_at"] = time.time()
+        self.mark_stats_dirty()
+
+    def note_job_sent(self, worker_name: str, height: int, clean_jobs: bool) -> None:
+        self.counters["jobs_sent"] += 1
+        if clean_jobs:
+            self.counters["clean_jobs_sent"] += 1
+        worker = self._worker(worker_name)
+        worker["jobs_sent"] += 1
+        worker["last_job_height"] = height
+        worker["last_seen_at"] = time.time()
+        self.mark_stats_dirty()
+
+    def note_share_submitted(self, worker_name: str) -> None:
+        self.counters["submitted_shares"] += 1
+        worker = self._worker(worker_name)
+        worker["submitted_shares"] += 1
+        worker["last_share_at"] = time.time()
+        worker["last_seen_at"] = worker["last_share_at"]
+        self.mark_stats_dirty()
+
+    def note_low_difficulty_share(self, worker_name: str, difficulty: Decimal, share_hash: str) -> None:
+        self.counters["rejected_low_difficulty"] += 1
+        worker = self._worker(worker_name)
+        worker["rejected_low_difficulty"] += 1
+        worker["last_share_difficulty"] = str(difficulty)
+        worker["last_share_hash"] = share_hash
+        worker["last_error"] = "low difficulty share"
+        self.mark_stats_dirty()
+
+    def note_stale_share(self, worker_name: str) -> None:
+        self.counters["stale_shares"] += 1
+        worker = self._worker(worker_name)
+        worker["stale_shares"] += 1
+        worker["last_error"] = "stale job"
+        self.mark_stats_dirty()
+
+    def note_invalid_share(self, worker_name: str, error: str) -> None:
+        self.counters["invalid_shares"] += 1
+        worker = self._worker(worker_name)
+        worker["invalid_shares"] += 1
+        worker["last_error"] = error
+        self.mark_stats_dirty()
+
+    def note_accepted_share(self, worker_name: str, share_hash: str) -> None:
+        self.counters["accepted_shares"] += 1
+        worker = self._worker(worker_name)
+        worker["accepted_shares"] += 1
+        worker["last_accepted_share_at"] = time.time()
+        worker["last_share_hash"] = share_hash
+        worker["last_error"] = None
+        self.mark_stats_dirty()
+
+    def note_candidate_block(self, worker_name: str, height: int, block_hash: str) -> None:
+        self.counters["candidate_blocks"] += 1
+        worker = self._worker(worker_name)
+        worker["candidate_blocks"] += 1
+        worker["last_candidate_block"] = {"height": height, "hash": block_hash, "time": time.time()}
+        self.mark_stats_dirty()
+
+    def note_submitblock_result(self, worker_name: str, result: Any) -> None:
+        if result in (None, ""):
+            counter = "submitblock_success"
+            error = None
+        else:
+            counter = "submitblock_rejected"
+            error = str(result)
+        self.counters[counter] += 1
+        worker = self._worker(worker_name)
+        worker[counter] += 1
+        worker["last_error"] = error
+        self.mark_stats_dirty()
+
+    def note_submitblock_exception(self, worker_name: str, error: str) -> None:
+        self.counters["submitblock_failed"] += 1
+        worker = self._worker(worker_name)
+        worker["submitblock_failed"] += 1
+        worker["last_error"] = error
+        self.mark_stats_dirty()
+
+    def stats_snapshot(self) -> dict[str, Any]:
+        now = time.time()
+        return {
+            "pool": "BitStar Stratum solo test pool",
+            "started_at": self.started_at,
+            "updated_at": now,
+            "uptime_seconds": int(now - self.started_at),
+            "listen": {
+                "host": self.host,
+                "port": self.port,
+                "share_difficulty": str(self.share_difficulty),
+                "refresh_seconds": self.refresh_seconds,
+            },
+            "connections": {
+                "active": len(self.clients),
+                "authorized": sum(1 for client in self.clients if client.authorized),
+            },
+            "counters": dict(self.counters),
+            "workers": self.workers,
+        }
+
+    def write_stats(self, force: bool = False) -> None:
+        if not self.stats_file:
+            return
+        now = time.time()
+        if not force and (not self._stats_dirty or now - self._last_stats_write < 2):
+            return
+
+        path = Path(self.stats_file)
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            tmp_path = path.with_suffix(path.suffix + ".tmp")
+            tmp_path.write_text(json.dumps(self.stats_snapshot(), indent=2, sort_keys=True), encoding="utf-8")
+            tmp_path.replace(path)
+            self._last_stats_write = now
+            self._stats_dirty = False
+        except Exception:
+            logging.exception("failed to write stats file %s", path)
 
     async def build_job(self, payout_address: str, extranonce1: str) -> Job:
         template = await asyncio.to_thread(self.rpc.getblocktemplate)
@@ -628,6 +853,11 @@ class StratumServer:
             except Exception:
                 logging.exception("failed to refresh jobs")
 
+    async def write_stats_periodically(self) -> None:
+        while True:
+            await asyncio.sleep(5)
+            self.write_stats(force=self._stats_dirty)
+
     async def serve(self) -> None:
         server = await asyncio.start_server(self.handle_client, self.host, self.port)
         sockets = ", ".join(str(sock.getsockname()) for sock in server.sockets or [])
@@ -637,12 +867,16 @@ class StratumServer:
             self.share_difficulty,
         )
 
+        self.write_stats(force=True)
         refresh_task = asyncio.create_task(self.refresh_jobs())
+        stats_task = asyncio.create_task(self.write_stats_periodically())
         try:
             async with server:
                 await server.serve_forever()
         finally:
             refresh_task.cancel()
+            stats_task.cancel()
+            self.write_stats(force=True)
 
 
 def parse_args() -> argparse.Namespace:
@@ -670,6 +904,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--rpc-timeout", type=int, default=int(os.getenv("BITSTAR_RPC_TIMEOUT", "15")))
     parser.add_argument("--check", action="store_true", help="Check node RPC and exit")
     parser.add_argument("--log-level", default=os.getenv("BITSTAR_POOL_LOG_LEVEL", "INFO"))
+    parser.add_argument(
+        "--stats-file",
+        default=os.getenv("BITSTAR_POOL_STATS_FILE", "/var/lib/bitstar/pool-stats.json"),
+        help="Write a local JSON stats snapshot for operators. Use an empty value to disable.",
+    )
     return parser.parse_args()
 
 
@@ -711,6 +950,7 @@ def main() -> None:
         share_difficulty=Decimal(str(args.share_difficulty)),
         extranonce2_size=args.extranonce2_size,
         refresh_seconds=args.refresh_seconds,
+        stats_file=args.stats_file,
     )
     asyncio.run(server.serve())
 

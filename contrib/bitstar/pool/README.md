@@ -10,6 +10,8 @@ The server works as a solo test pool:
 - the pool builds block templates through local `bitstar-cli`
 - if a miner finds a valid block, the coinbase output pays the miner address
 - no payout accounting, balances, web dashboard, vardiff, or custody is provided
+- a local operator stats file tracks submitted, rejected, accepted, and
+  block-candidate shares
 
 ## Install On A Seed Or Pool VPS
 
@@ -27,6 +29,33 @@ If a firewall is active, allow the public Stratum port:
 ```bash
 sudo ufw allow 3333/tcp
 ```
+
+## Operator Status Checks
+
+Follow live logs:
+
+```bash
+sudo journalctl -u bitstar-stratum-pool -f
+```
+
+Read the local stats snapshot:
+
+```bash
+sudo cat /var/lib/bitstar/pool-stats.json
+```
+
+Important fields:
+
+- `submitted_shares`: miner shares received by the pool
+- `accepted_shares`: shares that met the pool share difficulty
+- `rejected_low_difficulty`: shares below the configured pool share difficulty
+- `candidate_blocks`: shares strong enough to be submitted as possible blocks
+- `submitblock_success`: candidate blocks accepted by `bitstard`
+
+Miner output such as `Submitted Diff ...` only means the miner sent shares to
+the Stratum server. It does not mean a BitStar block was mined unless the pool
+stats show `candidate_blocks` and `submitblock_success`, and the public chain
+height increases.
 
 ## Check RPC Compatibility
 
