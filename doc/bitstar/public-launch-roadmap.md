@@ -42,9 +42,17 @@ Status: in progress.
 Current seed nodes:
 
 - `seed1.bitstarcoin.org:21333` (`134.209.68.145`), DNS-only Cloudflare record,
-  genesis verified, RPC private.
+  genesis verified, RPC private, healthcheck enabled, connected to seed2.
 - `seed2.bitstarcoin.org:21333` (`134.122.66.31`), DNS-only Cloudflare record,
-  genesis verified, RPC private, connected to seed1.
+  genesis verified, RPC private, healthcheck enabled, connected to seed1.
+
+Public chain status as of August 21, 2026:
+
+- Height: `1`
+- Best block: `00000738ca472e32ea8a6a247de802b4b2b031af610057a0c5158b12fb31b3d4`
+- Genesis: `00000c45c905ce3e3beeb9eb534650276947373d3a2a15694b4624a89bce4b49`
+- First block reward address:
+  `bst1q8x4dnwudeq4ke6zkq69we23gx8wdk0rase0hl7`
 
 ## Phase 4: Public Tooling
 

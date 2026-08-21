@@ -63,6 +63,25 @@ txindex=0
 printtoconsole=0
 ```
 
+For the official public seed nodes, add a stable public identity and one
+explicit peer:
+
+```ini
+# seed1.bitstarcoin.org
+externalip=134.209.68.145:21333
+addnode=seed2.bitstarcoin.org:21333
+maxconnections=64
+dbcache=256
+```
+
+```ini
+# seed2.bitstarcoin.org
+externalip=134.122.66.31:21333
+addnode=seed1.bitstarcoin.org:21333
+maxconnections=64
+dbcache=256
+```
+
 Set permissions:
 
 ```bash
@@ -129,6 +148,13 @@ Current public seed nodes:
 
 Seed node DNS records must stay `DNS only`, not proxied through Cloudflare,
 because BitStar P2P traffic uses TCP `21333`, not HTTP/HTTPS.
+
+As of August 21, 2026, both public seed nodes are synchronized at public block
+height `1` with best block hash:
+
+```text
+00000738ca472e32ea8a6a247de802b4b2b031af610057a0c5158b12fb31b3d4
+```
 
 ## Information To Record
 
