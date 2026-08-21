@@ -69,7 +69,11 @@ Optional later artifacts:
 - publish SHA256 checksums for every artifact
 - sign the checksum file or release manifest
 - document verification commands for Windows and Linux users
+- keep [release-verification.md](release-verification.md) current for every
+  public release
 - keep private signing keys offline
+- label Windows builds as not code-signed until an Authenticode certificate is
+  available
 
 ## Release Notes
 
@@ -85,6 +89,7 @@ Release notes must include:
 - known limitations
 - wallet safety warning
 - no exchange/listing/profit promises
+- signing key fingerprint and checksum verification instructions
 
 ## Final Launch Checklist
 

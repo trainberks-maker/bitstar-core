@@ -88,7 +88,9 @@ Definition of done:
 - wallet backup and restore path is documented
 - no test wallet or chain data is bundled
 
-Current status: bootstrap binaries exist; signed production release is pending.
+Current status: bootstrap binaries exist. The Windows `v0.1.1-bootstrap`
+launcher package is published, Linux `v0.1.0-bootstrap` remains available for
+server testing, and signed production release artifacts are still pending.
 
 ### Gate 5: Explorer
 
