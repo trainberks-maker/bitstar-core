@@ -22,6 +22,7 @@ Status: next.
 - Run a fresh 3-node rehearsal from genesis.
 - Confirm no private test-chain data is packaged.
 - Publish node, mining, and wallet guides.
+- Publish Linux build and VPS seed node guides.
 - Prepare signed release checksums.
 - Decide exact public launch date and time.
 - Prepare launch announcement with genesis hash, ports, and no-premine policy.

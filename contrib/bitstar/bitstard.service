@@ -1,0 +1,24 @@
+[Unit]
+Description=BitStar Core daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=bitstar
+Group=bitstar
+Type=forking
+RuntimeDirectory=bitstar
+RuntimeDirectoryMode=0750
+PIDFile=/run/bitstar/bitstard.pid
+ExecStart=/usr/local/bin/bitstard -daemon -pid=/run/bitstar/bitstard.pid -conf=/etc/bitstar/bitstar.conf -datadir=/var/lib/bitstar
+ExecStop=/usr/local/bin/bitstar-cli -conf=/etc/bitstar/bitstar.conf -datadir=/var/lib/bitstar stop
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=600
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
