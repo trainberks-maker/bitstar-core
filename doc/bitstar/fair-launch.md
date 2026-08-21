@@ -9,6 +9,11 @@ BitStar has a working local bootstrap chain. The local test chain reached height
 Those blocks are private test data. They should not be treated as public mainnet
 history unless explicitly disclosed.
 
+The current public seed chain is separate from the old local test chain. As of
+August 21, 2026, seed1 and seed2 are synchronized at height `5`. This public
+chain is still classified as bootstrap/test until a final launch decision is
+published.
+
 ## Recommended No-Premine Path
 
 1. Keep the local height `181` chain as development/test data only.
@@ -20,6 +25,23 @@ history unless explicitly disclosed.
 5. Let block 1 be mined publicly after the launch announcement.
 6. Publish explorer and seed nodes only after confirming they follow the public
    chain.
+
+## Launch Decision Options
+
+### Option A: Continue The Current Bootstrap Chain
+
+This avoids another reset, but it requires full disclosure that the first public
+blocks were mined during bootstrap testing. The public announcement must include
+the early block history, seed nodes, explorer state, and current best block.
+
+### Option B: Final Fair-Launch Reset
+
+This is the cleanest Bitcoin-style path. The current chain is treated as a
+public test, seed nodes are reset once, signed release artifacts are published,
+and block 1 is mined only after the public launch time.
+
+Recommended choice: Option B, unless the community intentionally accepts the
+current bootstrap history.
 
 ## Why This Matters
 

@@ -31,12 +31,12 @@ RPC is private to each node and must not be exposed to the public internet.
 
 ## Current Public Chain State
 
-As of August 21, 2026, the public bootstrap chain has one mined block after
-genesis.
+As of August 21, 2026, the public bootstrap chain is synchronized on seed1 and
+seed2 at height `5`.
 
-- Height: 1
-- Block 1 hash:
-  `00000738ca472e32ea8a6a247de802b4b2b031af610057a0c5158b12fb31b3d4`
+- Height: 5
+- Current best block:
+  `00000e7ed0c7df4e0db2d66c8d0031042e1ad66f5a8e3bf3e23a8e6a151c502d`
 - Block 1 reward address:
   `bst1q8x4dnwudeq4ke6zkq69we23gx8wdk0rase0hl7`
 
@@ -174,7 +174,7 @@ Before asking the public to mine, BitStar should have:
 - at least two stable seed nodes
 - public DNS records for seed nodes
 - block explorer
-- documented genesis hash and block 1 hash
+- documented genesis hash and current best block
 - published mining instructions
 - documented no-premine statement
 - security, legal, and listing readiness review

@@ -13,8 +13,8 @@ As of August 21, 2026:
 - RPC remains private and bound to localhost on seed nodes
 - `getmininginfo` is available on seed1 and seed2
 - `getblocktemplate` is available on seed1 and seed2 with segwit rules
-- public chain height is `1`
-- next template height is `2`
+- public chain height is `5`
+- next template height is `6`
 
 The bootstrap build still prints a pre-release warning. Do not use it for
 custody, merchant payments, exchange deposits, or guaranteed production mining.
@@ -33,7 +33,7 @@ custody, merchant payments, exchange deposits, or guaranteed production mining.
 | RPC port | 21332 |
 | Bech32 prefix | `bst1` |
 | Genesis hash | `00000c45c905ce3e3beeb9eb534650276947373d3a2a15694b4624a89bce4b49` |
-| Block 1 hash | `00000738ca472e32ea8a6a247de802b4b2b031af610057a0c5158b12fb31b3d4` |
+| Current best block | `00000e7ed0c7df4e0db2d66c8d0031042e1ad66f5a8e3bf3e23a8e6a151c502d` |
 
 ## Public Peers
 
@@ -71,13 +71,13 @@ Verified on seed1 and seed2 on August 21, 2026:
 
 ```json
 {
-  "blocks": 1,
+  "blocks": 5,
   "bits": "1e0ffff0",
   "difficulty": 0.000244140625,
   "target": "00000ffff0000000000000000000000000000000000000000000000000000000",
   "chain": "main",
   "next": {
-    "height": 2,
+    "height": 6,
     "bits": "1e0ffff0",
     "difficulty": 0.000244140625,
     "target": "00000ffff0000000000000000000000000000000000000000000000000000000"
@@ -101,11 +101,11 @@ Important template fields observed on seed1 and seed2 on August 21, 2026:
   "capabilities": ["proposal"],
   "version": 536870912,
   "rules": ["csv", "!segwit", "taproot"],
-  "previousblockhash": "00000738ca472e32ea8a6a247de802b4b2b031af610057a0c5158b12fb31b3d4",
+  "previousblockhash": "00000e7ed0c7df4e0db2d66c8d0031042e1ad66f5a8e3bf3e23a8e6a151c502d",
   "coinbasevalue": 5000000000,
   "target": "00000ffff0000000000000000000000000000000000000000000000000000000",
   "bits": "1e0ffff0",
-  "height": 2,
+  "height": 6,
   "weightlimit": 4000000
 }
 ```

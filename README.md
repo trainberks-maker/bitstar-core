@@ -42,9 +42,9 @@ This repository is an early bootstrap fork. Local validation has confirmed:
 - controlled public mining instructions
 - `getblocktemplate` baseline for pool compatibility
 
-The public bootstrap chain currently has one mined block after genesis. The
-project keeps a no-premine policy: no hidden founder allocation and no private
-nonstop mining before public coordination.
+The public bootstrap chain is online on seed1 and seed2. The project keeps a
+no-premine policy: no hidden founder allocation and no private nonstop mining
+before public coordination.
 
 ## Documentation
 
@@ -61,6 +61,8 @@ nonstop mining before public coordination.
 - [Launch and mining announcement](doc/bitstar/launch-mining-announcement.md)
 - [Wallet safety guide](doc/bitstar/wallet-guide.md)
 - [Public launch roadmap](doc/bitstar/public-launch-roadmap.md)
+- [Production readiness plan](doc/bitstar/production-readiness.md)
+- [Release checklist](doc/bitstar/release-checklist.md)
 
 The broader upstream Bitcoin Core developer documentation remains available in
 the [doc](doc) directory.

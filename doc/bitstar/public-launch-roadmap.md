@@ -49,8 +49,8 @@ Current seed nodes:
 
 Public chain status as of August 21, 2026:
 
-- Height: `1`
-- Best block: `00000738ca472e32ea8a6a247de802b4b2b031af610057a0c5158b12fb31b3d4`
+- Height: `5`
+- Best block: `00000e7ed0c7df4e0db2d66c8d0031042e1ad66f5a8e3bf3e23a8e6a151c502d`
 - Genesis: `00000c45c905ce3e3beeb9eb534650276947373d3a2a15694b4624a89bce4b49`
 - First block reward address:
   `bst1q8x4dnwudeq4ke6zkq69we23gx8wdk0rase0hl7`
@@ -67,6 +67,8 @@ Public chain status as of August 21, 2026:
 - Linux build guide
 - Reproducible build workflow
 - Release signing keys and verification guide
+- Production readiness plan
+- Release checklist
 
 ## Phase 5: Trust And Review
 
@@ -93,3 +95,10 @@ Serious exchanges usually require:
 - clear project ownership and contact path
 
 Code alone cannot guarantee a listing.
+
+## Current Production Status
+
+The current network is a public bootstrap, not a final production release. The
+project must still complete signed releases, broader review, stronger explorer
+tooling, independent node participation, production pool accounting, and a
+final fair-launch decision before it is presented as exchange-ready.
