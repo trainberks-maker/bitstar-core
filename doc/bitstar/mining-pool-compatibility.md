@@ -11,8 +11,8 @@ As of August 21, 2026:
 - public seed nodes are online
 - P2P port `21333` is reachable on seed1 and seed2
 - RPC remains private and bound to localhost on seed nodes
-- `getmininginfo` is available on seed1
-- `getblocktemplate` is available on seed1 with segwit rules
+- `getmininginfo` is available on seed1 and seed2
+- `getblocktemplate` is available on seed1 and seed2 with segwit rules
 - public chain height is `1`
 - next template height is `2`
 
@@ -67,7 +67,7 @@ still validate BitStar addresses beginning with `bst1`.
 
 ## getmininginfo Baseline
 
-Verified on seed1 on August 21, 2026:
+Verified on seed1 and seed2 on August 21, 2026:
 
 ```json
 {
@@ -94,7 +94,7 @@ bitstar-cli -datadir=/var/lib/bitstar -conf=/etc/bitstar/bitstar.conf \
   getblocktemplate '{"rules":["segwit"]}'
 ```
 
-Important template fields observed on August 21, 2026:
+Important template fields observed on seed1 and seed2 on August 21, 2026:
 
 ```json
 {
