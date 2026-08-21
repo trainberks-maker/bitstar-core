@@ -9,11 +9,12 @@ The `v0.x-bootstrap` releases are public bootstrap releases, not final
 production releases. A production release must have signed checksums and clear
 release notes before it is promoted as stable.
 
-As of the `v0.1.1-bootstrap` Windows launcher release:
+As of the `v0.1.1-bootstrap` bootstrap release:
 
 - Windows launcher package exists.
-- Linux x86_64 package exists for `v0.1.0-bootstrap`.
-- SHA256 checksum files exist for published packages.
+- Linux x86_64 server package exists.
+- SHA256 checksum files and a combined `SHA256SUMS` manifest exist for the
+  published packages.
 - Signed `SHA256SUMS` manifest is still pending.
 - Windows Authenticode code signing is still pending.
 
@@ -21,7 +22,7 @@ As of the `v0.1.1-bootstrap` Windows launcher release:
 
 Every serious public release should include:
 
-- `BitStar_Windows_x86_64_<version>.zip`
+- `BitStar_Windows_<version>.zip`
 - `BitStar_Linux_x86_64_<version>.tar.gz`
 - `SHA256SUMS`
 - `SHA256SUMS.asc`
@@ -42,7 +43,7 @@ Optional later artifacts:
 4. Create a single checksum manifest:
 
 ```powershell
-Get-FileHash -Algorithm SHA256 .\BitStar_Windows_x86_64_v0.1.1-bootstrap.zip |
+Get-FileHash -Algorithm SHA256 .\BitStar_Windows_v0.1.1-bootstrap.zip |
   ForEach-Object { "$($_.Hash.ToLower())  $(Split-Path $_.Path -Leaf)" } |
   Set-Content -Encoding ascii .\SHA256SUMS
 ```

@@ -35,27 +35,31 @@ or a clear decision to keep the pool test-only.
   - `/launch`
   - `/mining`
   - `/pool`
-- The website links the latest Windows bootstrap launcher release and checksum
-  verification files.
+- The website links the latest Windows bootstrap launcher, Linux x86_64 server
+  package, and checksum verification files.
 
 ### Release Artifacts
 
-Latest Windows bootstrap release:
+Latest bootstrap release:
 
 - Tag: `v0.1.1-bootstrap`
 - Release URL:
   `https://github.com/trainberks-maker/bitstar-core/releases/tag/v0.1.1-bootstrap`
 - Assets:
+  - `BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz`
+  - `BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz.sha256`
   - `BitStar_Windows_v0.1.1-bootstrap.zip`
   - `BitStar_Windows_v0.1.1-bootstrap.zip.sha256`
   - `SHA256SUMS`
   - `verify-checksums.ps1`
   - `verify-checksums.sh`
 
-Linux server package:
+Current published SHA256 values:
 
-- Current Linux package remains `v0.1.0-bootstrap`.
-- A Linux `v0.1.1-bootstrap` package is still pending.
+- `BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz`:
+  `24ec7ec5cc9ff15d0ed94a544a4ea6d860368f468626411a0df97c8f2ff5ef27`
+- `BitStar_Windows_v0.1.1-bootstrap.zip`:
+  `9cd8e559da3a8a8b92d6df92e5007923e226987b9087c9256180bdae1b76831d`
 
 ### Network Parameters
 
@@ -134,7 +138,7 @@ coordination, but they are not final stable releases.
 
 Remaining work:
 
-- build Linux `v0.1.1-bootstrap`
+- complete clean install smoke tests for Windows and Linux `v0.1.1-bootstrap`
 - create a release candidate tag after the build matrix is complete
 - remove or update pre-release warnings only when production gates are complete
 
@@ -224,15 +228,14 @@ Remaining work:
 
 ## Recommended Next Work Order
 
-1. Build and publish Linux `v0.1.1-bootstrap`.
-2. Create the release signing process and publish a signed `SHA256SUMS.asc`.
-3. Run a release test matrix for Windows and Linux from clean datadirs.
-4. Upgrade the explorer from status-only to block, transaction, and address
+1. Create the release signing process and publish a signed `SHA256SUMS.asc`.
+2. Run a release test matrix for Windows and Linux from clean datadirs.
+3. Upgrade the explorer from status-only to block, transaction, and address
    lookup.
-5. Keep the current pool labeled as solo/test, or build a real dashboard and
+4. Keep the current pool labeled as solo/test, or build a real dashboard and
    payout accounting system before calling it official.
-6. Invite independent node operators and miners.
-7. Decide final fair-launch policy: continue current bootstrap chain with full
+5. Invite independent node operators and miners.
+6. Decide final fair-launch policy: continue current bootstrap chain with full
    disclosure, or perform one final reset after signed release artifacts are
    ready.
 
