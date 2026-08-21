@@ -168,6 +168,7 @@ if(ENABLE_WALLET)
       init/bitcoin-wallet.cpp
       wallet/wallettool.cpp
     )
+    set_target_properties(bitcoin-wallet PROPERTIES OUTPUT_NAME bitstar-wallet)
     add_windows_application_manifest(bitcoin-wallet)
     target_link_libraries(bitcoin-wallet
       core_interface
@@ -306,6 +307,7 @@ if(BUILD_BITCOIN_BIN)
     bitcoin.cpp
     bitcoin-res.rc
   )
+  set_target_properties(bitcoin PROPERTIES OUTPUT_NAME bitstar)
   add_windows_application_manifest(bitcoin)
   target_link_libraries(bitcoin core_interface bitcoin_common bitcoin_util)
   install_binary_component(bitcoin HAS_MANPAGE)
@@ -318,6 +320,7 @@ if(BUILD_DAEMON)
     bitcoind-res.rc
     init/bitcoind.cpp
   )
+  set_target_properties(bitcoind PROPERTIES OUTPUT_NAME bitstard)
   add_windows_application_manifest(bitcoind)
   target_link_libraries(bitcoind
     core_interface
@@ -331,6 +334,7 @@ if(ENABLE_IPC AND BUILD_DAEMON)
     bitcoind.cpp
     init/bitcoin-node.cpp
   )
+  set_target_properties(bitcoin-node PROPERTIES OUTPUT_NAME bitstar-node)
   target_link_libraries(bitcoin-node
     core_interface
     bitcoin_node
@@ -359,6 +363,7 @@ if(BUILD_CLI)
     bitcoin-cli-res.rc
     init/basic.cpp
   )
+  set_target_properties(bitcoin-cli PROPERTIES OUTPUT_NAME bitstar-cli)
   add_windows_application_manifest(bitcoin-cli)
   target_link_libraries(bitcoin-cli
     core_interface
@@ -376,6 +381,7 @@ if(BUILD_TX)
     bitcoin-tx.cpp
     bitcoin-tx-res.rc
   )
+  set_target_properties(bitcoin-tx PROPERTIES OUTPUT_NAME bitstar-tx)
   add_windows_application_manifest(bitcoin-tx)
   target_link_libraries(bitcoin-tx
     core_interface
@@ -392,6 +398,7 @@ if(BUILD_UTIL)
     bitcoin-util.cpp
     bitcoin-util-res.rc
   )
+  set_target_properties(bitcoin-util PROPERTIES OUTPUT_NAME bitstar-util)
   add_windows_application_manifest(bitcoin-util)
   target_link_libraries(bitcoin-util
     core_interface
@@ -417,6 +424,7 @@ if(BUILD_KERNEL_LIB)
     add_executable(bitcoin-chainstate
       bitcoin-chainstate.cpp
     )
+    set_target_properties(bitcoin-chainstate PROPERTIES OUTPUT_NAME bitstar-chainstate)
     add_windows_application_manifest(bitcoin-chainstate)
     target_link_libraries(bitcoin-chainstate
       PRIVATE

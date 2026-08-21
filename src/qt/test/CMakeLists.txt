@@ -14,6 +14,7 @@ add_executable(test_bitcoin-qt
   ../../init/bitcoin-qt.cpp
 )
 
+set_target_properties(test_bitcoin-qt PROPERTIES OUTPUT_NAME test_bitstar-qt)
 add_windows_application_manifest(test_bitcoin-qt)
 
 target_link_libraries(test_bitcoin-qt

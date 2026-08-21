@@ -260,6 +260,7 @@ add_executable(bitcoin-qt WIN32
   res/bitcoin-qt-res.rc
   ../init/bitcoin-qt.cpp
 )
+set_target_properties(bitcoin-qt PROPERTIES OUTPUT_NAME bitstar-qt)
 
 add_windows_application_manifest(bitcoin-qt)
 
@@ -277,6 +278,7 @@ if(ENABLE_IPC)
     main.cpp
     ../init/bitcoin-gui.cpp
   )
+  set_target_properties(bitcoin-gui PROPERTIES OUTPUT_NAME bitstar-gui)
   target_link_libraries(bitcoin-gui
     core_interface
     bitcoinqt

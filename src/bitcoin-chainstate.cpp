@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 //
-// The bitcoin-chainstate executable serves to surface the dependencies required
-// by a program wishing to use Bitcoin Core's consensus engine as it is right
+// The bitstar-chainstate executable serves to surface the dependencies required
+// by a program wishing to use BitStar's consensus engine as it is right
 // now.
 //
 // DEVELOPER NOTE: Since this is a "demo-only", experimental, etc. executable,
