@@ -15,6 +15,7 @@ import asyncio
 import contextlib
 import dataclasses
 import hashlib
+import itertools
 import json
 import logging
 import os
@@ -90,6 +91,16 @@ def push_data(data: bytes) -> bytes:
     return b"\x4e" + struct.pack("<I", length) + data
 
 
+def push_script_int(value: int) -> bytes:
+    if value == -1:
+        return b"\x4f"
+    if value == 0:
+        return b"\x00"
+    if 1 <= value <= 16:
+        return bytes([0x50 + value])
+    return push_data(script_num(value))
+
+
 def compact_to_target(bits: str) -> int:
     raw = bytes.fromhex(bits)
     if len(raw) != 4:
@@ -110,6 +121,23 @@ def difficulty_to_target(difficulty: Decimal) -> int:
 
 def reverse_hash_hex(hash_hex: str) -> str:
     return bytes.fromhex(hash_hex)[::-1].hex()
+
+
+def swab32(data: bytes) -> bytes:
+    if len(data) % 4:
+        return data
+    return b"".join(data[index : index + 4][::-1] for index in range(0, len(data), 4))
+
+
+def unique_byte_options(options: list[tuple[str, bytes]]) -> list[tuple[str, bytes]]:
+    seen: set[bytes] = set()
+    result: list[tuple[str, bytes]] = []
+    for label, value in options:
+        if value in seen:
+            continue
+        seen.add(value)
+        result.append((label, value))
+    return result
 
 
 def extract_payout_address(worker_name: str) -> str:
@@ -203,6 +231,12 @@ class Job:
     def previous_hash_le(self) -> str:
         return reverse_hash_hex(self.previous_hash)
 
+    @property
+    def previous_hash_stratum(self) -> str:
+        # Bitcoin Stratum miners byte-swap header words internally, so prevhash
+        # is sent with 4-byte words swapped from the consensus header order.
+        return swab32(bytes.fromhex(self.previous_hash_le)).hex()
+
     def coinbase(self, extranonce2: str) -> bytes:
         extranonce2_bytes = bytes.fromhex(extranonce2)
         if len(extranonce2_bytes) != self.extranonce2_size:
@@ -221,16 +255,85 @@ class Job:
             ]
         )
 
+    def block_header_candidates(self, coinbase_hash: bytes, ntime: str, nonce: str) -> list[tuple[str, bytes]]:
+        version_wire = bytes.fromhex(self.version_hex)
+        previous_display = bytes.fromhex(self.previous_hash)
+        previous_wire = bytes.fromhex(self.previous_hash_stratum)
+        bits_wire = bytes.fromhex(self.bits)
+        ntime_wire = bytes.fromhex(ntime)
+        nonce_wire = bytes.fromhex(nonce)
+
+        if len(version_wire) != 4 or len(bits_wire) != 4 or len(ntime_wire) != 4 or len(nonce_wire) != 4:
+            raise ValueError("invalid header field length")
+
+        version_options = unique_byte_options(
+            [
+                ("version-consensus", ser_uint32(self.version)),
+                ("version-wire", version_wire),
+            ]
+        )
+        previous_options = unique_byte_options(
+            [
+                ("prev-consensus", previous_display[::-1]),
+                ("prev-display", previous_display),
+                ("prev-wire-swab32", swab32(previous_wire)),
+                ("prev-display-swab32", swab32(previous_display)),
+            ]
+        )
+        merkle_options = unique_byte_options(
+            [
+                ("merkle-consensus", coinbase_hash),
+                ("merkle-display", coinbase_hash[::-1]),
+                ("merkle-swab32", swab32(coinbase_hash)),
+            ]
+        )
+        time_options = unique_byte_options(
+            [
+                ("ntime-consensus", ser_uint32(int(ntime, 16))),
+                ("ntime-wire", ntime_wire),
+            ]
+        )
+        bits_options = unique_byte_options(
+            [
+                ("bits-consensus", bits_wire[::-1]),
+                ("bits-wire", bits_wire),
+            ]
+        )
+        nonce_options = unique_byte_options(
+            [
+                ("nonce-consensus", nonce_wire[::-1]),
+                ("nonce-wire", nonce_wire),
+            ]
+        )
+
+        candidates: list[tuple[str, bytes]] = []
+        for parts in itertools.product(
+            version_options,
+            previous_options,
+            merkle_options,
+            time_options,
+            bits_options,
+            nonce_options,
+        ):
+            label = ",".join(part[0] for part in parts)
+            header = b"".join(part[1] for part in parts)
+            candidates.append((label, header))
+        return candidates
+
     def block_hex(self, extranonce2: str, ntime: str, nonce: str) -> str:
         coinbase = self.coinbase(extranonce2)
         coinbase_hash = sha256d(coinbase)
         header = self.block_header(coinbase_hash, ntime, nonce)
         return (header + ser_varint(1) + coinbase).hex()
 
+    def block_hex_from_header(self, header: bytes, extranonce2: str) -> str:
+        coinbase = self.coinbase(extranonce2)
+        return (header + ser_varint(1) + coinbase).hex()
+
     def notify_params(self, clean_jobs: bool) -> list[Any]:
         return [
             self.job_id,
-            self.previous_hash_le,
+            self.previous_hash_stratum,
             self.coinb1.hex(),
             self.coinb2.hex(),
             [],
@@ -300,6 +403,8 @@ class StratumClient:
                     continue
 
                 await self.dispatch(request)
+        except ConnectionResetError:
+            logging.info("client reset connection peer=%s", self.peer)
         finally:
             self.server.clients.discard(self)
             self.writer.close()
@@ -373,35 +478,53 @@ class StratumClient:
         try:
             coinbase = job.coinbase(extranonce2)
             coinbase_hash = sha256d(coinbase)
-            header = job.block_header(coinbase_hash, ntime, nonce)
-            header_hash = sha256d(header)
-            header_hash_int = int.from_bytes(header_hash, "little")
-            display_hash = header_hash[::-1].hex()
+            candidates = []
+            for label, header in job.block_header_candidates(coinbase_hash, ntime, nonce):
+                header_hash = sha256d(header)
+                header_hash_int = int.from_bytes(header_hash, "little")
+                candidates.append((header_hash_int, header_hash, header, label))
         except Exception as exc:
             await self.error(request_id, 20, f"invalid share: {exc}")
             return
 
+        candidates.sort(key=lambda item: item[0])
+        header_hash_int, header_hash, header, header_variant = candidates[0]
+        display_hash = header_hash[::-1].hex()
+
         if header_hash_int > job.share_target:
+            share_difficulty = Decimal(DIFF1_TARGET) / Decimal(max(header_hash_int, 1))
+            logging.info(
+                "rejected low-difficulty share worker=%s job=%s diff=%s required=%s best_variant=%s hash=%s peer=%s",
+                worker_name,
+                job_id,
+                share_difficulty,
+                self.server.share_difficulty,
+                header_variant,
+                display_hash,
+                self.peer,
+            )
             await self.error(request_id, 23, "low difficulty share")
             return
 
         logging.info(
-            "accepted share worker=%s job=%s hash=%s peer=%s",
+            "accepted share worker=%s job=%s hash=%s variant=%s peer=%s",
             worker_name,
             job_id,
             display_hash,
+            header_variant,
             self.peer,
         )
 
         if header_hash_int <= job.target:
-            block_hex = job.block_hex(extranonce2, ntime, nonce)
+            block_hex = job.block_hex_from_header(header, extranonce2)
             try:
                 submit_result = self.server.rpc.submitblock(block_hex)
                 logging.warning(
-                    "submitted candidate block hash=%s height=%s result=%s",
+                    "submitted candidate block hash=%s height=%s result=%s variant=%s",
                     display_hash,
                     job.height,
                     submit_result,
+                    header_variant,
                 )
             except Exception as exc:
                 logging.exception("submitblock failed hash=%s height=%s error=%s", display_hash, job.height, exc)
@@ -447,7 +570,7 @@ class StratumServer:
             + (b"\x00" * 32)
             + ser_uint32(0xFFFFFFFF)
         )
-        script_prefix = push_data(script_num(height)) + push_data(DEFAULT_POOL_TAG)
+        script_prefix = push_script_int(height) + push_data(DEFAULT_POOL_TAG)
         script_len = len(script_prefix) + len(bytes.fromhex(extranonce1)) + self.extranonce2_size
         coinb1 = coinbase_prefix + ser_varint(script_len) + script_prefix
 
