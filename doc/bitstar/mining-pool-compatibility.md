@@ -159,11 +159,14 @@ The current official endpoint runs in `solo_direct_coinbase` mode:
 - the pool writes a local JSON stats snapshot for operators
 - the pool can append periodic JSONL history snapshots for review
 - the public API exposes sanitized counters and accounting flags only
+- the pool publishes a dry-run proportional share report for review only
 
 The current baseline intentionally keeps these disabled:
 
 - custodial miner balances
 - automatic pooled payouts
+- live payout ledger credits
+- payout transaction signing or broadcasting
 - payout-address changes managed by the pool
 - exchange, broker, liquidity, or profit guarantees
 
@@ -174,6 +177,8 @@ Before BitStar enables a real pooled payout system, operators should complete:
 - coinbase maturity handling before payouts are released
 - minimum payout rules, dust handling, and fee policy
 - dry-run payout reports before any live transaction is broadcast
+- reconciliation between dry-run reports, matured coinbase rewards, and public
+  chain data
 - signed release builds for pool and node binaries
 - monitoring, backups, and restore drills
 - independent review of payout code and operational controls

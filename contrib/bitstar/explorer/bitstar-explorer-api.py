@@ -137,9 +137,55 @@ def public_accounting(accounting):
         "mode": accounting.get("mode", "solo_direct_coinbase"),
         "auto_payouts_enabled": bool(accounting.get("auto_payouts_enabled")),
         "custody_enabled": bool(accounting.get("custody_enabled")),
+        "dry_run_ledger_enabled": bool(accounting.get("dry_run_ledger_enabled")),
+        "dry_run_payouts_broadcast": bool(accounting.get("dry_run_payouts_broadcast")),
+        "dry_run_reward_method": accounting.get("dry_run_reward_method", "proportional_share_report_only"),
         "coinbase_maturity_confirmations": int_value(accounting.get("coinbase_maturity_confirmations"), 100),
         "history_snapshots_enabled": bool(accounting.get("history_snapshots_enabled")),
         "history_interval_seconds": int_value(accounting.get("history_interval_seconds")),
+    }
+
+
+def public_dry_run_ledger(ledger):
+    if not isinstance(ledger, dict):
+        ledger = {}
+
+    totals = ledger.get("totals", {}) if isinstance(ledger.get("totals"), dict) else {}
+    workers = ledger.get("workers", []) if isinstance(ledger.get("workers"), list) else []
+    public_rows = []
+    for worker in workers:
+        if not isinstance(worker, dict):
+            continue
+        public_rows.append(
+            {
+                "worker": public_worker_name(worker.get("worker")),
+                "accepted_shares": int_value(worker.get("accepted_shares")),
+                "submitted_shares": int_value(worker.get("submitted_shares")),
+                "share_weight_ppm": int_value(worker.get("share_weight_ppm")),
+                "candidate_blocks": int_value(worker.get("candidate_blocks")),
+                "accepted_blocks": int_value(worker.get("accepted_blocks")),
+                "rejected_blocks": int_value(worker.get("rejected_blocks")),
+                "failed_blocks": int_value(worker.get("failed_blocks")),
+                "last_share_at": int_value(worker.get("last_share_at")),
+                "last_accepted_share_at": int_value(worker.get("last_accepted_share_at")),
+            }
+        )
+
+    return {
+        "mode": ledger.get("mode", "dry_run_only"),
+        "reward_method": ledger.get("reward_method", "proportional_share_report_only"),
+        "payouts_broadcast": bool(ledger.get("payouts_broadcast")),
+        "window_started_at": int_value(ledger.get("window_started_at")),
+        "window_updated_at": int_value(ledger.get("window_updated_at")),
+        "totals": {
+            "submitted_shares": int_value(totals.get("submitted_shares")),
+            "accepted_shares": int_value(totals.get("accepted_shares")),
+            "candidate_blocks": int_value(totals.get("candidate_blocks")),
+            "accepted_blocks": int_value(totals.get("accepted_blocks")),
+            "rejected_blocks": int_value(totals.get("rejected_blocks")),
+            "failed_blocks": int_value(totals.get("failed_blocks")),
+        },
+        "workers": public_rows[:10],
     }
 
 
@@ -150,6 +196,7 @@ def empty_pool_summary(message):
         "mode": POOL_MODE,
         "endpoint": POOL_ENDPOINT,
         "accounting": public_accounting({}),
+        "dry_run_ledger": public_dry_run_ledger({}),
         "message": message,
         "generated_at": int(time.time()),
     }
@@ -169,6 +216,7 @@ def pool_summary():
     connections = stats.get("connections", {}) if isinstance(stats.get("connections"), dict) else {}
     workers = public_workers(stats.get("workers", {}))
     accounting = public_accounting(stats.get("accounting", {}))
+    dry_run_ledger = public_dry_run_ledger(stats.get("dry_run_ledger", {}))
 
     return {
         "available": True,
@@ -198,6 +246,7 @@ def pool_summary():
         "submitblock_rejected": int_value(counters.get("submitblock_rejected")),
         "submitblock_failed": int_value(counters.get("submitblock_failed")),
         "accounting": accounting,
+        "dry_run_ledger": dry_run_ledger,
         "workers": workers,
         "generated_at": int(time.time()),
     }

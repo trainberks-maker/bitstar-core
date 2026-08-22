@@ -751,6 +751,56 @@ class StratumServer:
         worker["last_error"] = error
         self.mark_stats_dirty()
 
+    def dry_run_ledger_snapshot(self, now: float) -> dict[str, Any]:
+        total_accepted = int(self.counters["accepted_shares"])
+        rows = []
+        for worker_name, worker in self.workers.items():
+            accepted_shares = int(worker.get("accepted_shares", 0))
+            share_weight_ppm = 0
+            if total_accepted > 0:
+                share_weight_ppm = (accepted_shares * 1_000_000) // total_accepted
+
+            rows.append(
+                {
+                    "worker": worker_name,
+                    "accepted_shares": accepted_shares,
+                    "submitted_shares": int(worker.get("submitted_shares", 0)),
+                    "share_weight_ppm": share_weight_ppm,
+                    "candidate_blocks": int(worker.get("candidate_blocks", 0)),
+                    "accepted_blocks": int(worker.get("submitblock_success", 0)),
+                    "rejected_blocks": int(worker.get("submitblock_rejected", 0)),
+                    "failed_blocks": int(worker.get("submitblock_failed", 0)),
+                    "last_share_at": worker.get("last_share_at"),
+                    "last_accepted_share_at": worker.get("last_accepted_share_at"),
+                }
+            )
+
+        rows.sort(
+            key=lambda row: (
+                row["share_weight_ppm"],
+                row["accepted_shares"],
+                row["candidate_blocks"],
+            ),
+            reverse=True,
+        )
+
+        return {
+            "mode": "dry_run_only",
+            "reward_method": "proportional_share_report_only",
+            "payouts_broadcast": False,
+            "window_started_at": self.started_at,
+            "window_updated_at": now,
+            "totals": {
+                "submitted_shares": int(self.counters["submitted_shares"]),
+                "accepted_shares": total_accepted,
+                "candidate_blocks": int(self.counters["candidate_blocks"]),
+                "accepted_blocks": int(self.counters["submitblock_success"]),
+                "rejected_blocks": int(self.counters["submitblock_rejected"]),
+                "failed_blocks": int(self.counters["submitblock_failed"]),
+            },
+            "workers": rows,
+        }
+
     def stats_snapshot(self) -> dict[str, Any]:
         now = time.time()
         return {
@@ -772,10 +822,14 @@ class StratumServer:
                 "mode": "solo_direct_coinbase",
                 "auto_payouts_enabled": False,
                 "custody_enabled": False,
+                "dry_run_ledger_enabled": True,
+                "dry_run_payouts_broadcast": False,
+                "dry_run_reward_method": "proportional_share_report_only",
                 "coinbase_maturity_confirmations": 100,
                 "history_snapshots_enabled": bool(self.stats_history_file),
                 "history_interval_seconds": self.stats_history_seconds if self.stats_history_file else 0,
             },
+            "dry_run_ledger": self.dry_run_ledger_snapshot(now),
             "counters": dict(self.counters),
             "workers": self.workers,
         }

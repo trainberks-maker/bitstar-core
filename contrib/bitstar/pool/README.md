@@ -15,6 +15,8 @@ The server works as a solo test pool:
   block-candidate shares
 - an optional local JSONL history file records periodic stats snapshots for
   operator review; it is not a payout ledger
+- a dry-run ledger report ranks workers by accepted shares for review only; it
+  does not credit balances, sign payout transactions, or broadcast payments
 
 ## Install On A Seed Or Pool VPS
 
@@ -63,6 +65,9 @@ Important fields:
 - `accounting.mode`: currently `solo_direct_coinbase`
 - `accounting.auto_payouts_enabled`: currently `false`
 - `accounting.custody_enabled`: currently `false`
+- `accounting.dry_run_ledger_enabled`: currently `true`
+- `dry_run_ledger`: review-only proportional share report; no payments are
+  signed or broadcast
 
 Miner output such as `Submitted Diff ...` only means the miner sent shares to
 the Stratum server. It does not mean a BitStar block was mined unless the pool
