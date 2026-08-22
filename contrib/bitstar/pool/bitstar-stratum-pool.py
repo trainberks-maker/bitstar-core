@@ -35,6 +35,32 @@ DIFF1_TARGET = int(
 )
 MAX_TARGET = (1 << 256) - 1
 DEFAULT_POOL_TAG = b"/BitStarTestPool/"
+DRY_RUN_LEDGER_SCHEMA_VERSION = 1
+DRY_RUN_LEDGER_COUNTER_KEYS = (
+    "submitted_shares",
+    "accepted_shares",
+    "candidate_blocks",
+    "accepted_blocks",
+    "rejected_blocks",
+    "failed_blocks",
+)
+
+
+def safe_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def safe_timestamp(value: Any) -> float | None:
+    try:
+        timestamp = float(value)
+    except (TypeError, ValueError):
+        return None
+    if timestamp <= 0:
+        return None
+    return timestamp
 
 
 def sha256d(data: bytes) -> bytes:
@@ -579,6 +605,7 @@ class StratumServer:
         stats_file: str,
         stats_history_file: str,
         stats_history_seconds: int,
+        dry_run_ledger_file: str,
     ) -> None:
         self.rpc = rpc
         self.host = host
@@ -593,6 +620,7 @@ class StratumServer:
         self.stats_file = stats_file
         self.stats_history_file = stats_history_file
         self.stats_history_seconds = stats_history_seconds
+        self.dry_run_ledger_file = dry_run_ledger_file
         self._stats_dirty = True
         self._last_stats_write = 0.0
         self._last_stats_history_write = 0.0
@@ -613,6 +641,10 @@ class StratumServer:
             "submitblock_failed": 0,
         }
         self.workers: dict[str, dict[str, Any]] = {}
+        self.dry_run_ledger_started_at = self.started_at
+        self.dry_run_totals: dict[str, int] = {key: 0 for key in DRY_RUN_LEDGER_COUNTER_KEYS}
+        self.dry_run_workers: dict[str, dict[str, Any]] = {}
+        self.load_dry_run_ledger()
 
     def _worker(self, worker_name: str) -> dict[str, Any]:
         name = worker_name or "unknown"
@@ -640,6 +672,65 @@ class StratumServer:
                 "last_error": None,
             },
         )
+
+    def _dry_run_worker(self, worker_name: str) -> dict[str, Any]:
+        name = worker_name or "unknown"
+        return self.dry_run_workers.setdefault(
+            name,
+            {
+                "submitted_shares": 0,
+                "accepted_shares": 0,
+                "candidate_blocks": 0,
+                "accepted_blocks": 0,
+                "rejected_blocks": 0,
+                "failed_blocks": 0,
+                "last_share_at": None,
+                "last_accepted_share_at": None,
+            },
+        )
+
+    def load_dry_run_ledger(self) -> None:
+        if not self.dry_run_ledger_file:
+            return
+
+        path = Path(self.dry_run_ledger_file)
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            return
+        except json.JSONDecodeError:
+            logging.warning("dry-run ledger file is not valid JSON: %s", path)
+            return
+        except Exception:
+            logging.exception("failed to read dry-run ledger file %s", path)
+            return
+
+        totals = data.get("totals", {}) if isinstance(data, dict) else {}
+        if isinstance(totals, dict):
+            for key in DRY_RUN_LEDGER_COUNTER_KEYS:
+                self.dry_run_totals[key] = safe_int(totals.get(key))
+
+        rows = data.get("workers", []) if isinstance(data, dict) else []
+        if isinstance(rows, dict):
+            iterable_rows = [dict(value, worker=name) for name, value in rows.items() if isinstance(value, dict)]
+        elif isinstance(rows, list):
+            iterable_rows = [row for row in rows if isinstance(row, dict)]
+        else:
+            iterable_rows = []
+
+        for row in iterable_rows:
+            worker_name = str(row.get("worker") or "unknown")
+            worker = self._dry_run_worker(worker_name)
+            for key in DRY_RUN_LEDGER_COUNTER_KEYS:
+                if key in worker:
+                    worker[key] = safe_int(row.get(key))
+            worker["last_share_at"] = safe_timestamp(row.get("last_share_at"))
+            worker["last_accepted_share_at"] = safe_timestamp(row.get("last_accepted_share_at"))
+
+        loaded_start = safe_timestamp(data.get("window_started_at")) if isinstance(data, dict) else None
+        if loaded_start is not None:
+            self.dry_run_ledger_started_at = loaded_start
+        logging.info("loaded dry-run ledger file %s workers=%d", path, len(self.dry_run_workers))
 
     def mark_stats_dirty(self) -> None:
         self._stats_dirty = True
@@ -690,6 +781,10 @@ class StratumServer:
         worker["submitted_shares"] += 1
         worker["last_share_at"] = time.time()
         worker["last_seen_at"] = worker["last_share_at"]
+        dry_worker = self._dry_run_worker(worker_name)
+        dry_worker["submitted_shares"] += 1
+        dry_worker["last_share_at"] = worker["last_share_at"]
+        self.dry_run_totals["submitted_shares"] += 1
         self.mark_stats_dirty()
 
     def note_low_difficulty_share(self, worker_name: str, difficulty: Decimal, share_hash: str) -> None:
@@ -722,6 +817,10 @@ class StratumServer:
         worker["last_accepted_share_at"] = time.time()
         worker["last_share_hash"] = share_hash
         worker["last_error"] = None
+        dry_worker = self._dry_run_worker(worker_name)
+        dry_worker["accepted_shares"] += 1
+        dry_worker["last_accepted_share_at"] = worker["last_accepted_share_at"]
+        self.dry_run_totals["accepted_shares"] += 1
         self.mark_stats_dirty()
 
     def note_candidate_block(self, worker_name: str, height: int, block_hash: str) -> None:
@@ -729,19 +828,27 @@ class StratumServer:
         worker = self._worker(worker_name)
         worker["candidate_blocks"] += 1
         worker["last_candidate_block"] = {"height": height, "hash": block_hash, "time": time.time()}
+        dry_worker = self._dry_run_worker(worker_name)
+        dry_worker["candidate_blocks"] += 1
+        self.dry_run_totals["candidate_blocks"] += 1
         self.mark_stats_dirty()
 
     def note_submitblock_result(self, worker_name: str, result: Any) -> None:
         if result in (None, ""):
             counter = "submitblock_success"
+            dry_counter = "accepted_blocks"
             error = None
         else:
             counter = "submitblock_rejected"
+            dry_counter = "rejected_blocks"
             error = str(result)
         self.counters[counter] += 1
         worker = self._worker(worker_name)
         worker[counter] += 1
         worker["last_error"] = error
+        dry_worker = self._dry_run_worker(worker_name)
+        dry_worker[dry_counter] += 1
+        self.dry_run_totals[dry_counter] += 1
         self.mark_stats_dirty()
 
     def note_submitblock_exception(self, worker_name: str, error: str) -> None:
@@ -749,12 +856,15 @@ class StratumServer:
         worker = self._worker(worker_name)
         worker["submitblock_failed"] += 1
         worker["last_error"] = error
+        dry_worker = self._dry_run_worker(worker_name)
+        dry_worker["failed_blocks"] += 1
+        self.dry_run_totals["failed_blocks"] += 1
         self.mark_stats_dirty()
 
     def dry_run_ledger_snapshot(self, now: float) -> dict[str, Any]:
-        total_accepted = int(self.counters["accepted_shares"])
+        total_accepted = int(self.dry_run_totals["accepted_shares"])
         rows = []
-        for worker_name, worker in self.workers.items():
+        for worker_name, worker in self.dry_run_workers.items():
             accepted_shares = int(worker.get("accepted_shares", 0))
             share_weight_ppm = 0
             if total_accepted > 0:
@@ -767,9 +877,9 @@ class StratumServer:
                     "submitted_shares": int(worker.get("submitted_shares", 0)),
                     "share_weight_ppm": share_weight_ppm,
                     "candidate_blocks": int(worker.get("candidate_blocks", 0)),
-                    "accepted_blocks": int(worker.get("submitblock_success", 0)),
-                    "rejected_blocks": int(worker.get("submitblock_rejected", 0)),
-                    "failed_blocks": int(worker.get("submitblock_failed", 0)),
+                    "accepted_blocks": int(worker.get("accepted_blocks", 0)),
+                    "rejected_blocks": int(worker.get("rejected_blocks", 0)),
+                    "failed_blocks": int(worker.get("failed_blocks", 0)),
                     "last_share_at": worker.get("last_share_at"),
                     "last_accepted_share_at": worker.get("last_accepted_share_at"),
                 }
@@ -785,19 +895,15 @@ class StratumServer:
         )
 
         return {
+            "schema_version": DRY_RUN_LEDGER_SCHEMA_VERSION,
             "mode": "dry_run_only",
             "reward_method": "proportional_share_report_only",
             "payouts_broadcast": False,
-            "window_started_at": self.started_at,
+            "persistent": bool(self.dry_run_ledger_file),
+            "storage": "local_json" if self.dry_run_ledger_file else "memory",
+            "window_started_at": self.dry_run_ledger_started_at,
             "window_updated_at": now,
-            "totals": {
-                "submitted_shares": int(self.counters["submitted_shares"]),
-                "accepted_shares": total_accepted,
-                "candidate_blocks": int(self.counters["candidate_blocks"]),
-                "accepted_blocks": int(self.counters["submitblock_success"]),
-                "rejected_blocks": int(self.counters["submitblock_rejected"]),
-                "failed_blocks": int(self.counters["submitblock_failed"]),
-            },
+            "totals": dict(self.dry_run_totals),
             "workers": rows,
         }
 
@@ -825,6 +931,8 @@ class StratumServer:
                 "dry_run_ledger_enabled": True,
                 "dry_run_payouts_broadcast": False,
                 "dry_run_reward_method": "proportional_share_report_only",
+                "dry_run_ledger_persistent": bool(self.dry_run_ledger_file),
+                "dry_run_ledger_storage": "local_json" if self.dry_run_ledger_file else "memory",
                 "coinbase_maturity_confirmations": 100,
                 "history_snapshots_enabled": bool(self.stats_history_file),
                 "history_interval_seconds": self.stats_history_seconds if self.stats_history_file else 0,
@@ -850,8 +958,23 @@ class StratumServer:
         except Exception:
             logging.exception("failed to append stats history file %s", path)
 
+    def write_dry_run_ledger(self, ledger: dict[str, Any]) -> bool:
+        if not self.dry_run_ledger_file:
+            return True
+
+        path = Path(self.dry_run_ledger_file)
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            tmp_path = path.with_suffix(path.suffix + ".tmp")
+            tmp_path.write_text(json.dumps(ledger, indent=2, sort_keys=True), encoding="utf-8")
+            tmp_path.replace(path)
+            return True
+        except Exception:
+            logging.exception("failed to write dry-run ledger file %s", path)
+            return False
+
     def write_stats(self, force: bool = False) -> None:
-        if not self.stats_file and not self.stats_history_file:
+        if not self.stats_file and not self.stats_history_file and not self.dry_run_ledger_file:
             return
         now = time.time()
         if not force and (not self._stats_dirty or now - self._last_stats_write < 2):
@@ -859,6 +982,7 @@ class StratumServer:
 
         snapshot = self.stats_snapshot()
         stats_written = True
+        ledger_written = self.write_dry_run_ledger(snapshot["dry_run_ledger"])
         if self.stats_file:
             path = Path(self.stats_file)
             try:
@@ -871,7 +995,7 @@ class StratumServer:
                 logging.exception("failed to write stats file %s", path)
 
         self.write_stats_history(snapshot, now)
-        if stats_written:
+        if stats_written and ledger_written:
             self._last_stats_write = now
             self._stats_dirty = False
 
@@ -1021,6 +1145,11 @@ def parse_args() -> argparse.Namespace:
         default=int(os.getenv("BITSTAR_POOL_STATS_HISTORY_SECONDS", "60")),
         help="Minimum seconds between stats history snapshots.",
     )
+    parser.add_argument(
+        "--dry-run-ledger-file",
+        default=os.getenv("BITSTAR_POOL_DRY_RUN_LEDGER_FILE", "/var/lib/bitstar/pool-dry-run-ledger.json"),
+        help="Persist the dry-run share ledger as JSON. Use an empty value to keep it in memory only.",
+    )
     return parser.parse_args()
 
 
@@ -1065,6 +1194,7 @@ def main() -> None:
         stats_file=args.stats_file,
         stats_history_file=args.stats_history_file,
         stats_history_seconds=args.stats_history_seconds,
+        dry_run_ledger_file=args.dry_run_ledger_file,
     )
     asyncio.run(server.serve())
 

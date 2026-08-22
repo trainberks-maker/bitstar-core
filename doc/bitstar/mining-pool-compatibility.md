@@ -160,6 +160,7 @@ The current official endpoint runs in `solo_direct_coinbase` mode:
 - the pool can append periodic JSONL history snapshots for review
 - the public API exposes sanitized counters and accounting flags only
 - the pool publishes a dry-run proportional share report for review only
+- the dry-run report is persisted locally as JSON so it survives pool restarts
 
 The current baseline intentionally keeps these disabled:
 
@@ -179,6 +180,7 @@ Before BitStar enables a real pooled payout system, operators should complete:
 - dry-run payout reports before any live transaction is broadcast
 - reconciliation between dry-run reports, matured coinbase rewards, and public
   chain data
+- database backup and restore testing for any future production payout ledger
 - signed release builds for pool and node binaries
 - monitoring, backups, and restore drills
 - independent review of payout code and operational controls

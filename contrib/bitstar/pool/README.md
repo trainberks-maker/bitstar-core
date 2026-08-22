@@ -17,6 +17,8 @@ The server works as a solo test pool:
   operator review; it is not a payout ledger
 - a dry-run ledger report ranks workers by accepted shares for review only; it
   does not credit balances, sign payout transactions, or broadcast payments
+- the dry-run ledger is persisted locally by default at
+  `/var/lib/bitstar/pool-dry-run-ledger.json`
 
 ## Install On A Seed Or Pool VPS
 
@@ -55,6 +57,12 @@ Read the periodic stats history:
 sudo tail -n 5 /var/lib/bitstar/pool-stats-history.jsonl
 ```
 
+Read the persistent dry-run ledger:
+
+```bash
+sudo cat /var/lib/bitstar/pool-dry-run-ledger.json
+```
+
 Important fields:
 
 - `submitted_shares`: miner shares received by the pool
@@ -66,6 +74,8 @@ Important fields:
 - `accounting.auto_payouts_enabled`: currently `false`
 - `accounting.custody_enabled`: currently `false`
 - `accounting.dry_run_ledger_enabled`: currently `true`
+- `accounting.dry_run_ledger_persistent`: currently `true`
+- `accounting.dry_run_ledger_storage`: currently `local_json`
 - `dry_run_ledger`: review-only proportional share report; no payments are
   signed or broadcast
 

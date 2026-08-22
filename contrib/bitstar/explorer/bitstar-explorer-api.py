@@ -140,6 +140,8 @@ def public_accounting(accounting):
         "dry_run_ledger_enabled": bool(accounting.get("dry_run_ledger_enabled")),
         "dry_run_payouts_broadcast": bool(accounting.get("dry_run_payouts_broadcast")),
         "dry_run_reward_method": accounting.get("dry_run_reward_method", "proportional_share_report_only"),
+        "dry_run_ledger_persistent": bool(accounting.get("dry_run_ledger_persistent")),
+        "dry_run_ledger_storage": accounting.get("dry_run_ledger_storage", "memory"),
         "coinbase_maturity_confirmations": int_value(accounting.get("coinbase_maturity_confirmations"), 100),
         "history_snapshots_enabled": bool(accounting.get("history_snapshots_enabled")),
         "history_interval_seconds": int_value(accounting.get("history_interval_seconds")),
@@ -172,9 +174,12 @@ def public_dry_run_ledger(ledger):
         )
 
     return {
+        "schema_version": int_value(ledger.get("schema_version"), 1),
         "mode": ledger.get("mode", "dry_run_only"),
         "reward_method": ledger.get("reward_method", "proportional_share_report_only"),
         "payouts_broadcast": bool(ledger.get("payouts_broadcast")),
+        "persistent": bool(ledger.get("persistent")),
+        "storage": ledger.get("storage", "memory"),
         "window_started_at": int_value(ledger.get("window_started_at")),
         "window_updated_at": int_value(ledger.get("window_updated_at")),
         "totals": {
