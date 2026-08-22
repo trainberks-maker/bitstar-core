@@ -17,6 +17,9 @@ point-in-time audit of public services, release artifacts, and remaining
 production gaps.
 Use [operator-runbook.md](operator-runbook.md) as the daily operating checklist
 for seed nodes, explorer API, test pool, backups, and release verification.
+Use [launcher-production-checklist.md](launcher-production-checklist.md) and
+[windows-installer-plan.md](windows-installer-plan.md) for the path from the
+current Windows zip package to a production-ready launcher installer.
 
 As of August 22, 2026, seed1 and seed2 are synchronized at height `1136` with
 best block:
@@ -110,6 +113,9 @@ Windows and Linux upgrades from `v0.1.1-bootstrap` to `v0.1.2-rc2` are recorded 
 An outside-tester checklist is now available in
 [independent-verification-pack.md](independent-verification-pack.md), but no
 independent result has been archived yet.
+The Windows launcher production checklist and NSIS installer scaffold are now
+documented, but no Windows installer artifact has been promoted or published
+yet.
 
 The current release key fingerprint is:
 
@@ -126,8 +132,9 @@ Result: release artifacts are signed and checksum verified.
 This is still a signed pre-release candidate, not a final production release.
 Remaining release-engineering work includes an archived independent
 verification result, independent repeats of the Windows and Linux upgrade
-tests, Windows Authenticode signing, and a repeat of the process for every
-later release candidate or final release.
+tests, a built and clean-tested Windows installer, Windows Authenticode
+signing, and a repeat of the process for every later release candidate or
+final release.
 
 Clean install, Windows launcher, and full upgrade coverage must be recorded in
 [clean-install-upgrade-test.md](clean-install-upgrade-test.md) before any release
@@ -218,10 +225,12 @@ Current status: not ready.
 3. Archive independent signed-release verification and complete the upgrade
    matrix in
    [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
-4. Decide the fair launch path: continue with full disclosure, or reset once for
+4. Build and test the Windows installer from the verified Windows package using
+   [windows-installer-plan.md](windows-installer-plan.md).
+5. Decide the fair launch path: continue with full disclosure, or reset once for
    a final public launch.
-5. Upgrade the explorer from status-only to block, transaction, and address
+6. Upgrade the explorer from status-only to block, transaction, and address
    search.
-6. Keep the current pool labeled as solo/test until a payout/accounting system
+7. Keep the current pool labeled as solo/test until a payout/accounting system
    exists.
-7. Invite independent node operators to join and verify the network.
+8. Invite independent node operators to join and verify the network.

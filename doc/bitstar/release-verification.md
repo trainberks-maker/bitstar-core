@@ -13,6 +13,8 @@ release notes before it is promoted as stable.
 As of the `v0.1.2-rc2` release candidate:
 
 - Windows launcher package exists.
+- Windows installer plan and build scaffold exist; installer artifact is not
+  published yet.
 - Linux x86_64 server package exists.
 - SHA256 checksum files and a combined `SHA256SUMS-v0.1.2-rc2` manifest exist
   for the published packages.
@@ -44,12 +46,17 @@ See [independent-verification-pack.md](independent-verification-pack.md) for
 the exact checklist an outside tester can run and publish.
 See [operator-runbook.md](operator-runbook.md) for the operator-side release
 verification procedure used before installing artifacts on public seed nodes.
+See [launcher-production-checklist.md](launcher-production-checklist.md) and
+[windows-installer-plan.md](windows-installer-plan.md) before publishing a
+Windows installer.
 
 ## Required Release Files
 
 Every serious public release should include:
 
 - `BitStar_Windows_<version>.zip`
+- `BitStar_Core_Setup_<version>.exe`, once the Windows launcher installer gate
+  is complete
 - `BitStar_Linux_x86_64_<version>.tar.gz`
 - versioned checksum manifest, for example `SHA256SUMS-v0.1.2-rc2`
 - detached manifest signature, for example `SHA256SUMS-v0.1.2-rc2.asc`
@@ -58,7 +65,6 @@ Every serious public release should include:
 
 Optional later artifacts:
 
-- Windows installer
 - Linux arm64 package
 - macOS packages
 - Docker image
@@ -69,7 +75,9 @@ Optional later artifacts:
 2. Tag the exact source commit used for the release.
 3. Build each artifact in a clean environment.
 4. Run the release package hygiene audit.
-5. Create a single checksum manifest and detached signature.
+5. If publishing a Windows installer, build it from the verified Windows
+   package and run the clean installer test before creating the manifest.
+6. Create a single checksum manifest and detached signature.
 
 On Windows:
 
@@ -88,9 +96,9 @@ On Linux:
   BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz
 ```
 
-6. Export `bitstar-release-key.asc` with the public-key helper.
-7. Publish the signing key fingerprint in the release notes and website.
-8. Run the release readiness gate.
+7. Export `bitstar-release-key.asc` with the public-key helper.
+8. Publish the signing key fingerprint in the release notes and website.
+9. Run the release readiness gate.
 
 On Windows:
 
@@ -106,7 +114,7 @@ On Linux:
 ./check-release-readiness.sh --release-dir . --manifest SHA256SUMS-v0.1.2-rc2
 ```
 
-9. Upload artifacts, the versioned `SHA256SUMS-v0.1.2-rc2` manifest,
+10. Upload artifacts, the versioned `SHA256SUMS-v0.1.2-rc2` manifest,
    `SHA256SUMS-v0.1.2-rc2.asc`, public release key, verification scripts, and
    release notes.
 
@@ -171,8 +179,8 @@ download it again from the official release page.
 
 GPG-signed checksums prove the artifact matches the release maintainer's
 manifest. Windows Authenticode signing is a separate step and requires a code
-signing certificate. Until that certificate exists, Windows releases must be
-clearly labeled as not code-signed.
+signing certificate. Until that certificate exists, Windows zip and installer
+releases must be clearly labeled as not code-signed.
 
 ## Production Gate
 

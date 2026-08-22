@@ -45,3 +45,17 @@ powershell -ExecutionPolicy Bypass -File .\BitStar-Launcher.ps1 -Action start -D
   public internet.
 - This is pre-release software. Do not use it for custody, exchange deposits,
   merchant payments, or production funds.
+
+## Installer Status
+
+The release-candidate Windows package is still the primary published artifact.
+The repository includes an NSIS installer scaffold for testing the next
+launcher step:
+
+- `doc/bitstar/launcher-production-checklist.md`
+- `doc/bitstar/windows-installer-plan.md`
+- `contrib/bitstar/release/build-windows-installer.ps1`
+
+Do not publish an installer as production until it has a SHA256 checksum, is
+included in the signed release manifest, passes clean install and uninstall
+tests, and is clearly labeled if Windows Authenticode signing is not available.

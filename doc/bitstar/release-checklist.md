@@ -37,7 +37,9 @@ present in the node software.
 Required artifacts for a serious public release:
 
 - Windows x86_64 zip
-- Windows x86_64 installer, if GUI packaging is ready
+- Windows x86_64 installer, if launcher packaging is ready; follow
+  [windows-installer-plan.md](windows-installer-plan.md) and
+  [launcher-production-checklist.md](launcher-production-checklist.md)
 - Linux x86_64 tar.gz
 - Linux arm64 tar.gz, recommended for VPS and single-board nodes
 - source archive from GitHub tag
@@ -59,6 +61,19 @@ Optional later artifacts:
 - verify wallet creation, address generation, backup, and restore
 - run the Windows launcher clean-install smoke test in
   [clean-install-upgrade-test.md](clean-install-upgrade-test.md)
+- run the Windows installer package validation in check-only mode before
+  building an installer:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\contrib\bitstar\release\build-windows-installer.ps1 `
+  -PackageDir "C:\path\to\BitStar_Windows_v0.1.2-rc2" `
+  -Version "v0.1.2-rc2" `
+  -CheckOnly
+```
+
+- if an installer is included, install it on a clean Windows profile, start and
+  stop the launcher from the Start Menu, then uninstall and confirm
+  `%LOCALAPPDATA%\BitStar` remains untouched
 - run upgrade tests from the latest public bootstrap release using
   [clean-install-upgrade-test.md](clean-install-upgrade-test.md)
 - verify `getblocktemplate '{"rules":["segwit"]}'`
@@ -82,6 +97,8 @@ Optional later artifacts:
   `contrib/bitstar/release/export-release-public-key.ps1` or
   `contrib/bitstar/release/export-release-public-key.sh`
 - publish SHA256 checksums for every artifact
+- if a Windows installer is included, publish its SHA256 checksum and include
+  it in the signed manifest with the zip and Linux package
 - sign the checksum file or release manifest
 - use `contrib/bitstar/release/sign-release-manifest.ps1` or
   `contrib/bitstar/release/sign-release-manifest.sh` to create a versioned

@@ -41,6 +41,7 @@ and a production-grade pool or a clear decision to keep the pool test-only.
   - `/pool`
 - The website links the latest Windows bootstrap launcher, Linux x86_64 server
   package, and checksum verification files.
+- A Windows installer plan exists, but no installer download is published yet.
 
 ### Release Artifacts
 
@@ -84,6 +85,8 @@ Release-candidate signature status:
 - Smoke test result: Windows launcher clean test passed; Windows and Linux
   synthetic upgrades from `v0.1.1-bootstrap` to `v0.1.2-rc2` passed; Linux
   x86_64 clean temporary-datadir smoke test passed with two seed connections.
+- Windows installer status: NSIS installer scaffold and build validation helper
+  exist; no installer artifact is published in `v0.1.2-rc2`.
 
 ### Network Parameters
 
@@ -185,7 +188,21 @@ Remaining work:
 - add Windows Authenticode signing when a code-signing certificate exists
 - document key rotation and maintainer responsibility
 
-### 3. Pool Status
+### 3. Launcher And Installer Status
+
+The Windows launcher exists and is included in the release-candidate zip. It is
+usable for testing, but it is not yet a production-grade installer flow.
+
+Remaining work:
+
+- build the NSIS installer from the verified Windows package
+- test clean install, Start Menu launcher start/stop, and uninstall
+- confirm uninstall leaves `%LOCALAPPDATA%\BitStar` untouched
+- add installer checksum to the signed release manifest
+- add Windows Authenticode signing when a certificate exists
+- publish installer download only after the launcher production checklist passes
+
+### 4. Pool Status
 
 The current pool endpoint is a solo/test Stratum compatibility endpoint. It is
 not a full public mining pool.
@@ -202,7 +219,7 @@ Remaining work before an official production pool:
 - clear fee policy
 - public pool terms
 
-### 4. Explorer Status
+### 5. Explorer Status
 
 The explorer is useful as a basic public status surface, but it is not yet a
 professional explorer comparable to mature block explorers.
@@ -217,7 +234,7 @@ Remaining work:
 - API caching and rate limits
 - index persistence and restart recovery tests
 
-### 5. Security Review
+### 6. Security Review
 
 Operational hardening has started, but the BitStar-specific patches still need
 external review.
@@ -230,7 +247,7 @@ Remaining work:
 - review that no private keys, wallets, RPC passwords, or deployment tokens are
   in releases or repository history
 
-### 6. Network Decentralization
+### 7. Network Decentralization
 
 The network has two public seed nodes, but production credibility requires
 independent participants.
@@ -242,7 +259,7 @@ Remaining work:
 - independent operators verify release checksums and publish results
 - documented bootstrap peers beyond founder-operated infrastructure
 
-### 7. Exchange Or Broker Readiness
+### 8. Exchange Or Broker Readiness
 
 BitStar is not ready for serious exchange or broker outreach yet.
 
