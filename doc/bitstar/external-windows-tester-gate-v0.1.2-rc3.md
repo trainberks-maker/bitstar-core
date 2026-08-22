@@ -264,8 +264,24 @@ Overall result: PASS/FAIL
 Notes:
 ```
 
+## Recorded Results
+
+- 2026-08-22: External Windows verification report #1:
+  `https://github.com/trainberks-maker/bitstar-core/issues/1`
+  - Release tag: `v0.1.2-rc3`
+  - Platform: Windows
+  - Reported GPG manifest verification: PASS
+  - Reported checksum verification: PASS
+  - Reported node, wallet address, wallet backup, and pool mining smoke test:
+    PASS
+  - Observed block height: `6065`
+  - Observed best block:
+    `0000001a97af45aef7d8503dfc5124cb9e653b8fd75459135b408ccf1e844c7b`
+  - Observed connection count: `2`
+  - Final result: PASS
+
 ## Promotion Rule
 
-`v0.1.2-rc3` should not be promoted beyond pre-release until at least one
-external Windows tester publishes a passing result, and any failure reports are
-reviewed.
+`v0.1.2-rc3` now has one published external Windows passing result. Before
+promoting beyond pre-release, maintainers should review the report, repeat the
+gate with at least one more independent tester, and review any failure reports.

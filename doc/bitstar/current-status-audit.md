@@ -12,8 +12,9 @@ Current status: public bootstrap / early public test.
 BitStar is not a final production release yet. The network, website, signed
 release-candidate artifacts, seed nodes, explorer, and solo test pool are live
 enough for public testing, but the project still requires broader review,
-stronger explorer functionality, independent nodes, independent verification,
-and a production-grade pool or a clear decision to keep the pool test-only.
+stronger explorer functionality, more independent nodes, repeated independent
+verification, and a production-grade pool or a clear decision to keep the pool
+test-only.
 
 ## Verified Public Facts
 
@@ -39,10 +40,10 @@ and a production-grade pool or a clear decision to keep the pool test-only.
   - `/launch`
   - `/mining`
   - `/pool`
-- The website links the latest Windows bootstrap launcher, Linux x86_64 server
-  package, and checksum verification files.
-- A Windows installer artifact is published on the GitHub release as an
-  unsigned pre-release artifact; the website download link is still pending.
+- The website links the latest Windows installer, Windows bootstrap launcher,
+  Linux x86_64 server package, and checksum verification files.
+- A Windows installer artifact is published on the GitHub release and linked
+  from the website as unsigned pre-release software.
 
 ### Release Artifacts
 
@@ -93,6 +94,19 @@ Release-candidate signature status:
 - Windows installer status: NSIS installer built, silent install/uninstall
   smoke test passed, installer checksum is included in the signed manifest, and
   the artifact is published as unsigned pre-release software.
+- Independent verification report #1:
+  `https://github.com/trainberks-maker/bitstar-core/issues/1`
+  - Platform: Windows
+  - Release: `v0.1.2-rc3`
+  - Reported GPG manifest verification: PASS
+  - Reported checksum verification: PASS
+  - Reported wallet backup: PASS
+  - Reported mining smoke test: PASS
+  - Observed height: `6065`
+  - Observed best block:
+    `0000001a97af45aef7d8503dfc5124cb9e653b8fd75459135b408ccf1e844c7b`
+  - Observed connections: `2`
+  - Final result: PASS
 
 ### Network Parameters
 
@@ -171,8 +185,10 @@ testing and coordination, but it is not a final stable production release.
 
 Remaining work:
 
-- record and archive an independent third-party verification of `v0.1.2-rc3`
-  using [independent-verification-pack.md](independent-verification-pack.md)
+- review and archive independent verification report #1:
+  `https://github.com/trainberks-maker/bitstar-core/issues/1`
+- collect at least one additional independent verification from a separate
+  machine/account before calling the release production-ready
 - repeat the Windows and Linux upgrade tests independently from the latest
   bootstrap data directories
 - remove or update pre-release warnings only when production gates are complete
@@ -187,9 +203,9 @@ production release.
 
 Remaining work:
 
-- invite an outside tester to run
-  [independent-verification-pack.md](independent-verification-pack.md) and
-  publish the signed-artifact verification result
+- review the published outside tester result and repeat the
+  [independent-verification-pack.md](independent-verification-pack.md) process
+  with at least one more tester
 - repeat the signing process for every later release candidate or final release
 - add Windows Authenticode signing when a code-signing certificate exists
 - document key rotation and maintainer responsibility
