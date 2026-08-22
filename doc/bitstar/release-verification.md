@@ -24,6 +24,8 @@ See [release-signing-policy.md](release-signing-policy.md) for release key
 rules, signing workflow, and production gate requirements.
 See [release-key-ceremony.md](release-key-ceremony.md) for creating and backing
 up the dedicated release signing key safely.
+See [release-package-audit.md](release-package-audit.md) for checking that
+release archives do not contain wallet data, private keys, or credentials.
 See [operator-runbook.md](operator-runbook.md) for the operator-side release
 verification procedure used before installing artifacts on public seed nodes.
 
@@ -49,7 +51,8 @@ Optional later artifacts:
 1. Start from a clean repository state.
 2. Tag the exact source commit used for the release.
 3. Build each artifact in a clean environment.
-4. Create a single checksum manifest and detached signature.
+4. Run the release package hygiene audit.
+5. Create a single checksum manifest and detached signature.
 
 On Windows:
 
@@ -67,8 +70,8 @@ On Linux:
   BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz
 ```
 
-5. Publish the signing key fingerprint in the release notes and website.
-6. Run the release readiness gate.
+6. Publish the signing key fingerprint in the release notes and website.
+7. Run the release readiness gate.
 
 On Windows:
 
@@ -82,7 +85,7 @@ On Linux:
 ./check-release-readiness.sh --release-dir .
 ```
 
-7. Upload artifacts, `SHA256SUMS`, `SHA256SUMS.asc`, public release key, and
+8. Upload artifacts, `SHA256SUMS`, `SHA256SUMS.asc`, public release key, and
    release notes.
 
 Do not store release private keys, wallet files, RPC passwords, deployment
@@ -98,6 +101,7 @@ Before a release is promoted on seed infrastructure, record:
 - SHA256 values
 - release signing key fingerprint
 - release readiness gate result
+- release package hygiene scan result
 - Windows checksum verification result
 - Linux checksum verification result
 - GPG signature verification result

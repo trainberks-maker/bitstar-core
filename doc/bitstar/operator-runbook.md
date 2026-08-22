@@ -188,6 +188,9 @@ or asking users to download them.
 Windows user check:
 
 ```powershell
+powershell -ExecutionPolicy Bypass -File .\scan-release-package.ps1 `
+  -ReleaseDir . `
+  -Artifacts "BitStar_Windows_v0.1.1-bootstrap.zip,BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz"
 powershell -ExecutionPolicy Bypass -File .\verify-checksums.ps1 .\SHA256SUMS
 gpg --verify .\SHA256SUMS.asc .\SHA256SUMS
 powershell -ExecutionPolicy Bypass -File .\check-release-readiness.ps1 -ReleaseDir .\
@@ -196,6 +199,9 @@ powershell -ExecutionPolicy Bypass -File .\check-release-readiness.ps1 -ReleaseD
 Linux user check:
 
 ```bash
+./scan-release-package.sh --release-dir . \
+  --artifact BitStar_Windows_v0.1.1-bootstrap.zip \
+  --artifact BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz
 sh ./verify-checksums.sh SHA256SUMS
 gpg --verify SHA256SUMS.asc SHA256SUMS
 ./check-release-readiness.sh --release-dir .
@@ -213,6 +219,7 @@ Before promoting a release, record:
 - SHA256 values
 - release signing key fingerprint
 - release readiness gate result
+- release package hygiene scan result
 - verification result on Windows
 - verification result on Linux
 - known limitations and warnings

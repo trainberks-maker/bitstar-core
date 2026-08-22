@@ -64,6 +64,9 @@ Optional later artifacts:
   seed nodes
 - confirm no private wallets, chain data, RPC credentials, or SSH keys are
   packaged
+- run the package hygiene audit in
+  [release-package-audit.md](release-package-audit.md) against the exact
+  archives that will be published
 
 ## Signing And Verification
 
@@ -79,6 +82,8 @@ Optional later artifacts:
 - run `contrib/bitstar/release/check-release-readiness.ps1` or
   `contrib/bitstar/release/check-release-readiness.sh` without unsigned
   bootstrap mode and archive the result
+- run `contrib/bitstar/release/scan-release-package.ps1` or
+  `contrib/bitstar/release/scan-release-package.sh` and archive the result
 - document verification commands for Windows and Linux users
 - keep [release-verification.md](release-verification.md) current for every
   public release

@@ -94,6 +94,8 @@ Definition of done:
 - clean install and upgrade tests pass
 - wallet backup and restore path is documented
 - operator verification record is completed for the exact artifacts
+- release package hygiene audit confirms no private wallets, chain data, RPC
+  credentials, SSH private keys, or deployment tokens are bundled
 - no test wallet or chain data is bundled
 
 Current status: bootstrap binaries exist. The Windows launcher package and
