@@ -8,6 +8,7 @@ The server works as a solo test pool:
 - miners connect over Stratum on TCP `3333`
 - the worker username must be a valid BitStar payout address
 - the pool builds block templates through local `bitstar-cli`
+- the default bootstrap share difficulty is `0.00010`
 - if a miner finds a valid block, the coinbase output pays the miner address
 - no payout accounting, balances, web dashboard, vardiff, or custody is provided
 - a local operator stats file tracks submitted, rejected, accepted, and
