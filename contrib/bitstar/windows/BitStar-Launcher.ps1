@@ -119,12 +119,16 @@ function Invoke-BitStarCli {
 
     Require-Cli
     & $Cli "-datadir=$DataDir" @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "bitstar-cli failed with exit code $LASTEXITCODE"
+    }
 }
 
 function Test-RpcReady {
     try {
-        Invoke-BitStarCli -Arguments @("getblockchaininfo") | Out-Null
-        return $true
+        Require-Cli
+        & $Cli "-datadir=$DataDir" "getblockchaininfo" 2>$null | Out-Null
+        return ($LASTEXITCODE -eq 0)
     }
     catch {
         return $false
@@ -223,6 +227,9 @@ function Backup-BitStarWallets {
         }
         else {
             & $Cli "-datadir=$DataDir" "-rpcwallet=$wallet" "backupwallet" $target | Out-Host
+            if ($LASTEXITCODE -ne 0) {
+                throw "bitstar-cli failed with exit code $LASTEXITCODE"
+            }
         }
     }
 
