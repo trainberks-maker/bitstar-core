@@ -22,6 +22,7 @@ Latest recorded release-candidate checks:
 
 | Platform | Artifact | Clean install | Upgrade | Wallet backup | Result |
 | --- | --- | --- | --- | --- | --- |
+| Linux x86_64 | `BitStar_Linux_x86_64_v0.1.2-rc3.tar.gz` | clean temporary-datadir smoke passed | `v0.1.2-rc3` upgrade repeat pending | not applicable for headless package | pre-release pass |
 | Windows x86_64 | `BitStar_Windows_v0.1.2-rc2.zip` | passed | synthetic `v0.1.1-bootstrap` upgrade passed; independent repeat pending | launcher backup action smoke-tested | pre-release pass |
 | Windows x86_64 | `BitStar_Core_Setup_v0.1.2-rc2.exe` | silent installer smoke passed | previous-installer upgrade pending | data directory untouched; wallet backup manual repeat pending | pre-release pass |
 | Linux x86_64 | `BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz` | passed | synthetic `v0.1.1-bootstrap` upgrade passed; independent repeat pending | not applicable for headless package | pre-release pass |
@@ -104,8 +105,8 @@ still required before production promotion.
 
 ## Linux Clean Install
 
-1. Download the Linux tarball, `SHA256SUMS-v0.1.2-rc2`,
-   `SHA256SUMS-v0.1.2-rc2.asc`, and `bitstar-release-key.asc`.
+1. Download the Linux tarball, `SHA256SUMS-v0.1.2-rc3`,
+   `SHA256SUMS-v0.1.2-rc3.asc`, and `bitstar-release-key.asc`.
 2. Verify the signature and checksums.
 3. Extract into a new folder.
 4. Start with an empty data directory:
@@ -132,6 +133,22 @@ mkdir -p /tmp/bitstar-clean-test
 ```
 
 Record the Linux result here:
+
+```text
+Version: v0.1.2-rc3
+Source commit: b878238d8b6bf0271948558d9d0dfcc16ff7ce76
+Artifact SHA256: f27bcffb334c742ea8567dedd1f30f13d2776920b2c1f07b7dd38a25addf6778
+Test date: 2026-08-22
+Tester: BitStar maintainer
+Host: seed1.bitstarcoin.org
+Clean data directory: temporary /tmp/bitstar-linux-rc3-smoke.* directory, removed after test
+Peers: 1
+Block height: 54 during short smoke run
+Best block: observed after connecting to seed2 during short smoke run
+Genesis hash verified: 00000c45c905ce3e3beeb9eb534650276947373d3a2a15694b4624a89bce4b49
+Result: PASS
+Notes: Headless Linux package started from a clean temporary datadir with custom RPC and P2P ports, connected to seed2, RPC became ready, chain main and genesis matched, and the node stopped cleanly. This is an internal smoke test; independent repeat and upgrade repeat remain pending.
+```
 
 ```text
 Version: v0.1.2-rc2

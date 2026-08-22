@@ -21,11 +21,11 @@ Use [launcher-production-checklist.md](launcher-production-checklist.md) and
 [windows-installer-plan.md](windows-installer-plan.md) for the path from the
 current Windows zip package to a production-ready launcher installer.
 
-As of August 22, 2026, seed1 and seed2 are synchronized at height `1136` with
+As of August 22, 2026, seed1 and seed2 are synchronized at height `6062` with
 best block:
 
 ```text
-000009f1293ce4e68983535421f0701ed424104699f0f23ae5dca6b2885cf4f5
+0000003a13dbf41f57a6d42c3af026d4031c0e5c17f06c2323016e0690e86eba
 ```
 
 The software still reports the pre-release warning:
@@ -103,14 +103,14 @@ Definition of done:
   credentials, SSH private keys, or deployment tokens are bundled
 - no test wallet or chain data is bundled
 
-Current status: `v0.1.2-rc3` is the current Windows release candidate. The
-Windows launcher zip and unsigned Windows installer are published with SHA256
-checksums, helper verification scripts, a published public release key, and a
-GPG-signed `SHA256SUMS-v0.1.2-rc3.asc` manifest. The Linux x86_64 server
-package remains at `v0.1.2-rc2` until the next Linux build. Windows clean
-install, Windows launcher, Linux x86_64 clean temporary-datadir smoke, and
-synthetic Windows and Linux upgrades from `v0.1.1-bootstrap` to `v0.1.2-rc2`
-are recorded in [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
+Current status: `v0.1.2-rc3` is the current signed release candidate. The
+Windows launcher zip, unsigned Windows installer, and Linux x86_64 server
+package are published with SHA256 checksums, helper verification scripts, a
+published public release key, and a GPG-signed
+`SHA256SUMS-v0.1.2-rc3.asc` manifest. Windows clean install, Windows launcher,
+Linux x86_64 clean temporary-datadir smoke, and synthetic Windows and Linux
+upgrades from `v0.1.1-bootstrap` to `v0.1.2-rc2` are recorded in
+[clean-install-upgrade-test.md](clean-install-upgrade-test.md).
 An outside-tester checklist is now available in
 [independent-verification-pack.md](independent-verification-pack.md), but no
 independent result has been archived yet.
@@ -136,9 +136,9 @@ Result: release artifacts are signed and checksum verified.
 This is still a signed pre-release candidate, not a final production release.
 Remaining release-engineering work includes an archived independent
 verification result, independent repeats of the Windows and Linux upgrade
-tests, a clean-profile manual Windows installer repeat, Windows Authenticode
-signing, and a repeat of the process for every later release candidate or final
-release.
+tests, a Linux `v0.1.2-rc3` upgrade repeat, a clean-profile manual Windows
+installer repeat, Windows Authenticode signing, and a repeat of the process for
+every later release candidate or final release.
 
 Clean install, Windows launcher, and full upgrade coverage must be recorded in
 [clean-install-upgrade-test.md](clean-install-upgrade-test.md) before any release

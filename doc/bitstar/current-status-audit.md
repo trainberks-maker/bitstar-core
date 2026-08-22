@@ -48,48 +48,48 @@ and a production-grade pool or a clear decision to keep the pool test-only.
 
 Latest release candidate:
 
-- Tag: `v0.1.2-rc2`
-- Source commit: `75b5e47311269bcc0ea6eb5cf7cdb4726eac4f3f`
+- Tag: `v0.1.2-rc3`
+- Source commit: `b878238d8b6bf0271948558d9d0dfcc16ff7ce76`
 - Release URL:
-  `https://github.com/trainberks-maker/bitstar-core/releases/tag/v0.1.2-rc2`
+  `https://github.com/trainberks-maker/bitstar-core/releases/tag/v0.1.2-rc3`
 - Assets:
-  - `BitStar_Windows_v0.1.2-rc2.zip`
-  - `BitStar_Windows_v0.1.2-rc2.zip.sha256`
-  - `BitStar_Core_Setup_v0.1.2-rc2.exe`
-  - `BitStar_Core_Setup_v0.1.2-rc2.exe.sha256`
-  - `BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz`
-  - `BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz.sha256`
-  - `SHA256SUMS-v0.1.2-rc2`
-  - `SHA256SUMS-v0.1.2-rc2.asc`
+  - `BitStar_Windows_v0.1.2-rc3.zip`
+  - `BitStar_Windows_v0.1.2-rc3.zip.sha256`
+  - `BitStar_Core_Setup_v0.1.2-rc3.exe`
+  - `BitStar_Core_Setup_v0.1.2-rc3.exe.sha256`
+  - `BitStar_Linux_x86_64_v0.1.2-rc3.tar.gz`
+  - `BitStar_Linux_x86_64_v0.1.2-rc3.tar.gz.sha256`
+  - `SHA256SUMS-v0.1.2-rc3`
+  - `SHA256SUMS-v0.1.2-rc3.asc`
   - `bitstar-release-key.asc`
   - `verify-checksums.ps1`
   - `verify-checksums.sh`
   - `scan-release-package.ps1`
-  - `scan-release-package.sh`
   - `check-release-readiness.ps1`
   - `check-release-readiness.sh`
 
 Current published SHA256 values:
 
-- `BitStar_Windows_v0.1.2-rc2.zip`:
-  `416c5232a7155ba85fcdfd1b4005bf184d75055433193b214cf8d7a1cf57dd46`
-- `BitStar_Core_Setup_v0.1.2-rc2.exe`:
-  `b1a8d3aea370beb6126daf37e70902e53cef29ec0e7778cdfd89c033d94330ad`
-- `BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz`:
-  `a13e9ec2c13a97f169f6d9e3c37256c27caa878dbe08d9a971da2be05f774392`
+- `BitStar_Windows_v0.1.2-rc3.zip`:
+  `491fd62654f0a883db5ed7da33c38c13a9152240441cd57540037a088eb01320`
+- `BitStar_Core_Setup_v0.1.2-rc3.exe`:
+  `954ed1bb71c51daef237cd0de8cf293165d38c74d0fff24e8861b5c1c343ce42`
+- `BitStar_Linux_x86_64_v0.1.2-rc3.tar.gz`:
+  `f27bcffb334c742ea8567dedd1f30f13d2776920b2c1f07b7dd38a25addf6778`
 
 Release-candidate signature status:
 
 - Release key: `BitStar Release <release@bitstarcoin.org>`
 - Fingerprint:
   `5744BDF701AFDCF43983AB96B87F9907D27EC983`
-- Signed manifest: `SHA256SUMS-v0.1.2-rc2.asc` is published.
+- Signed manifest: `SHA256SUMS-v0.1.2-rc3.asc` is published.
 - Public key: `bitstar-release-key.asc` is published.
 - Readiness gate result:
   `Result: release artifacts are signed and checksum verified.`
-- Smoke test result: Windows launcher clean test passed; Windows and Linux
-  synthetic upgrades from `v0.1.1-bootstrap` to `v0.1.2-rc2` passed; Linux
-  x86_64 clean temporary-datadir smoke test passed with two seed connections.
+- Smoke test result: Windows launcher and installer gates passed for
+  `v0.1.2-rc3`; Linux x86_64 `v0.1.2-rc3` clean temporary-datadir smoke test
+  passed; Windows and Linux synthetic upgrades from `v0.1.1-bootstrap` to
+  `v0.1.2-rc2` remain the latest archived upgrade records.
 - Windows installer status: NSIS installer built, silent install/uninstall
   smoke test passed, installer checksum is included in the signed manifest, and
   the artifact is published as unsigned pre-release software.
@@ -171,7 +171,7 @@ testing and coordination, but it is not a final stable production release.
 
 Remaining work:
 
-- record and archive an independent third-party verification of `v0.1.2-rc2`
+- record and archive an independent third-party verification of `v0.1.2-rc3`
   using [independent-verification-pack.md](independent-verification-pack.md)
 - repeat the Windows and Linux upgrade tests independently from the latest
   bootstrap data directories
@@ -179,9 +179,9 @@ Remaining work:
 
 ### 2. Signing And Verification
 
-The `v0.1.2-rc2` release candidate has checksum verification documentation,
+The `v0.1.2-rc3` release candidate has checksum verification documentation,
 helper scripts, a published public release key, and a GPG-signed
-`SHA256SUMS-v0.1.2-rc2.asc` manifest. This makes the release-candidate
+`SHA256SUMS-v0.1.2-rc3.asc` manifest. This makes the release-candidate
 artifacts signed and checksum-verifiable, but it does not make BitStar a final
 production release.
 
@@ -197,7 +197,7 @@ Remaining work:
 ### 3. Launcher And Installer Status
 
 The Windows launcher exists and is included in the release-candidate zip. A
-Windows NSIS installer is also published for `v0.1.2-rc2` as unsigned
+Windows NSIS installer is also published for `v0.1.2-rc3` as unsigned
 pre-release software. It is usable for testing, but it is not yet a
 production-grade installer flow.
 

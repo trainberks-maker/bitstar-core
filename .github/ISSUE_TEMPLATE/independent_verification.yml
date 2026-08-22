@@ -64,7 +64,7 @@ body:
     id: artifact
     attributes:
       label: Artifact tested
-      placeholder: BitStar_Core_Setup_v0.1.2-rc3.exe or BitStar_Windows_v0.1.2-rc3.zip
+      placeholder: BitStar_Core_Setup_v0.1.2-rc3.exe, BitStar_Windows_v0.1.2-rc3.zip, or BitStar_Linux_x86_64_v0.1.2-rc3.tar.gz
     validations:
       required: true
 

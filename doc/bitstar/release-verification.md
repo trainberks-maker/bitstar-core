@@ -15,10 +15,9 @@ As of the `v0.1.2-rc3` release candidate:
 - Windows launcher package exists.
 - Windows installer artifact exists and is published as unsigned pre-release
   software.
-- Linux x86_64 server package exists from `v0.1.2-rc2`; the `v0.1.2-rc3`
-  manifest is Windows-only.
+- Linux x86_64 server package exists for `v0.1.2-rc3`.
 - SHA256 checksum files and a combined `SHA256SUMS-v0.1.2-rc3` manifest exist
-  for the Windows package and installer.
+  for the Windows package, Windows installer, and Linux x86_64 package.
 - Helper scripts exist for checksum verification and for creating/signing the
   release manifest.
 - Helper scripts exist for exporting only the public release key.
@@ -30,10 +29,10 @@ As of the `v0.1.2-rc3` release candidate:
   `Result: release artifacts are signed and checksum verified.`
 - Windows launcher clean smoke test passed.
 - Windows installer silent install/uninstall smoke test passed.
-- Linux x86_64 clean temporary-datadir smoke test passed.
+- Linux x86_64 `v0.1.2-rc3` clean temporary-datadir smoke test passed.
 - Windows and Linux synthetic upgrade smoke tests from `v0.1.1-bootstrap` to
-  `v0.1.2-rc2` passed; the `v0.1.2-rc3` Windows installer gate passed and now
-  needs an external Windows tester repeat.
+  `v0.1.2-rc2` passed; the `v0.1.2-rc3` Windows installer gate passed, while
+  a Linux `v0.1.2-rc3` upgrade repeat still needs to be archived.
 - Windows Authenticode code signing is still pending.
 
 See [release-signing-policy.md](release-signing-policy.md) for release key
@@ -88,7 +87,7 @@ On Windows:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\sign-release-manifest.ps1 `
-  -Artifacts ".\BitStar_Windows_v0.1.2-rc3.zip,.\BitStar_Core_Setup_v0.1.2-rc3.exe" `
+  -Artifacts ".\BitStar_Windows_v0.1.2-rc3.zip,.\BitStar_Core_Setup_v0.1.2-rc3.exe,.\BitStar_Linux_x86_64_v0.1.2-rc3.tar.gz" `
   -Output ".\SHA256SUMS-v0.1.2-rc3" `
   -GpgKey "<release-key-fingerprint>"
 ```
@@ -98,7 +97,8 @@ On Linux:
 ```sh
 ./sign-release-manifest.sh --output SHA256SUMS-v0.1.2-rc3 --key "<release-key-fingerprint>" \
   BitStar_Windows_v0.1.2-rc3.zip \
-  BitStar_Core_Setup_v0.1.2-rc3.exe
+  BitStar_Core_Setup_v0.1.2-rc3.exe \
+  BitStar_Linux_x86_64_v0.1.2-rc3.tar.gz
 ```
 
 7. Export `bitstar-release-key.asc` with the public-key helper.
@@ -172,12 +172,13 @@ Only run the software if both the signature and checksum verification succeed.
 
 ## User Verification On Linux
 
-Linux currently remains on `v0.1.2-rc2` until the next Linux release candidate.
-
 ```sh
 gpg --import bitstar-release-key.asc
-gpg --verify SHA256SUMS-v0.1.2-rc2.asc SHA256SUMS-v0.1.2-rc2
-sh ./verify-checksums.sh SHA256SUMS-v0.1.2-rc2
+gpg --verify SHA256SUMS-v0.1.2-rc3.asc SHA256SUMS-v0.1.2-rc3
+sh ./verify-checksums.sh SHA256SUMS-v0.1.2-rc3
+tar -xzf BitStar_Linux_x86_64_v0.1.2-rc3.tar.gz
+cd BitStar_Linux_x86_64_v0.1.2-rc3
+./bin/bitstard -version
 ```
 
 If the signature fails, stop. If any checksum fails, delete the artifact and

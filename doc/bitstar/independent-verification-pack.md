@@ -3,9 +3,7 @@
 This pack is for an independent tester who wants to verify BitStar release
 artifacts and network behavior without relying on maintainer claims.
 
-Current target release: `v0.1.2-rc3` for Windows.
-
-Linux x86_64 remains on `v0.1.2-rc2` until the next Linux build.
+Current target release: `v0.1.2-rc3` for Windows and Linux x86_64.
 
 Release URL:
 `https://github.com/trainberks-maker/bitstar-core/releases/tag/v0.1.2-rc3`
@@ -45,15 +43,15 @@ Download these files from the release page into one folder:
 - one or both Windows release packages:
   - `BitStar_Core_Setup_v0.1.2-rc3.exe`
   - `BitStar_Windows_v0.1.2-rc3.zip`
-
-For Linux verification, use the `v0.1.2-rc2` release page until a Linux `rc3`
-artifact is published.
+- the Linux x86_64 release package, if testing Linux:
+  - `BitStar_Linux_x86_64_v0.1.2-rc3.tar.gz`
 
 Expected SHA256 values:
 
 ```text
 954ed1bb71c51daef237cd0de8cf293165d38c74d0fff24e8861b5c1c343ce42  BitStar_Core_Setup_v0.1.2-rc3.exe
 491fd62654f0a883db5ed7da33c38c13a9152240441cd57540037a088eb01320  BitStar_Windows_v0.1.2-rc3.zip
+f27bcffb334c742ea8567dedd1f30f13d2776920b2c1f07b7dd38a25addf6778  BitStar_Linux_x86_64_v0.1.2-rc3.tar.gz
 ```
 
 ## Windows Verification
@@ -116,24 +114,21 @@ wallet backup, optional mining smoke test, stop, and clean uninstall behavior.
 
 ## Linux Verification
 
-Linux is still verified against `v0.1.2-rc2` until a newer Linux artifact is
-published.
-
 Run these commands from the folder containing the downloaded release files:
 
 ```sh
 gpg --import bitstar-release-key.asc
 gpg --fingerprint "BitStar Release"
-gpg --verify SHA256SUMS-v0.1.2-rc2.asc SHA256SUMS-v0.1.2-rc2
-sh ./verify-checksums.sh SHA256SUMS-v0.1.2-rc2
+gpg --verify SHA256SUMS-v0.1.2-rc3.asc SHA256SUMS-v0.1.2-rc3
+sh ./verify-checksums.sh SHA256SUMS-v0.1.2-rc3
 ```
 
 Extract and start a clean node:
 
 ```sh
-tar -xzf BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz
-export RELEASE="$PWD/BitStar_Linux_x86_64_v0.1.2-rc2"
-export DATADIR="/tmp/bitstar-independent-rc2"
+tar -xzf BitStar_Linux_x86_64_v0.1.2-rc3.tar.gz
+export RELEASE="$PWD/BitStar_Linux_x86_64_v0.1.2-rc3"
+export DATADIR="/tmp/bitstar-independent-rc3"
 mkdir -p "$DATADIR"
 "$RELEASE/bin/bitstard" -datadir="$DATADIR" -server=1 -listen=1 \
   -addnode=seed1.bitstarcoin.org:21333 \
