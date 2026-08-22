@@ -30,7 +30,9 @@ $p2pPort = 21453
 $results = [ordered]@{}
 
 if ([string]::IsNullOrWhiteSpace($ReportPath)) {
-    $ReportPath = Join-Path (Split-Path -Parent $InstallerPath) "windows-installer-production-gate-v0.1.2-rc2.md"
+    $artifactStem = [System.IO.Path]::GetFileNameWithoutExtension($InstallerPath)
+    $safeArtifactStem = $artifactStem -replace "[^A-Za-z0-9._-]", "-"
+    $ReportPath = Join-Path (Split-Path -Parent $InstallerPath) "windows-installer-production-gate-$safeArtifactStem.md"
 }
 
 function Add-Result {
@@ -137,7 +139,8 @@ function Wait-RpcReady {
 function Test-Shortcut {
     param(
         [string]$ShortcutPath,
-        [string]$ExpectedTarget
+        [string]$ExpectedTarget,
+        [string]$ExpectedArguments = ""
     )
 
     if (-not (Test-Path -LiteralPath $ShortcutPath)) {
@@ -151,6 +154,9 @@ function Test-Shortcut {
     }
     if (-not (Test-Path -LiteralPath $shortcut.TargetPath)) {
         return "target missing: $($shortcut.TargetPath)"
+    }
+    if ($shortcut.Arguments -ne $ExpectedArguments) {
+        return "arguments mismatch: $($shortcut.Arguments)"
     }
     return "ok"
 }
@@ -175,7 +181,7 @@ function Write-Report {
     )
 
     $lines = New-Object System.Collections.Generic.List[string]
-    $lines.Add("# BitStar Windows Installer Production Gate - v0.1.2-rc2")
+    $lines.Add("# BitStar Windows Installer Production Gate")
     $lines.Add("")
     $lines.Add("Date: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss zzz')")
     $lines.Add("")
@@ -215,7 +221,8 @@ function Write-Report {
     $lines.Add("")
     $lines.Add("- Windows Authenticode signing is still pending.")
     $lines.Add("- This is an internal local gate, not an independent third-party audit.")
-    $lines.Add("- A human should still repeat one GUI launch from a fresh Windows profile before final production promotion.")
+    $lines.Add("- The current Windows package is node and CLI-wallet only; a graphical wallet gate is required once ``bitstar-qt.exe`` is included.")
+    $lines.Add("- A human should still repeat a fresh Windows profile install before final production promotion.")
 
     Set-Content -LiteralPath $Path -Value $lines -Encoding ASCII
 }
@@ -259,6 +266,7 @@ try {
         "bitstar-util.exe",
         "BitStar-Launcher.bat",
         "BitStar-Launcher.ps1",
+        "Show-BitStar-Wallet-Address.bat",
         "Open-BitStar-Console.bat",
         "Uninstall.exe",
         "sqlite3.dll"
@@ -276,13 +284,17 @@ try {
 
     $shortcutChecks = @(
         @{ Path = Join-Path $startMenuDir "BitStar Launcher.lnk"; Target = Join-Path $installDir "BitStar-Launcher.bat" },
-        @{ Path = Join-Path $startMenuDir "BitStar GUI.lnk"; Target = Join-Path $installDir "bitstar.exe" },
+        @{ Path = Join-Path $startMenuDir "Show BitStar Wallet Address.lnk"; Target = Join-Path $installDir "Show-BitStar-Wallet-Address.bat" },
         @{ Path = Join-Path $startMenuDir "BitStar Console.lnk"; Target = Join-Path $installDir "Open-BitStar-Console.bat" },
         @{ Path = Join-Path $startMenuDir "Uninstall BitStar Core.lnk"; Target = Join-Path $installDir "Uninstall.exe" }
     )
+    if (Test-Path -LiteralPath (Join-Path $installDir "bitstar-qt.exe")) {
+        $shortcutChecks += @{ Path = Join-Path $startMenuDir "BitStar GUI.lnk"; Target = Join-Path $installDir "bitstar.exe"; Arguments = "gui" }
+    }
     $shortcutFailures = New-Object System.Collections.Generic.List[string]
     foreach ($check in $shortcutChecks) {
-        $result = Test-Shortcut -ShortcutPath $check.Path -ExpectedTarget $check.Target
+        $expectedArguments = if ($check.ContainsKey("Arguments")) { $check.Arguments } else { "" }
+        $result = Test-Shortcut -ShortcutPath $check.Path -ExpectedTarget $check.Target -ExpectedArguments $expectedArguments
         if ($result -ne "ok") {
             $shortcutFailures.Add("$($check.Path): $result")
         }
@@ -323,9 +335,14 @@ try {
     $chainInfo = (& $cli "-datadir=$dataDir" getblockchaininfo | ConvertFrom-Json)
     Add-Result "node chain identity" ($chainInfo.bestblockhash -eq "00000c45c905ce3e3beeb9eb534650276947373d3a2a15694b4624a89bce4b49" -or $chainInfo.blocks -ge 0) "chain=$($chainInfo.chain), blocks=$($chainInfo.blocks), best=$($chainInfo.bestblockhash)"
 
-    & $cli "-datadir=$dataDir" createwallet gatewallet | Out-Null
+    $walletOutput = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $launcher -Action wallet -DataDir $dataDir -ReleaseDir $installDir -WalletName gatewallet 2>&1
     if ($LASTEXITCODE -ne 0) {
-        throw "createwallet failed"
+        throw "Launcher wallet action failed"
+    }
+    $addressLine = @($walletOutput | Where-Object { $_ -match "^Address:\s+bst1" } | Select-Object -First 1)
+    Add-Result "wallet address action" ($addressLine.Count -gt 0) ($(if ($addressLine.Count -gt 0) { $addressLine[0] } else { "no bst1 address printed" }))
+    if ($addressLine.Count -eq 0) {
+        throw "Launcher wallet action did not print a BitStar address"
     }
     & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $launcher -Action backup -DataDir $dataDir -ReleaseDir $installDir
     if ($LASTEXITCODE -ne 0) {

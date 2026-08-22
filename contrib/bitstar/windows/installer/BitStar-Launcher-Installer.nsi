@@ -68,7 +68,9 @@ Section "BitStar Core" SEC_MAIN
 
     CreateDirectory "$SMPROGRAMS\BitStar Core"
     CreateShortcut "$SMPROGRAMS\BitStar Core\BitStar Launcher.lnk" "$INSTDIR\BitStar-Launcher.bat"
-    CreateShortcut "$SMPROGRAMS\BitStar Core\BitStar GUI.lnk" "$INSTDIR\bitstar.exe"
+    CreateShortcut "$SMPROGRAMS\BitStar Core\Show BitStar Wallet Address.lnk" "$INSTDIR\Show-BitStar-Wallet-Address.bat" "" "$INSTDIR\bitstar.exe"
+    IfFileExists "$INSTDIR\bitstar-qt.exe" 0 +2
+      CreateShortcut "$SMPROGRAMS\BitStar Core\BitStar GUI.lnk" "$INSTDIR\bitstar.exe" "gui" "$INSTDIR\bitstar.exe"
     CreateShortcut "$SMPROGRAMS\BitStar Core\BitStar Console.lnk" "$INSTDIR\Open-BitStar-Console.bat"
     CreateShortcut "$SMPROGRAMS\BitStar Core\Uninstall BitStar Core.lnk" "$INSTDIR\Uninstall.exe"
 
@@ -85,6 +87,7 @@ SectionEnd
 Section "Uninstall"
     SetShellVarContext current
     Delete "$SMPROGRAMS\BitStar Core\BitStar Launcher.lnk"
+    Delete "$SMPROGRAMS\BitStar Core\Show BitStar Wallet Address.lnk"
     Delete "$SMPROGRAMS\BitStar Core\BitStar GUI.lnk"
     Delete "$SMPROGRAMS\BitStar Core\BitStar Console.lnk"
     Delete "$SMPROGRAMS\BitStar Core\Uninstall BitStar Core.lnk"

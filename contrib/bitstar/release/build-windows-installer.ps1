@@ -69,6 +69,7 @@ $requiredFiles = @(
     "sqlite3.dll",
     "BitStar-Launcher.bat",
     "BitStar-Launcher.ps1",
+    "Show-BitStar-Wallet-Address.bat",
     "Open-BitStar-Console.bat",
     "Start-BitStar-Node.bat",
     "Check-BitStar-Status.bat",

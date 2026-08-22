@@ -19,11 +19,16 @@ The Windows launcher package currently includes:
 - `Check-BitStar-Status.bat`
 - `Stop-BitStar-Node.bat`
 - `Open-BitStar-Console.bat`
+- `Show-BitStar-Wallet-Address.bat`
 - `bitstard.exe`
 - `bitstar-cli.exe`
 - `bitstar-util.exe`
 - `bitstar.exe`
 - `sqlite3.dll`
+
+The current package does not include `bitstar-qt.exe`, so it is treated as a
+node and CLI wallet package. GUI wallet shortcuts are only created when a
+package includes `bitstar-qt.exe`.
 
 The launcher can:
 
@@ -34,7 +39,10 @@ The launcher can:
 - add `seed2.bitstarcoin.org:21333`;
 - start `bitstard.exe`;
 - show block height, best block, IBD state, and peer count;
-- open the GUI;
+- create or load `wallet1`;
+- print a Bech32 `bst1...` receiving address for mining;
+- print a cpuminer command for `pool.bitstarcoin.org:3333`;
+- open the GUI only when `bitstar-qt.exe` is present;
 - back up loaded wallets;
 - open the data directory;
 - stop the node cleanly.
@@ -62,7 +70,8 @@ Definition of done:
 - Installer installs into a user-writable app directory.
 - Installer creates Start Menu shortcuts for:
   - BitStar Launcher;
-  - BitStar GUI;
+  - Show BitStar Wallet Address;
+  - BitStar GUI, only when the package includes `bitstar-qt.exe`;
   - BitStar Console;
   - Uninstall.
 - Installer does not delete `%LOCALAPPDATA%\BitStar` on uninstall.
@@ -78,8 +87,8 @@ Gate record:
 [windows-installer-production-gate-v0.1.2-rc2.md](windows-installer-production-gate-v0.1.2-rc2.md)
 
 It is not a final production installer yet because Authenticode signing,
-independent repeat testing, and fresh-profile human GUI testing are still
-pending.
+independent repeat testing, fresh-profile human testing, and a real GUI build
+including `bitstar-qt.exe` are still pending.
 
 Build helper:
 `contrib/bitstar/release/build-windows-installer.ps1`

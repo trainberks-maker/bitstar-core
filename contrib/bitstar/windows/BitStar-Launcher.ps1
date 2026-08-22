@@ -1,10 +1,12 @@
 param(
-    [ValidateSet("menu", "start", "status", "stop", "backup", "datadir", "gui", "config")]
+    [ValidateSet("menu", "start", "status", "stop", "backup", "datadir", "gui", "wallet", "config")]
     [string]$Action = "menu",
 
     [string]$DataDir = (Join-Path $env:LOCALAPPDATA "BitStar"),
 
-    [string]$ReleaseDir = ""
+    [string]$ReleaseDir = "",
+
+    [string]$WalletName = "wallet1"
 )
 
 Set-StrictMode -Version Latest
@@ -17,6 +19,7 @@ if ([string]::IsNullOrWhiteSpace($ReleaseDir)) {
 $Daemon = Join-Path $ReleaseDir "bitstard.exe"
 $Cli = Join-Path $ReleaseDir "bitstar-cli.exe"
 $Gui = Join-Path $ReleaseDir "bitstar.exe"
+$QtGui = Join-Path $ReleaseDir "bitstar-qt.exe"
 $ConfPath = Join-Path $DataDir "bitstar.conf"
 $SeedNodes = @("seed1.bitstarcoin.org:21333", "seed2.bitstarcoin.org:21333")
 
@@ -236,6 +239,56 @@ function Backup-BitStarWallets {
     Write-Host "Wallet backup folder: $backupDir"
 }
 
+function Get-OrCreate-BitStarWalletAddress {
+    Ensure-Config
+
+    if (-not (Test-RpcReady)) {
+        Write-Host "BitStar node is not running yet. Starting it now..."
+        Start-BitStarNode
+    }
+
+    if (-not (Test-RpcReady)) {
+        Write-Warning "BitStar node is not responding yet. Wait a minute, then try wallet address again."
+        return
+    }
+
+    Require-Cli
+    $loadedWallets = @(& $Cli "-datadir=$DataDir" "listwallets" | ConvertFrom-Json)
+    if (-not ($loadedWallets -contains $WalletName)) {
+        $loadWalletExitCode = 1
+        $previousErrorActionPreference = $ErrorActionPreference
+        try {
+            $ErrorActionPreference = "Continue"
+            & $Cli "-datadir=$DataDir" "loadwallet" $WalletName *>$null
+            $loadWalletExitCode = $LASTEXITCODE
+        }
+        finally {
+            $ErrorActionPreference = $previousErrorActionPreference
+        }
+
+        if ($loadWalletExitCode -ne 0) {
+            & $Cli "-datadir=$DataDir" "createwallet" $WalletName | Out-Host
+            if ($LASTEXITCODE -ne 0) {
+                throw "Could not load or create wallet '$WalletName'."
+            }
+        }
+    }
+
+    $address = & $Cli "-datadir=$DataDir" "-rpcwallet=$WalletName" "getnewaddress" "" "bech32"
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not create a receiving address for wallet '$WalletName'."
+    }
+
+    Write-Host ""
+    Write-Host "BitStar wallet address"
+    Write-Host "----------------------"
+    Write-Host "Wallet:  $WalletName"
+    Write-Host "Address: $address"
+    Write-Host ""
+    Write-Host "Use this address for mining:"
+    Write-Host ".\cpuminer-avx2.exe -a sha256d -o stratum+tcp://pool.bitstarcoin.org:3333 -u $address -p x -t 2"
+}
+
 function Open-BitStarDataDir {
     Ensure-Config
     Start-Process -FilePath "explorer.exe" -ArgumentList $DataDir
@@ -248,7 +301,13 @@ function Open-BitStarGui {
         throw "Missing bitstar.exe in $ReleaseDir"
     }
 
-    Start-Process -FilePath $Gui -ArgumentList @("-datadir=$DataDir") -WorkingDirectory $ReleaseDir
+    if (-not (Test-Path -LiteralPath $QtGui)) {
+        Write-Warning "This package does not include bitstar-qt.exe, so the graphical wallet cannot open."
+        Write-Host "Use option 3 to create/load wallet '$WalletName' and print a mining address."
+        return
+    }
+
+    Start-Process -FilePath $Gui -ArgumentList @("gui", "-datadir=$DataDir") -WorkingDirectory $ReleaseDir
 }
 
 function Show-Menu {
@@ -260,11 +319,12 @@ function Show-Menu {
         Write-Host ""
         Write-Host "1. Start node"
         Write-Host "2. Show status"
-        Write-Host "3. Open wallet/GUI"
+        Write-Host "3. Create/load wallet + show address"
         Write-Host "4. Backup loaded wallet"
-        Write-Host "5. Open data folder"
-        Write-Host "6. Stop node"
-        Write-Host "7. Ensure config"
+        Write-Host "5. Open wallet/GUI if included"
+        Write-Host "6. Open data folder"
+        Write-Host "7. Stop node"
+        Write-Host "8. Ensure config"
         Write-Host "0. Exit"
         Write-Host ""
 
@@ -273,11 +333,12 @@ function Show-Menu {
             switch ($choice) {
                 "1" { Start-BitStarNode }
                 "2" { Show-BitStarStatus }
-                "3" { Open-BitStarGui }
+                "3" { Get-OrCreate-BitStarWalletAddress }
                 "4" { Backup-BitStarWallets }
-                "5" { Open-BitStarDataDir }
-                "6" { Stop-BitStarNode }
-                "7" { Ensure-Config }
+                "5" { Open-BitStarGui }
+                "6" { Open-BitStarDataDir }
+                "7" { Stop-BitStarNode }
+                "8" { Ensure-Config }
                 "0" { return }
                 default { Write-Warning "Unknown option." }
             }
@@ -299,5 +360,6 @@ switch ($Action) {
     "backup" { Backup-BitStarWallets }
     "datadir" { Open-BitStarDataDir }
     "gui" { Open-BitStarGui }
+    "wallet" { Get-OrCreate-BitStarWalletAddress }
     "config" { Ensure-Config }
 }
