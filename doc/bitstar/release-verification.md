@@ -33,6 +33,8 @@ As of the `v0.1.2-rc3` release candidate:
 - Windows and Linux synthetic upgrade smoke tests from `v0.1.1-bootstrap` to
   `v0.1.2-rc2` passed; the `v0.1.2-rc3` Windows installer gate passed, while
   a Linux `v0.1.2-rc3` upgrade repeat still needs to be archived.
+- External Windows verification report #1 passed and is accepted as closing
+  the `v0.1.2-rc3` external Windows tester gate.
 - Windows Authenticode code signing is still pending.
 
 See [release-signing-policy.md](release-signing-policy.md) for release key

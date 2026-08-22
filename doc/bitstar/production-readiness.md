@@ -112,8 +112,9 @@ Linux x86_64 clean temporary-datadir smoke, and synthetic Windows and Linux
 upgrades from `v0.1.1-bootstrap` to `v0.1.2-rc2` are recorded in
 [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
 An outside-tester checklist is now available in
-[independent-verification-pack.md](independent-verification-pack.md), but no
-independent result has been archived yet.
+[independent-verification-pack.md](independent-verification-pack.md). External
+Windows verification report #1 has been archived and accepted as sufficient to
+close the `v0.1.2-rc3` external Windows tester gate.
 The Windows launcher production checklist and NSIS installer scaffold are
 documented. A Windows NSIS installer has been built, smoke-tested, included in
 the signed manifest, and published as an unsigned pre-release artifact. It has
@@ -134,11 +135,11 @@ Result: release artifacts are signed and checksum verified.
 ```
 
 This is still a signed pre-release candidate, not a final production release.
-Remaining release-engineering work includes an archived independent
-verification result, independent repeats of the Windows and Linux upgrade
-tests, a Linux `v0.1.2-rc3` upgrade repeat, a clean-profile manual Windows
-installer repeat, Windows Authenticode signing, and a repeat of the process for
-every later release candidate or final release.
+Remaining release-engineering work includes independent repeats of the Windows
+and Linux upgrade tests, a Linux `v0.1.2-rc3` upgrade repeat, a clean-profile
+manual Windows installer repeat, Windows Authenticode signing, optional
+additional outside-tester reports, and a repeat of the process for every later
+release candidate or final release.
 
 Clean install, Windows launcher, and full upgrade coverage must be recorded in
 [clean-install-upgrade-test.md](clean-install-upgrade-test.md) before any release
@@ -226,8 +227,8 @@ Current status: not ready.
 
 1. Keep seed1 and seed2 synchronized and monitored.
 2. Run the operator runbook on seed1 and seed2 after each infrastructure change.
-3. Archive independent signed-release verification and complete the upgrade
-   matrix in
+3. Keep external verification open for optional additional testers, and
+   complete the upgrade matrix in
    [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
 4. Repeat the Windows installer smoke test manually from a clean Windows
    profile using [windows-installer-plan.md](windows-installer-plan.md).

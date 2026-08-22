@@ -282,6 +282,10 @@ Notes:
 
 ## Promotion Rule
 
-`v0.1.2-rc3` now has one published external Windows passing result. Before
-promoting beyond pre-release, maintainers should review the report, repeat the
-gate with at least one more independent tester, and review any failure reports.
+`v0.1.2-rc3` has one published external Windows passing result. Maintainers
+reviewed report #1 and accept it as sufficient to close this external Windows
+tester gate for the `v0.1.2-rc3` release-candidate cycle.
+
+Additional independent reports are still welcome and recommended before a final
+production release, but they are no longer required to mark this specific gate
+as passed.

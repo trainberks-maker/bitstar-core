@@ -12,7 +12,7 @@ Current status: public bootstrap / early public test.
 BitStar is not a final production release yet. The network, website, signed
 release-candidate artifacts, seed nodes, explorer, and solo test pool are live
 enough for public testing, but the project still requires broader review,
-stronger explorer functionality, more independent nodes, repeated independent
+stronger explorer functionality, more independent nodes, continued independent
 verification, and a production-grade pool or a clear decision to keep the pool
 test-only.
 
@@ -107,6 +107,8 @@ Release-candidate signature status:
     `0000001a97af45aef7d8503dfc5124cb9e653b8fd75459135b408ccf1e844c7b`
   - Observed connections: `2`
   - Final result: PASS
+- External Windows tester gate status: closed for `v0.1.2-rc3` with one
+  external Windows report passed and reviewed.
 
 ### Network Parameters
 
@@ -183,14 +185,19 @@ This is a pre-release test build - use at your own risk - do not use for mining 
 The current release is a signed release candidate. It is useful for public
 testing and coordination, but it is not a final stable production release.
 
+Current gate decision:
+
+- independent verification report #1 is archived:
+  `https://github.com/trainberks-maker/bitstar-core/issues/1`
+- the external Windows tester gate for `v0.1.2-rc3` is closed with one external
+  Windows report passed
+
 Remaining work:
 
-- review and archive independent verification report #1:
-  `https://github.com/trainberks-maker/bitstar-core/issues/1`
-- collect at least one additional independent verification from a separate
-  machine/account before calling the release production-ready
 - repeat the Windows and Linux upgrade tests independently from the latest
   bootstrap data directories
+- collect more independent reports if possible before final production
+  promotion
 - remove or update pre-release warnings only when production gates are complete
 
 ### 2. Signing And Verification
@@ -201,11 +208,14 @@ helper scripts, a published public release key, and a GPG-signed
 artifacts signed and checksum-verifiable, but it does not make BitStar a final
 production release.
 
+Current gate decision:
+
+- report #1 closes the external Windows tester gate for `v0.1.2-rc3`
+
 Remaining work:
 
-- review the published outside tester result and repeat the
-  [independent-verification-pack.md](independent-verification-pack.md) process
-  with at least one more tester
+- keep the [independent-verification-pack.md](independent-verification-pack.md)
+  process open for any later testers or later release candidates
 - repeat the signing process for every later release candidate or final release
 - add Windows Authenticode signing when a code-signing certificate exists
 - document key rotation and maintainer responsibility
@@ -300,9 +310,8 @@ Remaining work:
 
 ## Recommended Next Work Order
 
-1. Record at least one independent verification of the release signature and
-   checksums using
-   [independent-verification-pack.md](independent-verification-pack.md).
+1. Treat the `v0.1.2-rc3` external Windows tester gate as closed based on
+   independent verification report #1.
 2. Repeat the recorded Windows and Linux upgrade tests independently from
    earlier bootstrap data directories, and archive the results in
    [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
