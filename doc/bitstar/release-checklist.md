@@ -68,12 +68,17 @@ Optional later artifacts:
 ## Signing And Verification
 
 - create a dedicated release signing key
+- follow [release-key-ceremony.md](release-key-ceremony.md) when creating,
+  exporting, backing up, or rotating the release signing key
 - publish the signing key fingerprint
 - publish SHA256 checksums for every artifact
 - sign the checksum file or release manifest
 - use `contrib/bitstar/release/sign-release-manifest.ps1` or
   `contrib/bitstar/release/sign-release-manifest.sh` to create `SHA256SUMS`
   and `SHA256SUMS.asc`
+- run `contrib/bitstar/release/check-release-readiness.ps1` or
+  `contrib/bitstar/release/check-release-readiness.sh` without unsigned
+  bootstrap mode and archive the result
 - document verification commands for Windows and Linux users
 - keep [release-verification.md](release-verification.md) current for every
   public release

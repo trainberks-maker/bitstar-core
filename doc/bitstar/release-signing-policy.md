@@ -1,6 +1,8 @@
 # BitStar Release Signing Policy
 
 This policy defines how BitStar release artifacts are signed and verified.
+For the safe key creation procedure, see
+[release-key-ceremony.md](release-key-ceremony.md).
 
 ## Goal
 
@@ -55,7 +57,27 @@ Or on Linux:
 gpg --verify SHA256SUMS.asc SHA256SUMS
 ```
 
-5. Upload the packages, `SHA256SUMS`, `SHA256SUMS.asc`, verification scripts,
+5. Run the release readiness gate.
+
+On Windows:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\check-release-readiness.ps1 -ReleaseDir .\
+```
+
+On Linux:
+
+```sh
+./check-release-readiness.sh --release-dir .
+```
+
+The result must say:
+
+```text
+Result: release artifacts are signed and checksum verified.
+```
+
+6. Upload the packages, `SHA256SUMS`, `SHA256SUMS.asc`, verification scripts,
    and release notes to the GitHub release.
 
 ## User Verification
@@ -86,6 +108,8 @@ BitStar release engineering is not production-ready until:
 - the public signing key fingerprint is listed in release notes and on the
   website;
 - `SHA256SUMS.asc` is published for the current release;
+- `check-release-readiness.ps1` or `check-release-readiness.sh` passes without
+  `--allow-unsigned-bootstrap`;
 - clean verification succeeds on both Windows and Linux;
 - at least one independent person can reproduce or verify the release package
   checksums.

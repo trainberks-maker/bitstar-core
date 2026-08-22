@@ -190,6 +190,7 @@ Windows user check:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\verify-checksums.ps1 .\SHA256SUMS
 gpg --verify .\SHA256SUMS.asc .\SHA256SUMS
+powershell -ExecutionPolicy Bypass -File .\check-release-readiness.ps1 -ReleaseDir .\
 ```
 
 Linux user check:
@@ -197,6 +198,7 @@ Linux user check:
 ```bash
 sh ./verify-checksums.sh SHA256SUMS
 gpg --verify SHA256SUMS.asc SHA256SUMS
+./check-release-readiness.sh --release-dir .
 ```
 
 For the current bootstrap release, `SHA256SUMS` exists but the signed manifest
@@ -210,12 +212,15 @@ Before promoting a release, record:
 - artifact filenames
 - SHA256 values
 - release signing key fingerprint
+- release readiness gate result
 - verification result on Windows
 - verification result on Linux
 - known limitations and warnings
 
 See [release-verification.md](release-verification.md) and
-[release-checklist.md](release-checklist.md).
+[release-checklist.md](release-checklist.md). See
+[release-key-ceremony.md](release-key-ceremony.md) before creating or rotating
+the release signing key.
 
 ## Incident Response
 

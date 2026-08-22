@@ -22,6 +22,8 @@ As of the `v0.1.1-bootstrap` bootstrap release:
 
 See [release-signing-policy.md](release-signing-policy.md) for release key
 rules, signing workflow, and production gate requirements.
+See [release-key-ceremony.md](release-key-ceremony.md) for creating and backing
+up the dedicated release signing key safely.
 See [operator-runbook.md](operator-runbook.md) for the operator-side release
 verification procedure used before installing artifacts on public seed nodes.
 
@@ -66,7 +68,22 @@ On Linux:
 ```
 
 5. Publish the signing key fingerprint in the release notes and website.
-6. Upload artifacts, `SHA256SUMS`, `SHA256SUMS.asc`, and release notes.
+6. Run the release readiness gate.
+
+On Windows:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\check-release-readiness.ps1 -ReleaseDir .\
+```
+
+On Linux:
+
+```sh
+./check-release-readiness.sh --release-dir .
+```
+
+7. Upload artifacts, `SHA256SUMS`, `SHA256SUMS.asc`, public release key, and
+   release notes.
 
 Do not store release private keys, wallet files, RPC passwords, deployment
 tokens, or SSH keys in this repository or in release packages.
@@ -80,6 +97,7 @@ Before a release is promoted on seed infrastructure, record:
 - artifact filenames
 - SHA256 values
 - release signing key fingerprint
+- release readiness gate result
 - Windows checksum verification result
 - Linux checksum verification result
 - GPG signature verification result
@@ -129,6 +147,7 @@ BitStar should not be called production-ready until:
 
 - the release signing key fingerprint is published;
 - `SHA256SUMS` and `SHA256SUMS.asc` are published for the release;
+- the release readiness gate passes without unsigned-bootstrap mode;
 - Windows and Linux users can verify packages with documented commands;
 - the operator verification record has been completed for the exact artifacts;
 - no private chain data, wallets, RPC credentials, or SSH keys are packaged;
