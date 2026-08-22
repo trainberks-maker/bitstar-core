@@ -35,7 +35,7 @@ custody, merchant payments, exchange deposits, or guaranteed production mining.
 | RPC port | 21332 |
 | Bech32 prefix | `bst1` |
 | Genesis hash | `00000c45c905ce3e3beeb9eb534650276947373d3a2a15694b4624a89bce4b49` |
-| Current best block | `00000e7ed0c7df4e0db2d66c8d0031042e1ad66f5a8e3bf3e23a8e6a151c502d` |
+| Current best block | `000009f1293ce4e68983535421f0701ed424104699f0f23ae5dca6b2885cf4f5` |
 
 ## Public Peers
 
@@ -211,8 +211,9 @@ described as a custodial payout pool.
 ## Current Limitations
 
 - The official endpoint is a public solo-style test pool, not a full payout pool.
-- Release signing exists as a workflow, but reproducible release verification is
-  still pending.
+- The `v0.1.1-bootstrap` release has a GPG-signed `SHA256SUMS.asc`, but
+  reproducible build verification and independent verification are still
+  pending.
 - DNS seed infrastructure is not active; documented static seed nodes are used.
 - The bootstrap build still carries a pre-release warning.
 - Pool dashboard counters are operational status signals, not balances.

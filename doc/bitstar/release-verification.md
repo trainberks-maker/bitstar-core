@@ -18,7 +18,12 @@ As of the `v0.1.1-bootstrap` bootstrap release:
 - Helper scripts exist for checksum verification and for creating/signing the
   release manifest.
 - Helper scripts exist for exporting only the public release key.
-- Signed `SHA256SUMS` manifest is still pending.
+- Signed `SHA256SUMS.asc` manifest is published.
+- Public release key `bitstar-release-key.asc` is published.
+- Release key fingerprint:
+  `5744BDF701AFDCF43983AB96B87F9907D27EC983`
+- The release readiness gate passes with:
+  `Result: release artifacts are signed and checksum verified.`
 - Windows Authenticode code signing is still pending.
 
 See [release-signing-policy.md](release-signing-policy.md) for release key
@@ -110,8 +115,9 @@ Before a release is promoted on seed infrastructure, record:
 - GPG signature verification result
 - known limitations and warnings
 
-For bootstrap releases where `SHA256SUMS.asc` is not present yet, record the
-release as checksum-verifiable only. Do not label it as a fully signed
+For older bootstrap releases where `SHA256SUMS.asc` is not present, record the
+release as checksum-verifiable only. For `v0.1.1-bootstrap`, record it as a
+signed bootstrap pre-release. Do not label any bootstrap build as a final
 production release.
 
 ## User Verification On Windows

@@ -192,6 +192,7 @@ powershell -ExecutionPolicy Bypass -File .\scan-release-package.ps1 `
   -ReleaseDir . `
   -Artifacts "BitStar_Windows_v0.1.1-bootstrap.zip,BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz"
 powershell -ExecutionPolicy Bypass -File .\verify-checksums.ps1 .\SHA256SUMS
+gpg --import .\bitstar-release-key.asc
 gpg --verify .\SHA256SUMS.asc .\SHA256SUMS
 powershell -ExecutionPolicy Bypass -File .\check-release-readiness.ps1 -ReleaseDir .\
 ```
@@ -203,13 +204,28 @@ Linux user check:
   --artifact BitStar_Windows_v0.1.1-bootstrap.zip \
   --artifact BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz
 sh ./verify-checksums.sh SHA256SUMS
+gpg --import bitstar-release-key.asc
 gpg --verify SHA256SUMS.asc SHA256SUMS
 ./check-release-readiness.sh --release-dir .
 ```
 
-For the current bootstrap release, `SHA256SUMS` exists but the signed manifest
-is still pending. That means the release is checksum-verifiable but not yet a
-fully signed production release.
+For the current `v0.1.1-bootstrap` release, `SHA256SUMS`,
+`SHA256SUMS.asc`, and `bitstar-release-key.asc` are published. The release key
+fingerprint is:
+
+```text
+5744BDF701AFDCF43983AB96B87F9907D27EC983
+```
+
+The readiness gate result for the published artifacts is:
+
+```text
+Result: release artifacts are signed and checksum verified.
+```
+
+This makes the bootstrap release signed and checksum-verifiable. It is still
+not a final production release until the remaining production gates are
+complete.
 
 Before promoting a release, record:
 

@@ -9,11 +9,12 @@ Date: 2026-08-22
 
 Current status: public bootstrap / early public test.
 
-BitStar is not a final production release yet. The network, website, release
-artifacts, seed nodes, explorer, and solo test pool are live enough for public
-testing, but the project still requires signed releases, broader review,
-stronger explorer functionality, independent nodes, and a production-grade pool
-or a clear decision to keep the pool test-only.
+BitStar is not a final production release yet. The network, website, signed
+bootstrap release artifacts, seed nodes, explorer, and solo test pool are live
+enough for public testing, but the project still requires broader review,
+stronger explorer functionality, independent nodes, final release-candidate
+testing, and a production-grade pool or a clear decision to keep the pool
+test-only.
 
 ## Verified Public Facts
 
@@ -22,6 +23,10 @@ or a clear decision to keep the pool test-only.
 - Canonical repository: `https://github.com/trainberks-maker/bitstar-core`
 - Public branch: `master`
 - Recent production-readiness commits:
+  - `e44ea5deb0` Improve BitStar release signing workflow
+  - `47e0e4a2c9` Add BitStar release package hygiene audit
+  - `30fa517a97` Add BitStar release signing readiness checks
+  - `9d79a03639` Add BitStar operator runbook
   - `4149c7078e` Add BitStar release verification guide
   - `7292574d9d` Add Windows launcher helper scripts
   - `bd2089854f` Add BitStar VPS hardening scripts
@@ -51,6 +56,8 @@ Latest bootstrap release:
   - `BitStar_Windows_v0.1.1-bootstrap.zip`
   - `BitStar_Windows_v0.1.1-bootstrap.zip.sha256`
   - `SHA256SUMS`
+  - `SHA256SUMS.asc`
+  - `bitstar-release-key.asc`
   - `verify-checksums.ps1`
   - `verify-checksums.sh`
 
@@ -60,6 +67,16 @@ Current published SHA256 values:
   `24ec7ec5cc9ff15d0ed94a544a4ea6d860368f468626411a0df97c8f2ff5ef27`
 - `BitStar_Windows_v0.1.1-bootstrap.zip`:
   `9cd8e559da3a8a8b92d6df92e5007923e226987b9087c9256180bdae1b76831d`
+
+Bootstrap release signature status:
+
+- Release key: `BitStar Release <release@bitstarcoin.org>`
+- Fingerprint:
+  `5744BDF701AFDCF43983AB96B87F9907D27EC983`
+- Signed manifest: `SHA256SUMS.asc` is published.
+- Public key: `bitstar-release-key.asc` is published.
+- Readiness gate result:
+  `Result: release artifacts are signed and checksum verified.`
 
 ### Network Parameters
 
@@ -116,10 +133,10 @@ Public explorer API:
 Current public snapshot:
 
 - Chain: `main`
-- Height: `5`
-- Headers: `5`
+- Height: `1136`
+- Headers: `1136`
 - Best block:
-  `00000e7ed0c7df4e0db2d66c8d0031042e1ad66f5a8e3bf3e23a8e6a151c502d`
+  `000009f1293ce4e68983535421f0701ed424104699f0f23ae5dca6b2885cf4f5`
 - Difficulty: `0.000244140625`
 - Connections: `2`
 - Initial block download: `false`
@@ -144,14 +161,15 @@ Remaining work:
 
 ### 2. Signing And Verification
 
-The project now has checksum verification documentation, helper scripts, and
-manifest signing scripts, but it does not yet have signed release manifests.
+The `v0.1.1-bootstrap` release now has checksum verification documentation,
+helper scripts, a published public release key, and a GPG-signed
+`SHA256SUMS.asc` manifest. This makes the bootstrap artifacts signed and
+checksum-verifiable, but it does not make BitStar a final production release.
 
 Remaining work:
 
-- create a dedicated offline release signing key
-- publish the signing key fingerprint
-- publish `SHA256SUMS.asc`
+- complete independent verification of the signed artifacts
+- repeat the signing process for the next release candidate or final release
 - add Windows Authenticode signing when a code-signing certificate exists
 - document key rotation and maintainer responsibility
 
@@ -228,8 +246,9 @@ Remaining work:
 
 ## Recommended Next Work Order
 
-1. Create the release signing process and publish a signed `SHA256SUMS.asc`.
-2. Run a release test matrix for Windows and Linux from clean datadirs.
+1. Run a signed release test matrix for Windows and Linux from clean datadirs.
+2. Record at least one independent verification of the release signature and
+   checksums.
 3. Upgrade the explorer from status-only to block, transaction, and address
    lookup.
 4. Keep the current pool labeled as solo/test, or build a real dashboard and
@@ -242,5 +261,6 @@ Remaining work:
 ## Current Recommendation
 
 Continue treating the current chain as a public bootstrap chain. Do not call it
-the final production launch until signed release artifacts, independent
-verification, explorer improvements, and public launch policy are complete.
+the final production launch until independent verification, explorer
+improvements, third-party nodes, release-candidate testing, and public launch
+policy are complete.

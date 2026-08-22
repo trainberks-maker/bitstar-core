@@ -18,11 +18,11 @@ production gaps.
 Use [operator-runbook.md](operator-runbook.md) as the daily operating checklist
 for seed nodes, explorer API, test pool, backups, and release verification.
 
-As of August 22, 2026, seed1 and seed2 are synchronized at height `5` with best
-block:
+As of August 22, 2026, seed1 and seed2 are synchronized at height `1136` with
+best block:
 
 ```text
-00000e7ed0c7df4e0db2d66c8d0031042e1ad66f5a8e3bf3e23a8e6a151c502d
+000009f1293ce4e68983535421f0701ed424104699f0f23ae5dca6b2885cf4f5
 ```
 
 The software still reports the pre-release warning:
@@ -100,9 +100,25 @@ Definition of done:
 
 Current status: bootstrap binaries exist. The Windows launcher package and
 Linux x86_64 server package are published for `v0.1.1-bootstrap`, with SHA256
-checksum files, helper verification scripts, and manifest signing helpers.
-Actual signed production release artifacts are still pending until a dedicated
-release signing key is created and `SHA256SUMS.asc` is published.
+checksum files, helper verification scripts, a published public release key,
+and a GPG-signed `SHA256SUMS.asc` manifest.
+
+The current release key fingerprint is:
+
+```text
+5744BDF701AFDCF43983AB96B87F9907D27EC983
+```
+
+The bootstrap release readiness gate passes with:
+
+```text
+Result: release artifacts are signed and checksum verified.
+```
+
+This is still a signed bootstrap pre-release, not a final production release.
+Remaining release-engineering work includes clean install and upgrade test
+records, independent verification, Windows Authenticode signing, and a repeat
+of the process for a release candidate or final release.
 
 ### Gate 5: Explorer
 
@@ -186,8 +202,8 @@ Current status: not ready.
 
 1. Keep seed1 and seed2 synchronized and monitored.
 2. Run the operator runbook on seed1 and seed2 after each infrastructure change.
-3. Create the dedicated release signing key, publish its fingerprint, and
-   publish `SHA256SUMS.asc` for the current release.
+3. Archive the signed-release verification record and run clean Windows/Linux
+   install tests from empty datadirs.
 4. Decide the fair launch path: continue with full disclosure, or reset once for
    a final public launch.
 5. Upgrade the explorer from status-only to block, transaction, and address
