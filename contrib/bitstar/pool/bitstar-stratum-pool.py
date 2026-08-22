@@ -21,6 +21,7 @@ import logging
 import os
 from pathlib import Path
 import secrets
+import sqlite3
 import struct
 import subprocess
 import time
@@ -36,6 +37,9 @@ DIFF1_TARGET = int(
 MAX_TARGET = (1 << 256) - 1
 DEFAULT_POOL_TAG = b"/BitStarTestPool/"
 DRY_RUN_LEDGER_SCHEMA_VERSION = 1
+DRY_RUN_LEDGER_STORAGE_MEMORY = "memory"
+DRY_RUN_LEDGER_STORAGE_JSON = "local_json"
+DRY_RUN_LEDGER_STORAGE_SQLITE = "sqlite"
 DRY_RUN_LEDGER_COUNTER_KEYS = (
     "submitted_shares",
     "accepted_shares",
@@ -606,6 +610,7 @@ class StratumServer:
         stats_history_file: str,
         stats_history_seconds: int,
         dry_run_ledger_file: str,
+        dry_run_ledger_db: str,
     ) -> None:
         self.rpc = rpc
         self.host = host
@@ -621,6 +626,7 @@ class StratumServer:
         self.stats_history_file = stats_history_file
         self.stats_history_seconds = stats_history_seconds
         self.dry_run_ledger_file = dry_run_ledger_file
+        self.dry_run_ledger_db = dry_run_ledger_db
         self._stats_dirty = True
         self._last_stats_write = 0.0
         self._last_stats_history_write = 0.0
@@ -645,6 +651,16 @@ class StratumServer:
         self.dry_run_totals: dict[str, int] = {key: 0 for key in DRY_RUN_LEDGER_COUNTER_KEYS}
         self.dry_run_workers: dict[str, dict[str, Any]] = {}
         self.load_dry_run_ledger()
+
+    def dry_run_ledger_persistent(self) -> bool:
+        return bool(self.dry_run_ledger_db or self.dry_run_ledger_file)
+
+    def dry_run_ledger_storage(self) -> str:
+        if self.dry_run_ledger_db:
+            return DRY_RUN_LEDGER_STORAGE_SQLITE
+        if self.dry_run_ledger_file:
+            return DRY_RUN_LEDGER_STORAGE_JSON
+        return DRY_RUN_LEDGER_STORAGE_MEMORY
 
     def _worker(self, worker_name: str) -> dict[str, Any]:
         name = worker_name or "unknown"
@@ -689,21 +705,118 @@ class StratumServer:
             },
         )
 
-    def load_dry_run_ledger(self) -> None:
+    def init_dry_run_sqlite(self, conn: sqlite3.Connection) -> None:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS dry_run_meta (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS dry_run_totals (
+                counter TEXT PRIMARY KEY,
+                value INTEGER NOT NULL
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS dry_run_workers (
+                worker TEXT PRIMARY KEY,
+                submitted_shares INTEGER NOT NULL DEFAULT 0,
+                accepted_shares INTEGER NOT NULL DEFAULT 0,
+                candidate_blocks INTEGER NOT NULL DEFAULT 0,
+                accepted_blocks INTEGER NOT NULL DEFAULT 0,
+                rejected_blocks INTEGER NOT NULL DEFAULT 0,
+                failed_blocks INTEGER NOT NULL DEFAULT 0,
+                last_share_at REAL,
+                last_accepted_share_at REAL,
+                updated_at REAL NOT NULL
+            )
+            """
+        )
+
+    def connect_dry_run_sqlite(self) -> sqlite3.Connection:
+        path = Path(self.dry_run_ledger_db)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        conn = sqlite3.connect(path)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA synchronous=NORMAL")
+        self.init_dry_run_sqlite(conn)
+        return conn
+
+    def load_dry_run_sqlite_ledger(self) -> bool:
+        if not self.dry_run_ledger_db:
+            return False
+
+        path = Path(self.dry_run_ledger_db)
+        existed = path.exists()
+        try:
+            with contextlib.closing(self.connect_dry_run_sqlite()) as conn:
+                with conn:
+                    if not existed:
+                        return False
+
+                    meta = {
+                        row["key"]: row["value"]
+                        for row in conn.execute("SELECT key, value FROM dry_run_meta")
+                    }
+                    total_rows = list(conn.execute("SELECT counter, value FROM dry_run_totals"))
+                    worker_rows = list(
+                        conn.execute(
+                            """
+                            SELECT worker, submitted_shares, accepted_shares,
+                                   candidate_blocks, accepted_blocks, rejected_blocks,
+                                   failed_blocks, last_share_at, last_accepted_share_at
+                            FROM dry_run_workers
+                            """
+                        )
+                    )
+        except Exception:
+            logging.exception("failed to read dry-run SQLite ledger %s", path)
+            return False
+
+        if not meta and not total_rows and not worker_rows:
+            return False
+
+        for row in total_rows:
+            key = str(row["counter"])
+            if key in self.dry_run_totals:
+                self.dry_run_totals[key] = safe_int(row["value"])
+
+        for row in worker_rows:
+            worker_name = str(row["worker"] or "unknown")
+            worker = self._dry_run_worker(worker_name)
+            for key in DRY_RUN_LEDGER_COUNTER_KEYS:
+                worker[key] = safe_int(row[key])
+            worker["last_share_at"] = safe_timestamp(row["last_share_at"])
+            worker["last_accepted_share_at"] = safe_timestamp(row["last_accepted_share_at"])
+
+        loaded_start = safe_timestamp(meta.get("window_started_at"))
+        if loaded_start is not None:
+            self.dry_run_ledger_started_at = loaded_start
+        logging.info("loaded dry-run SQLite ledger %s workers=%d", path, len(self.dry_run_workers))
+        return True
+
+    def load_dry_run_json_ledger(self) -> bool:
         if not self.dry_run_ledger_file:
-            return
+            return False
 
         path = Path(self.dry_run_ledger_file)
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
         except FileNotFoundError:
-            return
+            return False
         except json.JSONDecodeError:
             logging.warning("dry-run ledger file is not valid JSON: %s", path)
-            return
+            return False
         except Exception:
             logging.exception("failed to read dry-run ledger file %s", path)
-            return
+            return False
 
         totals = data.get("totals", {}) if isinstance(data, dict) else {}
         if isinstance(totals, dict):
@@ -731,6 +844,14 @@ class StratumServer:
         if loaded_start is not None:
             self.dry_run_ledger_started_at = loaded_start
         logging.info("loaded dry-run ledger file %s workers=%d", path, len(self.dry_run_workers))
+        return True
+
+    def load_dry_run_ledger(self) -> None:
+        loaded = False
+        if self.dry_run_ledger_db:
+            loaded = self.load_dry_run_sqlite_ledger()
+        if not loaded and self.dry_run_ledger_file:
+            self.load_dry_run_json_ledger()
 
     def mark_stats_dirty(self) -> None:
         self._stats_dirty = True
@@ -899,8 +1020,11 @@ class StratumServer:
             "mode": "dry_run_only",
             "reward_method": "proportional_share_report_only",
             "payouts_broadcast": False,
-            "persistent": bool(self.dry_run_ledger_file),
-            "storage": "local_json" if self.dry_run_ledger_file else "memory",
+            "persistent": self.dry_run_ledger_persistent(),
+            "storage": self.dry_run_ledger_storage(),
+            "database_backed": bool(self.dry_run_ledger_db),
+            "json_mirror": bool(self.dry_run_ledger_file),
+            "backup_required": bool(self.dry_run_ledger_db),
             "window_started_at": self.dry_run_ledger_started_at,
             "window_updated_at": now,
             "totals": dict(self.dry_run_totals),
@@ -931,8 +1055,11 @@ class StratumServer:
                 "dry_run_ledger_enabled": True,
                 "dry_run_payouts_broadcast": False,
                 "dry_run_reward_method": "proportional_share_report_only",
-                "dry_run_ledger_persistent": bool(self.dry_run_ledger_file),
-                "dry_run_ledger_storage": "local_json" if self.dry_run_ledger_file else "memory",
+                "dry_run_ledger_persistent": self.dry_run_ledger_persistent(),
+                "dry_run_ledger_storage": self.dry_run_ledger_storage(),
+                "dry_run_ledger_database": bool(self.dry_run_ledger_db),
+                "dry_run_ledger_json_mirror": bool(self.dry_run_ledger_file),
+                "dry_run_ledger_backup_required": bool(self.dry_run_ledger_db),
                 "coinbase_maturity_confirmations": 100,
                 "history_snapshots_enabled": bool(self.stats_history_file),
                 "history_interval_seconds": self.stats_history_seconds if self.stats_history_file else 0,
@@ -958,7 +1085,88 @@ class StratumServer:
         except Exception:
             logging.exception("failed to append stats history file %s", path)
 
-    def write_dry_run_ledger(self, ledger: dict[str, Any]) -> bool:
+    def write_dry_run_sqlite_ledger(self, ledger: dict[str, Any]) -> bool:
+        if not self.dry_run_ledger_db:
+            return True
+
+        try:
+            with contextlib.closing(self.connect_dry_run_sqlite()) as conn:
+                with conn:
+                    meta_values = {
+                        "schema_version": str(safe_int(ledger.get("schema_version"), DRY_RUN_LEDGER_SCHEMA_VERSION)),
+                        "mode": str(ledger.get("mode", "dry_run_only")),
+                        "reward_method": str(ledger.get("reward_method", "proportional_share_report_only")),
+                        "payouts_broadcast": "false",
+                        "window_started_at": str(float(ledger.get("window_started_at") or self.dry_run_ledger_started_at)),
+                        "window_updated_at": str(float(ledger.get("window_updated_at") or time.time())),
+                        "storage": DRY_RUN_LEDGER_STORAGE_SQLITE,
+                    }
+                    for key, value in meta_values.items():
+                        conn.execute(
+                            """
+                            INSERT INTO dry_run_meta(key, value)
+                            VALUES (?, ?)
+                            ON CONFLICT(key) DO UPDATE SET value = excluded.value
+                            """,
+                            (key, value),
+                        )
+
+                    totals = ledger.get("totals", {}) if isinstance(ledger.get("totals"), dict) else {}
+                    for key in DRY_RUN_LEDGER_COUNTER_KEYS:
+                        conn.execute(
+                            """
+                            INSERT INTO dry_run_totals(counter, value)
+                            VALUES (?, ?)
+                            ON CONFLICT(counter) DO UPDATE SET value = excluded.value
+                            """,
+                            (key, safe_int(totals.get(key))),
+                        )
+
+                    updated_at = safe_timestamp(ledger.get("window_updated_at")) or time.time()
+                    workers = ledger.get("workers", []) if isinstance(ledger.get("workers"), list) else []
+                    for row in workers:
+                        if not isinstance(row, dict):
+                            continue
+                        worker_name = str(row.get("worker") or "unknown")
+                        conn.execute(
+                            """
+                            INSERT INTO dry_run_workers(
+                                worker, submitted_shares, accepted_shares,
+                                candidate_blocks, accepted_blocks, rejected_blocks,
+                                failed_blocks, last_share_at, last_accepted_share_at,
+                                updated_at
+                            )
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            ON CONFLICT(worker) DO UPDATE SET
+                                submitted_shares = excluded.submitted_shares,
+                                accepted_shares = excluded.accepted_shares,
+                                candidate_blocks = excluded.candidate_blocks,
+                                accepted_blocks = excluded.accepted_blocks,
+                                rejected_blocks = excluded.rejected_blocks,
+                                failed_blocks = excluded.failed_blocks,
+                                last_share_at = excluded.last_share_at,
+                                last_accepted_share_at = excluded.last_accepted_share_at,
+                                updated_at = excluded.updated_at
+                            """,
+                            (
+                                worker_name,
+                                safe_int(row.get("submitted_shares")),
+                                safe_int(row.get("accepted_shares")),
+                                safe_int(row.get("candidate_blocks")),
+                                safe_int(row.get("accepted_blocks")),
+                                safe_int(row.get("rejected_blocks")),
+                                safe_int(row.get("failed_blocks")),
+                                safe_timestamp(row.get("last_share_at")),
+                                safe_timestamp(row.get("last_accepted_share_at")),
+                                updated_at,
+                            ),
+                        )
+            return True
+        except Exception:
+            logging.exception("failed to write dry-run SQLite ledger %s", self.dry_run_ledger_db)
+            return False
+
+    def write_dry_run_json_ledger(self, ledger: dict[str, Any]) -> bool:
         if not self.dry_run_ledger_file:
             return True
 
@@ -973,8 +1181,18 @@ class StratumServer:
             logging.exception("failed to write dry-run ledger file %s", path)
             return False
 
+    def write_dry_run_ledger(self, ledger: dict[str, Any]) -> bool:
+        sqlite_written = self.write_dry_run_sqlite_ledger(ledger)
+        json_written = self.write_dry_run_json_ledger(ledger)
+        return sqlite_written and json_written
+
     def write_stats(self, force: bool = False) -> None:
-        if not self.stats_file and not self.stats_history_file and not self.dry_run_ledger_file:
+        if (
+            not self.stats_file
+            and not self.stats_history_file
+            and not self.dry_run_ledger_file
+            and not self.dry_run_ledger_db
+        ):
             return
         now = time.time()
         if not force and (not self._stats_dirty or now - self._last_stats_write < 2):
@@ -1148,7 +1366,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--dry-run-ledger-file",
         default=os.getenv("BITSTAR_POOL_DRY_RUN_LEDGER_FILE", "/var/lib/bitstar/pool-dry-run-ledger.json"),
-        help="Persist the dry-run share ledger as JSON. Use an empty value to keep it in memory only.",
+        help="Write a JSON mirror of the dry-run share ledger. Use an empty value to disable the mirror.",
+    )
+    parser.add_argument(
+        "--dry-run-ledger-db",
+        default=os.getenv("BITSTAR_POOL_DRY_RUN_LEDGER_DB", "/var/lib/bitstar/pool-dry-run-ledger.sqlite3"),
+        help="Persist the dry-run share ledger in SQLite. Use an empty value to keep it in JSON/memory only.",
     )
     return parser.parse_args()
 
@@ -1195,6 +1418,7 @@ def main() -> None:
         stats_history_file=args.stats_history_file,
         stats_history_seconds=args.stats_history_seconds,
         dry_run_ledger_file=args.dry_run_ledger_file,
+        dry_run_ledger_db=args.dry_run_ledger_db,
     )
     asyncio.run(server.serve())
 

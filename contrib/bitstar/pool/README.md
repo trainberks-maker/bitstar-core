@@ -17,8 +17,10 @@ The server works as a solo test pool:
   operator review; it is not a payout ledger
 - a dry-run ledger report ranks workers by accepted shares for review only; it
   does not credit balances, sign payout transactions, or broadcast payments
-- the dry-run ledger is persisted locally by default at
-  `/var/lib/bitstar/pool-dry-run-ledger.json`
+- the dry-run ledger is persisted locally by default in SQLite at
+  `/var/lib/bitstar/pool-dry-run-ledger.sqlite3`
+- a JSON mirror is also written at `/var/lib/bitstar/pool-dry-run-ledger.json`
+  for simple operator/API reads
 
 ## Install On A Seed Or Pool VPS
 
@@ -63,6 +65,30 @@ Read the persistent dry-run ledger:
 sudo cat /var/lib/bitstar/pool-dry-run-ledger.json
 ```
 
+Inspect the SQLite-backed dry-run ledger:
+
+```bash
+sudo sqlite3 /var/lib/bitstar/pool-dry-run-ledger.sqlite3 \
+  'select counter, value from dry_run_totals order by counter;'
+```
+
+Create a safe online backup:
+
+```bash
+sudo mkdir -p /var/backups/bitstar
+sudo sqlite3 /var/lib/bitstar/pool-dry-run-ledger.sqlite3 \
+  ".backup '/var/backups/bitstar/pool-dry-run-ledger-$(date -u +%Y%m%dT%H%M%SZ).sqlite3'"
+```
+
+Restore only during maintenance:
+
+```bash
+sudo systemctl stop bitstar-stratum-pool
+sudo install -o bitstar -g bitstar -m 0640 /var/backups/bitstar/pool-dry-run-ledger-YYYYMMDDTHHMMSSZ.sqlite3 \
+  /var/lib/bitstar/pool-dry-run-ledger.sqlite3
+sudo systemctl start bitstar-stratum-pool
+```
+
 Important fields:
 
 - `submitted_shares`: miner shares received by the pool
@@ -75,7 +101,9 @@ Important fields:
 - `accounting.custody_enabled`: currently `false`
 - `accounting.dry_run_ledger_enabled`: currently `true`
 - `accounting.dry_run_ledger_persistent`: currently `true`
-- `accounting.dry_run_ledger_storage`: currently `local_json`
+- `accounting.dry_run_ledger_storage`: currently `sqlite`
+- `accounting.dry_run_ledger_database`: currently `true`
+- `accounting.dry_run_ledger_backup_required`: currently `true`
 - `dry_run_ledger`: review-only proportional share report; no payments are
   signed or broadcast
 

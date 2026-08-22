@@ -15,6 +15,7 @@ Environment=BITSTAR_POOL_STATS_FILE=/var/lib/bitstar/pool-stats.json
 Environment=BITSTAR_POOL_STATS_HISTORY_FILE=/var/lib/bitstar/pool-stats-history.jsonl
 Environment=BITSTAR_POOL_STATS_HISTORY_SECONDS=60
 Environment=BITSTAR_POOL_DRY_RUN_LEDGER_FILE=/var/lib/bitstar/pool-dry-run-ledger.json
+Environment=BITSTAR_POOL_DRY_RUN_LEDGER_DB=/var/lib/bitstar/pool-dry-run-ledger.sqlite3
 Environment=BITSTAR_DATADIR=/var/lib/bitstar
 Environment=BITSTAR_CONF=/etc/bitstar/bitstar.conf
 ExecStart=/usr/local/bin/bitstar-stratum-pool.py
