@@ -17,6 +17,7 @@ As of the `v0.1.1-bootstrap` bootstrap release:
   published packages.
 - Helper scripts exist for checksum verification and for creating/signing the
   release manifest.
+- Helper scripts exist for exporting only the public release key.
 - Signed `SHA256SUMS` manifest is still pending.
 - Windows Authenticode code signing is still pending.
 
@@ -37,6 +38,7 @@ Every serious public release should include:
 - `BitStar_Linux_x86_64_<version>.tar.gz`
 - `SHA256SUMS`
 - `SHA256SUMS.asc`
+- `bitstar-release-key.asc`
 - release notes with source commit, status, network parameters, and warnings
 
 Optional later artifacts:
@@ -70,8 +72,9 @@ On Linux:
   BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz
 ```
 
-6. Publish the signing key fingerprint in the release notes and website.
-7. Run the release readiness gate.
+6. Export `bitstar-release-key.asc` with the public-key helper.
+7. Publish the signing key fingerprint in the release notes and website.
+8. Run the release readiness gate.
 
 On Windows:
 
@@ -85,7 +88,7 @@ On Linux:
 ./check-release-readiness.sh --release-dir .
 ```
 
-8. Upload artifacts, `SHA256SUMS`, `SHA256SUMS.asc`, public release key, and
+9. Upload artifacts, `SHA256SUMS`, `SHA256SUMS.asc`, public release key, and
    release notes.
 
 Do not store release private keys, wallet files, RPC passwords, deployment
@@ -113,17 +116,17 @@ production release.
 
 ## User Verification On Windows
 
-Download the release package, `SHA256SUMS`, and `SHA256SUMS.asc` into the same
-folder. Then verify the checksum file:
+Download the release package, `SHA256SUMS`, `SHA256SUMS.asc`, and
+`bitstar-release-key.asc` into the same folder. Import the public key, verify
+the signature, then verify the checksum file:
+
+```powershell
+gpg --import .\bitstar-release-key.asc
+gpg --verify .\SHA256SUMS.asc .\SHA256SUMS
+```
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\verify-checksums.ps1 .\SHA256SUMS
-```
-
-If GPG is installed and the BitStar release key is imported:
-
-```powershell
-gpg --verify .\SHA256SUMS.asc .\SHA256SUMS
 ```
 
 Only run the software if both the signature and checksum verification succeed.
@@ -131,6 +134,7 @@ Only run the software if both the signature and checksum verification succeed.
 ## User Verification On Linux
 
 ```sh
+gpg --import bitstar-release-key.asc
 gpg --verify SHA256SUMS.asc SHA256SUMS
 sh ./verify-checksums.sh SHA256SUMS
 ```
@@ -150,6 +154,7 @@ clearly labeled as not code-signed.
 BitStar should not be called production-ready until:
 
 - the release signing key fingerprint is published;
+- `bitstar-release-key.asc` is published for the release;
 - `SHA256SUMS` and `SHA256SUMS.asc` are published for the release;
 - the release readiness gate passes without unsigned-bootstrap mode;
 - Windows and Linux users can verify packages with documented commands;

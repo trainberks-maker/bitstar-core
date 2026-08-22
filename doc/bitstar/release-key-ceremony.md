@@ -18,12 +18,20 @@ same care as production infrastructure credentials.
 ## Required Tools
 
 Windows maintainers should install Gpg4win. Linux maintainers should install
-GnuPG from the operating system package manager.
+GnuPG from the operating system package manager. On Windows, Git for Windows
+also includes GPG and the BitStar PowerShell release scripts will try to find it
+automatically.
 
 Check that GPG is available:
 
 ```powershell
 gpg --version
+```
+
+If normal PowerShell cannot find `gpg`, try the Git for Windows GPG path:
+
+```powershell
+& "C:\Program Files\Git\usr\bin\gpg.exe" --version
 ```
 
 or:
@@ -36,11 +44,29 @@ gpg --version
 
 Run this on the maintainer machine:
 
+Windows with Git for Windows GPG:
+
+```powershell
+& "C:\Program Files\Git\usr\bin\gpg.exe" --quick-generate-key "BitStar Release <release@bitstarcoin.org>" ed25519 sign 2y
+```
+
+Linux, macOS, or Windows where `gpg` is already in `PATH`:
+
 ```sh
 gpg --quick-generate-key "BitStar Release <release@bitstarcoin.org>" ed25519 sign 2y
 ```
 
+GPG will ask for a passphrase. Use a strong passphrase and do not share it.
+
 Then list the key and copy the full fingerprint:
+
+Windows with Git for Windows GPG:
+
+```powershell
+& "C:\Program Files\Git\usr\bin\gpg.exe" --list-secret-keys --keyid-format LONG "BitStar Release"
+```
+
+Linux, macOS, or Windows where `gpg` is already in `PATH`:
 
 ```sh
 gpg --list-secret-keys --keyid-format LONG "BitStar Release"
@@ -56,8 +82,16 @@ Record the fingerprint in:
 
 Export only the public key:
 
+Windows:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\export-release-public-key.ps1 -GpgKey "<release-key-fingerprint>"
+```
+
+Linux:
+
 ```sh
-gpg --armor --export <release-key-fingerprint> > bitstar-release-key.asc
+./export-release-public-key.sh --key "<release-key-fingerprint>"
 ```
 
 The public key may be committed or uploaded to a release. The secret key must
@@ -105,6 +139,7 @@ Expected outputs:
 
 - `SHA256SUMS`
 - `SHA256SUMS.asc`
+- `bitstar-release-key.asc`, created by the public-key export helper
 
 ## Verify Before Publishing
 

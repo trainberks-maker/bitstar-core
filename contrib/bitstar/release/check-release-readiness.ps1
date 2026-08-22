@@ -20,6 +20,40 @@ function Pass($Message) {
     Write-Host "OK      $Message"
 }
 
+function Resolve-GpgPath {
+    $gpg = Get-Command gpg -ErrorAction SilentlyContinue
+    if ($gpg) {
+        return $gpg.Source
+    }
+
+    $programFilesX86 = ${env:ProgramFiles(x86)}
+    $candidates = @()
+
+    if (![string]::IsNullOrWhiteSpace($env:ProgramFiles)) {
+        $candidates += @(
+            (Join-Path $env:ProgramFiles "Git\usr\bin\gpg.exe"),
+            (Join-Path $env:ProgramFiles "Git\mingw64\bin\gpg.exe"),
+            (Join-Path $env:ProgramFiles "GnuPG\bin\gpg.exe"),
+            (Join-Path $env:ProgramFiles "Gpg4win\bin\gpg.exe")
+        )
+    }
+
+    if (![string]::IsNullOrWhiteSpace($programFilesX86)) {
+        $candidates += @(
+            (Join-Path $programFilesX86 "GnuPG\bin\gpg.exe"),
+            (Join-Path $programFilesX86 "Gpg4win\bin\gpg.exe")
+        )
+    }
+
+    foreach ($candidate in $candidates) {
+        if (Test-Path -LiteralPath $candidate) {
+            return $candidate
+        }
+    }
+
+    return $null
+}
+
 $failed = $false
 $warned = $false
 $releasePath = Resolve-Path -LiteralPath $ReleaseDir
@@ -79,11 +113,11 @@ foreach ($entry in $entries) {
     }
 }
 
-$gpg = Get-Command gpg -ErrorAction SilentlyContinue
-if (!$gpg) {
+$gpgPath = Resolve-GpgPath
+if (!$gpgPath) {
     Warn "gpg not found; install GnuPG or Gpg4win before production signing"
 } else {
-    Pass "gpg available: $($gpg.Source)"
+    Pass "gpg available: $gpgPath"
 }
 
 if (!(Test-Path -LiteralPath $signaturePath)) {
@@ -92,10 +126,10 @@ if (!(Test-Path -LiteralPath $signaturePath)) {
     } else {
         Fail "signature missing: $Manifest.asc"
     }
-} elseif (!$gpg) {
+} elseif (!$gpgPath) {
     Fail "signature exists but cannot be verified because gpg is missing"
 } else {
-    & $gpg.Source --verify $signaturePath $manifestPath
+    & $gpgPath --verify $signaturePath $manifestPath
     if ($LASTEXITCODE -ne 0) {
         Fail "GPG signature verification failed"
     } else {

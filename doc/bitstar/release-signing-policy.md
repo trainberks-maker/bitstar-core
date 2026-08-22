@@ -14,6 +14,7 @@ For the bootstrap stage, the minimum acceptable release verification stack is:
 - one `SHA256SUMS` file covering all release packages;
 - one detached GPG signature, `SHA256SUMS.asc`;
 - a published release signing key fingerprint;
+- the public release key, `bitstar-release-key.asc`;
 - verification commands for Windows and Linux.
 
 Windows Authenticode signing is a separate requirement and should be added when
@@ -77,8 +78,21 @@ The result must say:
 Result: release artifacts are signed and checksum verified.
 ```
 
-6. Upload the packages, `SHA256SUMS`, `SHA256SUMS.asc`, verification scripts,
-   and release notes to the GitHub release.
+6. Export the public release key:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\export-release-public-key.ps1 -GpgKey "<release-key-fingerprint>"
+```
+
+or:
+
+```sh
+./export-release-public-key.sh --key "<release-key-fingerprint>"
+```
+
+7. Upload the packages, `SHA256SUMS`, `SHA256SUMS.asc`,
+   `bitstar-release-key.asc`, verification scripts, and release notes to the
+   GitHub release.
 
 ## User Verification
 
@@ -87,6 +101,7 @@ Users should verify the GPG signature first, then verify package checksums.
 On Windows:
 
 ```powershell
+gpg --import .\bitstar-release-key.asc
 gpg --verify .\SHA256SUMS.asc .\SHA256SUMS
 powershell -ExecutionPolicy Bypass -File .\verify-checksums.ps1 .\SHA256SUMS
 ```
@@ -94,6 +109,7 @@ powershell -ExecutionPolicy Bypass -File .\verify-checksums.ps1 .\SHA256SUMS
 On Linux:
 
 ```sh
+gpg --import bitstar-release-key.asc
 gpg --verify SHA256SUMS.asc SHA256SUMS
 ./verify-checksums.sh SHA256SUMS
 ```
@@ -107,6 +123,7 @@ BitStar release engineering is not production-ready until:
 
 - the public signing key fingerprint is listed in release notes and on the
   website;
+- `bitstar-release-key.asc` is published for the current release;
 - `SHA256SUMS.asc` is published for the current release;
 - `check-release-readiness.ps1` or `check-release-readiness.sh` passes without
   `--allow-unsigned-bootstrap`;
