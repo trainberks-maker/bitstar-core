@@ -137,9 +137,10 @@ Result: release artifacts are signed and checksum verified.
 This is still a signed pre-release candidate, not a final production release.
 Remaining release-engineering work includes independent repeats of the Windows
 and Linux upgrade tests, a Linux `v0.1.2-rc3` upgrade repeat, a clean-profile
-manual Windows installer repeat, Windows Authenticode signing, optional
-additional outside-tester reports, and a repeat of the process for every later
-release candidate or final release.
+manual Windows installer production promotion repeat, previous-installer
+upgrade testing, Windows Authenticode signing, optional additional
+outside-tester reports, and a repeat of the process for every later release
+candidate or final release.
 
 Clean install, Windows launcher, and full upgrade coverage must be recorded in
 [clean-install-upgrade-test.md](clean-install-upgrade-test.md) before any release
@@ -230,8 +231,10 @@ Current status: not ready.
 3. Keep external verification open for optional additional testers, and
    complete the upgrade matrix in
    [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
-4. Repeat the Windows installer smoke test manually from a clean Windows
-   profile using [windows-installer-plan.md](windows-installer-plan.md).
+4. Run the Windows installer production promotion repeat from a clean Windows
+   profile using [launcher-production-checklist.md](launcher-production-checklist.md),
+   [windows-installer-production-promotion-v0.1.2-rc3.md](windows-installer-production-promotion-v0.1.2-rc3.md),
+   and [windows-installer-plan.md](windows-installer-plan.md).
 5. Decide the fair launch path: continue with full disclosure, or reset once for
    a final public launch.
 6. Upgrade the explorer from status-only to block, transaction, and address

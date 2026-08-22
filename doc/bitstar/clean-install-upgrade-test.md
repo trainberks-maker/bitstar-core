@@ -23,6 +23,8 @@ Latest recorded release-candidate checks:
 | Platform | Artifact | Clean install | Upgrade | Wallet backup | Result |
 | --- | --- | --- | --- | --- | --- |
 | Linux x86_64 | `BitStar_Linux_x86_64_v0.1.2-rc3.tar.gz` | clean temporary-datadir smoke passed | `v0.1.2-rc3` upgrade repeat pending | not applicable for headless package | pre-release pass |
+| Windows x86_64 | `BitStar_Windows_v0.1.2-rc3.zip` | external verification report #1 passed | previous-zip upgrade repeat pending | external wallet backup passed | pre-release pass |
+| Windows x86_64 | `BitStar_Core_Setup_v0.1.2-rc3.exe` | internal installer gate passed | previous-installer upgrade pending | internal launcher backup passed | pre-release pass |
 | Windows x86_64 | `BitStar_Windows_v0.1.2-rc2.zip` | passed | synthetic `v0.1.1-bootstrap` upgrade passed; independent repeat pending | launcher backup action smoke-tested | pre-release pass |
 | Windows x86_64 | `BitStar_Core_Setup_v0.1.2-rc2.exe` | silent installer smoke passed | previous-installer upgrade pending | data directory untouched; wallet backup manual repeat pending | pre-release pass |
 | Linux x86_64 | `BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz` | passed | synthetic `v0.1.1-bootstrap` upgrade passed; independent repeat pending | not applicable for headless package | pre-release pass |
@@ -34,8 +36,8 @@ operators use arm64 systems.
 
 ## Windows Clean Install
 
-1. Download the Windows zip, `SHA256SUMS-v0.1.2-rc2`,
-   `SHA256SUMS-v0.1.2-rc2.asc`, and `bitstar-release-key.asc` from the
+1. Download the Windows zip, `SHA256SUMS-v0.1.2-rc3`,
+   `SHA256SUMS-v0.1.2-rc3.asc`, and `bitstar-release-key.asc` from the
    official release page.
 2. Verify the GPG signature and checksums using
    [release-verification.md](release-verification.md).
@@ -79,6 +81,34 @@ Notes:
 ```
 
 ## Windows Installer Smoke Test
+
+The `v0.1.2-rc3` installer is a user-mode NSIS installer built from the
+verified Windows zip package. It is published as an unsigned pre-release
+artifact, not as a final production installer.
+
+```text
+Version: v0.1.2-rc3
+Source commit: b878238d8b6bf0271948558d9d0dfcc16ff7ce76
+Artifact: BitStar_Core_Setup_v0.1.2-rc3.exe
+Artifact SHA256: 954ed1bb71c51daef237cd0de8cf293165d38c74d0fff24e8861b5c1c343ce42
+Test date: 2026-08-22
+Tester: BitStar maintainer
+Installer tool: NSIS
+Install mode: silent clean install to an isolated temporary user directory
+Installed file check: passed
+Start Menu shortcut check: passed
+Launcher start node check: passed
+Wallet address action: passed
+Wallet backup check: passed
+Launcher stop node check: passed
+Silent uninstall check: passed
+Data directory check: uninstall preserved the isolated test data directory and wallet backup
+Gate record: windows-installer-production-gate-v0.1.2-rc3.md
+Result: PASS
+Notes: This is an internal installer production gate, not final production
+promotion. Dedicated independent installer repeat, previous-installer upgrade
+test, Authenticode signing, and GUI wallet testing remain pending.
+```
 
 The `v0.1.2-rc2` installer is a user-mode NSIS installer built from the
 verified Windows zip package. It is published as an unsigned pre-release

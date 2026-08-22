@@ -229,9 +229,9 @@ production-grade installer flow.
 
 Remaining work:
 
-- repeat clean install, Start Menu launcher start/stop, and uninstall on a clean
-  Windows profile
-- repeat and archive installer testing independently
+- run and archive the clean-profile Windows installer production promotion
+  repeat in
+  [windows-installer-production-promotion-v0.1.2-rc3.md](windows-installer-production-promotion-v0.1.2-rc3.md)
 - test upgrade over a previous installer once previous installer artifacts exist
 - add Windows Authenticode signing when a certificate exists
 - link the installer from the website only while clearly labeling it as unsigned
@@ -312,15 +312,17 @@ Remaining work:
 
 1. Treat the `v0.1.2-rc3` external Windows tester gate as closed based on
    independent verification report #1.
-2. Repeat the recorded Windows and Linux upgrade tests independently from
+2. Run the Windows installer production promotion repeat from a clean Windows
+   profile and archive the result.
+3. Repeat the recorded Windows and Linux upgrade tests independently from
    earlier bootstrap data directories, and archive the results in
    [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
-3. Upgrade the explorer from status-only to block, transaction, and address
+4. Upgrade the explorer from status-only to block, transaction, and address
    lookup.
-4. Keep the current pool labeled as solo/test, or build a real dashboard and
+5. Keep the current pool labeled as solo/test, or build a real dashboard and
    payout accounting system before calling it official.
-5. Invite independent node operators and miners.
-6. Decide final fair-launch policy: continue current bootstrap chain with full
+6. Invite independent node operators and miners.
+7. Decide final fair-launch policy: continue current bootstrap chain with full
    disclosure, or perform one final reset after signed release artifacts are
    ready.
 

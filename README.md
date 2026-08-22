@@ -63,6 +63,9 @@ before public coordination.
 - [Public launch roadmap](doc/bitstar/public-launch-roadmap.md)
 - [Production readiness plan](doc/bitstar/production-readiness.md)
 - [Release checklist](doc/bitstar/release-checklist.md)
+- [Windows launcher production checklist](doc/bitstar/launcher-production-checklist.md)
+- [Windows installer rc3 gate](doc/bitstar/windows-installer-production-gate-v0.1.2-rc3.md)
+- [Windows installer rc3 promotion repeat](doc/bitstar/windows-installer-production-promotion-v0.1.2-rc3.md)
 - [External Windows tester gate](doc/bitstar/external-windows-tester-gate-v0.1.2-rc3.md)
 - [Operations hardening](doc/bitstar/operations-hardening.md)
 

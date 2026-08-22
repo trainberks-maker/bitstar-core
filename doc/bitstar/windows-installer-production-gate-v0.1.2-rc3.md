@@ -8,7 +8,14 @@ Actual SHA256: `954ed1bb71c51daef237cd0de8cf293165d38c74d0fff24e8861b5c1c343ce42
 
 ## Result
 
-Overall: **PASS**
+Internal installer gate: **PASS**
+
+Production promotion decision: **HOLD**
+
+This record proves that the `v0.1.2-rc3` installer can install, start the
+launcher flow, create/load a wallet, back up that wallet, stop the node, and
+uninstall without deleting the test data directory. It does not yet promote the
+installer to final production status.
 
 ## Checks
 
@@ -43,6 +50,7 @@ Overall: **PASS**
 ## Remaining Production Gaps
 
 - Windows Authenticode signing is still pending.
-- This is an internal local gate, not an independent third-party audit.
+- A dedicated independent installer repeat is still recommended.
+- Previous-installer upgrade testing is still pending.
 - The current Windows package is node and CLI-wallet only; a graphical wallet gate is required once `bitstar-qt.exe` is included.
 - A human should still repeat a fresh Windows profile install before final production promotion.

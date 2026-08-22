@@ -5,7 +5,7 @@ treated as a production-ready user entry point.
 
 Current launcher status: release-candidate helper launcher.
 
-Current target package: `BitStar_Windows_v0.1.2-rc2.zip`
+Current target package: `BitStar_Windows_v0.1.2-rc3.zip`
 
 Installer plan: [windows-installer-plan.md](windows-installer-plan.md)
 
@@ -60,7 +60,10 @@ Definition of done:
   included.
 - A clean extraction smoke test passes.
 
-Current status: passed for `v0.1.2-rc2`; independent repeat pending.
+Current status: passed for `v0.1.2-rc3`. The package is included in the signed
+`SHA256SUMS-v0.1.2-rc3` manifest, and external Windows verification report #1
+passed for the release candidate. Optional additional outside repeats remain
+welcome before final production promotion.
 
 ### Gate 2: Installer
 
@@ -78,17 +81,20 @@ Definition of done:
 - Installer can upgrade over the previous installer without deleting user data.
 - Installer artifact has SHA256 checksum and is included in the signed manifest.
 
-Current status: installer scaffold exists; `BitStar_Core_Setup_v0.1.2-rc2.exe`
+Current status: installer scaffold exists; `BitStar_Core_Setup_v0.1.2-rc3.exe`
 was built, smoke-tested, included in the signed manifest, published as
 unsigned pre-release software, and passed the internal Windows installer
 production gate.
 
 Gate record:
-[windows-installer-production-gate-v0.1.2-rc2.md](windows-installer-production-gate-v0.1.2-rc2.md)
+[windows-installer-production-gate-v0.1.2-rc3.md](windows-installer-production-gate-v0.1.2-rc3.md)
+
+Manual promotion repeat:
+[windows-installer-production-promotion-v0.1.2-rc3.md](windows-installer-production-promotion-v0.1.2-rc3.md)
 
 It is not a final production installer yet because Authenticode signing,
-independent repeat testing, fresh-profile human testing, and a real GUI build
-including `bitstar-qt.exe` are still pending.
+dedicated independent installer repeat testing, previous-installer upgrade
+testing, and a real GUI build including `bitstar-qt.exe` are still pending.
 
 Build helper:
 `contrib/bitstar/release/build-windows-installer.ps1`
@@ -134,8 +140,9 @@ Definition of done:
 Current status: zip-package upgrade smoke test passed internally for
 `v0.1.1-bootstrap` to `v0.1.2-rc2`; installer silent install/uninstall,
 launcher start/stop, wallet backup, and data-preserving uninstall gate passed
-internally for `v0.1.2-rc2`; independent repeat and previous-installer upgrade
-test pending.
+internally for `v0.1.2-rc3`; external Windows verification report #1 passed for
+`v0.1.2-rc3`; previous-installer upgrade and dedicated independent installer
+repeat remain pending.
 
 ### Gate 6: Public Website
 
@@ -151,8 +158,10 @@ Definition of done:
   - verification guide.
 - Website warns when Windows code signing is not yet available.
 
-Current status: GitHub release includes the installer artifact; website
-installer link is pending.
+Current status: GitHub release includes the installer artifact, and the website
+links the installer, zip package, signed checksum manifest, public release key,
+and verification guide while labeling Windows builds as unsigned pre-release
+software.
 
 ## Required Release Record
 
@@ -180,6 +189,10 @@ Notes:
 
 ## Current Recommendation
 
-Keep `v0.1.2-rc2` labeled as a signed release candidate. The next practical
-launcher step is a manual clean-profile Windows installer test and independent
-repeat before the installer is treated as production-ready.
+Keep `v0.1.2-rc3` labeled as a signed release candidate. The next practical
+launcher step is the Windows installer production promotion repeat: a
+clean-profile Windows install from the published installer, Start Menu launch,
+node start/stop, wallet address generation, wallet backup, uninstall, and
+confirmation that `%LOCALAPPDATA%\BitStar` is preserved. After that, complete
+previous-installer upgrade testing and Authenticode signing before the installer
+is treated as production-ready.

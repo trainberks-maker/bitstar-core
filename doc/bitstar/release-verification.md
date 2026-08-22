@@ -49,7 +49,10 @@ candidate or final production release.
 See [independent-verification-pack.md](independent-verification-pack.md) for
 the exact checklist an outside tester can run and publish.
 See [external-windows-tester-gate-v0.1.2-rc3.md](external-windows-tester-gate-v0.1.2-rc3.md)
-for the current Windows installer repeat required before promotion.
+for the closed external Windows tester gate.
+See [windows-installer-production-promotion-v0.1.2-rc3.md](windows-installer-production-promotion-v0.1.2-rc3.md)
+for the clean-profile Windows installer repeat required before installer
+promotion.
 See [operator-runbook.md](operator-runbook.md) for the operator-side release
 verification procedure used before installing artifacts on public seed nodes.
 See [launcher-production-checklist.md](launcher-production-checklist.md) and
