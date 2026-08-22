@@ -23,7 +23,7 @@ Latest recorded release-candidate checks:
 | Platform | Artifact | Clean install | Upgrade | Wallet backup | Result |
 | --- | --- | --- | --- | --- | --- |
 | Windows x86_64 | `BitStar_Windows_v0.1.2-rc2.zip` | passed | synthetic `v0.1.1-bootstrap` upgrade passed; independent repeat pending | launcher backup action smoke-tested | pre-release pass |
-| Linux x86_64 | `BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz` | passed | pending | not applicable for headless package | pre-release pass |
+| Linux x86_64 | `BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz` | passed | synthetic `v0.1.1-bootstrap` upgrade passed; independent repeat pending | not applicable for headless package | pre-release pass |
 | Linux arm64 | `BitStar_Linux_arm64_<version>.tar.gz` | pending | pending | pending | pending |
 
 Linux arm64 can remain pending for a bootstrap release, but it should be
@@ -171,7 +171,29 @@ After peers: 2
 Genesis hash verified: 00000c45c905ce3e3beeb9eb534650276947373d3a2a15694b4624a89bce4b49
 Wallet backup verified: not applicable; no wallet was loaded in this synthetic upgrade test
 Result: PASS
-Notes: v0.1.1-bootstrap opened a fresh test datadir, synced from public seeds, stopped cleanly, and v0.1.2-rc2 reopened the same datadir without reindex or wallet changes. This is an internal synthetic upgrade smoke test; it still needs an independent repeat and Linux upgrade coverage before production promotion.
+Notes: v0.1.1-bootstrap opened a fresh test datadir, synced from public seeds, stopped cleanly, and v0.1.2-rc2 reopened the same datadir without reindex or wallet changes. This is an internal synthetic upgrade smoke test and still needs an independent repeat before production promotion.
+```
+
+```text
+Old version: v0.1.1-bootstrap
+New version: v0.1.2-rc2
+Source commit: 75b5e47311269bcc0ea6eb5cf7cdb4726eac4f3f
+Test date: 2026-08-22
+Tester: BitStar maintainer
+Host: seed2.bitstarcoin.org
+Test data directory: /tmp/bitstar-linux-upgrade-v0.1.1-to-v0.1.2-rc2-20260822-140924/data
+Old artifact SHA256: 24ec7ec5cc9ff15d0ed94a544a4ea6d860368f468626411a0df97c8f2ff5ef27
+New artifact SHA256: a13e9ec2c13a97f169f6d9e3c37256c27caa878dbe08d9a971da2be05f774392
+Before height: 1136
+After height: 1136
+Before best block: 000009f1293ce4e68983535421f0701ed424104699f0f23ae5dca6b2885cf4f5
+After best block: 000009f1293ce4e68983535421f0701ed424104699f0f23ae5dca6b2885cf4f5
+Before peers: 2
+After peers: 2
+Genesis hash verified: 00000c45c905ce3e3beeb9eb534650276947373d3a2a15694b4624a89bce4b49
+Wallet backup verified: not applicable; no wallet was loaded and the v0.1.1 Linux package does not expose listwallets RPC
+Result: PASS
+Notes: Linux v0.1.1-bootstrap opened a synthetic test datadir, synced from public seeds, stopped cleanly, and Linux v0.1.2-rc2 reopened the same datadir without reindex or wallet changes. This is an internal synthetic upgrade smoke test and still needs an independent repeat before production promotion.
 ```
 
 ## Release Gate
