@@ -5,12 +5,11 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## This issue tracker is only for technical issues related to Bitcoin Core.
+        ## This issue tracker is for technical issues related to BitStar Core.
 
-        * General bitcoin questions and/or support requests should use Bitcoin StackExchange at https://bitcoin.stackexchange.com.
-        * For reporting security issues, please read instructions at https://bitcoincore.org/en/contact/.
+        * General BitStar questions and launch status belong on the website or community channels, not as technical bug reports.
+        * For release verification, use the independent verification report template.
         * If the node is "stuck" during sync or giving "block checksum mismatch" errors, please ensure your hardware is stable by running `memtest` and observe CPU temperature with a load-test tool such as `linpack` before creating an issue.
-        * If you use AI tools when opening this issue, please read the [AI policy](https://github.com/bitcoin/bitcoin/blob/master/doc/AI_POLICY.md).
 
         ----
   - type: checkboxes
@@ -51,14 +50,14 @@ body:
       description: |
         Please copy and paste any relevant log output or attach a debug log file.
 
-        You can find the debug.log in your [data dir.](https://github.com/bitcoin/bitcoin/blob/master/doc/files.md#data-directory-location)
+        You can find `debug.log` in your BitStar data directory.
 
         Please be aware that the debug log might contain personally identifying information.
     validations:
       required: false
   - type: dropdown
     attributes:
-      label: How did you obtain Bitcoin Core
+      label: How did you obtain BitStar Core?
       multiple: false
       options:
         - Compiled from source
@@ -70,9 +69,9 @@ body:
   - type: input
     id: core-version
     attributes:
-      label: What version of Bitcoin Core are you using?
-      description: Run `bitcoind --version` or in Bitcoin-QT use `Help > About Bitcoin Core`
-      placeholder: e.g. v24.0.1 or master@e1bf547
+      label: What version of BitStar Core are you using?
+      description: Run `bitstard --version`, `bitstar-cli --version`, or in the GUI use `Help > About BitStar Core`
+      placeholder: e.g. v0.1.2-rc2 or master@34a6717
     validations:
       required: true
   - type: input

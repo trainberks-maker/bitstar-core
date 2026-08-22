@@ -1,0 +1,178 @@
+name: Independent verification report
+description: Publish an outside verification result for a BitStar release.
+title: "[verification] v0.1.2-rc2 on "
+labels: [verification, release]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form after running the BitStar independent verification pack:
+
+        https://github.com/trainberks-maker/bitstar-core/blob/master/doc/bitstar/independent-verification-pack.md
+
+        Do not paste private keys, wallet seeds, SSH keys, RPC passwords, or API tokens.
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety checklist
+      options:
+        - label: I used a clean temporary data directory for this verification.
+          required: true
+        - label: I did not use a wallet containing real funds.
+          required: true
+        - label: I did not paste private keys, wallet seeds, RPC passwords, SSH keys, or API tokens.
+          required: true
+
+  - type: input
+    id: tester
+    attributes:
+      label: Tester name or handle
+      placeholder: e.g. @alice
+    validations:
+      required: true
+
+  - type: input
+    id: date-utc
+    attributes:
+      label: Date and time UTC
+      placeholder: e.g. 2026-08-22 16:30 UTC
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform tested
+      options:
+        - Windows
+        - Linux
+        - Both Windows and Linux
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: release-tag
+    attributes:
+      label: Release tag
+      placeholder: v0.1.2-rc2
+    validations:
+      required: true
+
+  - type: input
+    id: artifact
+    attributes:
+      label: Artifact tested
+      placeholder: BitStar_Windows_v0.1.2-rc2.zip or BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz
+    validations:
+      required: true
+
+  - type: input
+    id: fingerprint
+    attributes:
+      label: Release key fingerprint observed
+      placeholder: 5744BDF701AFDCF43983AB96B87F9907D27EC983
+    validations:
+      required: true
+
+  - type: dropdown
+    id: gpg-result
+    attributes:
+      label: GPG manifest verification
+      options:
+        - PASS
+        - FAIL
+        - Not performed
+    validations:
+      required: true
+
+  - type: dropdown
+    id: checksum-result
+    attributes:
+      label: Checksum verification
+      options:
+        - PASS
+        - FAIL
+        - Not performed
+    validations:
+      required: true
+
+  - type: input
+    id: genesis
+    attributes:
+      label: Genesis hash observed
+      placeholder: 00000c45c905ce3e3beeb9eb534650276947373d3a2a15694b4624a89bce4b49
+    validations:
+      required: true
+
+  - type: input
+    id: block-height
+    attributes:
+      label: Block height observed
+      placeholder: e.g. 1136
+    validations:
+      required: true
+
+  - type: input
+    id: best-block
+    attributes:
+      label: Best block observed
+    validations:
+      required: true
+
+  - type: input
+    id: connections
+    attributes:
+      label: Connection count observed
+      placeholder: e.g. 2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: ibd
+    attributes:
+      label: Initial block download
+      options:
+        - "false"
+        - "true"
+        - Not checked
+    validations:
+      required: true
+
+  - type: dropdown
+    id: upgrade-repeat
+    attributes:
+      label: Upgrade repeat performed
+      options:
+        - "yes"
+        - "no"
+    validations:
+      required: true
+
+  - type: textarea
+    id: commands
+    attributes:
+      label: Commands and relevant output
+      description: Paste the commands you ran and the important output. Redact private paths if needed.
+      render: shell
+    validations:
+      required: true
+
+  - type: dropdown
+    id: final-result
+    attributes:
+      label: Final result
+      options:
+        - PASS
+        - FAIL
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Include anything unusual, warnings, or follow-up recommendations.
+    validations:
+      required: false

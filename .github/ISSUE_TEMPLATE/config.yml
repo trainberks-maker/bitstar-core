@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
-  - name: Bitcoin Core Security Policy
-    url: https://github.com/bitcoin/bitcoin/blob/master/SECURITY.md
-    about: View security policy
-  - name: Bitcoin Core Developers
-    url: https://bitcoincore.org
-    about: Bitcoin Core homepage
+  - name: BitStar website
+    url: https://bitstarcoin.org
+    about: Project website, explorer, mining notes, and launch status
+  - name: BitStar release verification
+    url: https://github.com/trainberks-maker/bitstar-core/blob/master/doc/bitstar/release-verification.md
+    about: Verify release artifacts before running or mining

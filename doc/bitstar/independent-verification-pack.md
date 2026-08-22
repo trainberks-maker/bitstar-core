@@ -178,7 +178,8 @@ Notes:
 
 Good places to publish the result:
 
-- a GitHub issue in `trainberks-maker/bitstar-core`;
+- a GitHub issue using the
+  [independent verification report template](https://github.com/trainberks-maker/bitstar-core/issues/new?template=independent_verification.yml);
 - a pull request adding the result to
   [clean-install-upgrade-test.md](clean-install-upgrade-test.md);
 - a public post that links back to the release and includes the exact commands.

@@ -5,7 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        If you use AI tools when opening this issue, please read the [AI policy](https://github.com/bitcoin/bitcoin/blob/master/doc/AI_POLICY.md).
+        Use this template for BitStar Core feature requests. For release
+        verification results, use the independent verification report template.
 
   - type: textarea
     id: feature
