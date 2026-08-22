@@ -516,7 +516,7 @@ class StratumClient:
         if header_hash_int > job.share_target:
             share_difficulty = Decimal(DIFF1_TARGET) / Decimal(max(header_hash_int, 1))
             self.server.note_low_difficulty_share(worker_name, share_difficulty, display_hash)
-            logging.info(
+            logging.debug(
                 "rejected low-difficulty share worker=%s job=%s diff=%s required=%s best_variant=%s hash=%s peer=%s",
                 worker_name,
                 job_id,
@@ -530,7 +530,7 @@ class StratumClient:
             return
 
         self.server.note_accepted_share(worker_name, display_hash)
-        logging.info(
+        logging.debug(
             "accepted share worker=%s job=%s hash=%s variant=%s peer=%s",
             worker_name,
             job_id,
@@ -539,18 +539,22 @@ class StratumClient:
             self.peer,
         )
 
+        block_accepted = False
         if header_hash_int <= job.target:
             self.server.note_candidate_block(worker_name, job.height, display_hash)
             block_hex = job.block_hex_from_header(header, extranonce2)
             try:
                 submit_result = self.server.rpc.submitblock(block_hex)
                 self.server.note_submitblock_result(worker_name, submit_result)
-                logging.warning(
-                    "submitted candidate block hash=%s height=%s result=%s variant=%s",
+                block_accepted = submit_result in (None, "")
+                log = logging.warning if block_accepted else logging.info
+                log(
+                    "submitted candidate block hash=%s height=%s result=%s variant=%s accepted=%s",
                     display_hash,
                     job.height,
                     submit_result,
                     header_variant,
+                    block_accepted,
                 )
             except Exception as exc:
                 self.server.note_submitblock_exception(worker_name, str(exc))
@@ -559,6 +563,8 @@ class StratumClient:
                 return
 
         await self.result(request_id, True)
+        if block_accepted:
+            await self.server.broadcast_jobs(clean_jobs=True)
 
 
 class StratumServer:
@@ -834,6 +840,11 @@ class StratumServer:
         client = StratumClient(self, reader, writer, self._client_counter)
         self.clients.add(client)
         await client.handle()
+
+    async def broadcast_jobs(self, clean_jobs: bool) -> None:
+        for client in list(self.clients):
+            if client.authorized:
+                await client.send_job(clean_jobs=clean_jobs)
 
     async def refresh_jobs(self) -> None:
         last_seen_hash = ""
