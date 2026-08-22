@@ -10,18 +10,19 @@ candidate releases, not final production releases. A production release must
 have signed checksums, clean test records, independent verification, and clear
 release notes before it is promoted as stable.
 
-As of the `v0.1.2-rc2` release candidate:
+As of the `v0.1.2-rc3` release candidate:
 
 - Windows launcher package exists.
 - Windows installer artifact exists and is published as unsigned pre-release
   software.
-- Linux x86_64 server package exists.
-- SHA256 checksum files and a combined `SHA256SUMS-v0.1.2-rc2` manifest exist
-  for the published packages and installer.
+- Linux x86_64 server package exists from `v0.1.2-rc2`; the `v0.1.2-rc3`
+  manifest is Windows-only.
+- SHA256 checksum files and a combined `SHA256SUMS-v0.1.2-rc3` manifest exist
+  for the Windows package and installer.
 - Helper scripts exist for checksum verification and for creating/signing the
   release manifest.
 - Helper scripts exist for exporting only the public release key.
-- Signed `SHA256SUMS-v0.1.2-rc2.asc` manifest is published.
+- Signed `SHA256SUMS-v0.1.2-rc3.asc` manifest is published.
 - Public release key `bitstar-release-key.asc` is published.
 - Release key fingerprint:
   `5744BDF701AFDCF43983AB96B87F9907D27EC983`
@@ -31,7 +32,8 @@ As of the `v0.1.2-rc2` release candidate:
 - Windows installer silent install/uninstall smoke test passed.
 - Linux x86_64 clean temporary-datadir smoke test passed.
 - Windows and Linux synthetic upgrade smoke tests from `v0.1.1-bootstrap` to
-  `v0.1.2-rc2` passed.
+  `v0.1.2-rc2` passed; the `v0.1.2-rc3` Windows installer gate passed and now
+  needs an external Windows tester repeat.
 - Windows Authenticode code signing is still pending.
 
 See [release-signing-policy.md](release-signing-policy.md) for release key
@@ -45,6 +47,8 @@ clean install, launcher, and upgrade test record required before a release
 candidate or final production release.
 See [independent-verification-pack.md](independent-verification-pack.md) for
 the exact checklist an outside tester can run and publish.
+See [external-windows-tester-gate-v0.1.2-rc3.md](external-windows-tester-gate-v0.1.2-rc3.md)
+for the current Windows installer repeat required before promotion.
 See [operator-runbook.md](operator-runbook.md) for the operator-side release
 verification procedure used before installing artifacts on public seed nodes.
 See [launcher-production-checklist.md](launcher-production-checklist.md) and
@@ -59,8 +63,8 @@ Every serious public release should include:
 - `BitStar_Core_Setup_<version>.exe`, if the Windows launcher installer gate
   is complete enough for pre-release testing
 - `BitStar_Linux_x86_64_<version>.tar.gz`
-- versioned checksum manifest, for example `SHA256SUMS-v0.1.2-rc2`
-- detached manifest signature, for example `SHA256SUMS-v0.1.2-rc2.asc`
+- versioned checksum manifest, for example `SHA256SUMS-v0.1.2-rc3`
+- detached manifest signature, for example `SHA256SUMS-v0.1.2-rc3.asc`
 - `bitstar-release-key.asc`
 - release notes with source commit, status, network parameters, and warnings
 
@@ -84,18 +88,17 @@ On Windows:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\sign-release-manifest.ps1 `
-  -Artifacts ".\BitStar_Windows_v0.1.2-rc2.zip,.\BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz,.\BitStar_Core_Setup_v0.1.2-rc2.exe" `
-  -Output ".\SHA256SUMS-v0.1.2-rc2" `
+  -Artifacts ".\BitStar_Windows_v0.1.2-rc3.zip,.\BitStar_Core_Setup_v0.1.2-rc3.exe" `
+  -Output ".\SHA256SUMS-v0.1.2-rc3" `
   -GpgKey "<release-key-fingerprint>"
 ```
 
 On Linux:
 
 ```sh
-./sign-release-manifest.sh --output SHA256SUMS-v0.1.2-rc2 --key "<release-key-fingerprint>" \
-  BitStar_Windows_v0.1.2-rc2.zip \
-  BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz \
-  BitStar_Core_Setup_v0.1.2-rc2.exe
+./sign-release-manifest.sh --output SHA256SUMS-v0.1.2-rc3 --key "<release-key-fingerprint>" \
+  BitStar_Windows_v0.1.2-rc3.zip \
+  BitStar_Core_Setup_v0.1.2-rc3.exe
 ```
 
 7. Export `bitstar-release-key.asc` with the public-key helper.
@@ -107,17 +110,17 @@ On Windows:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\check-release-readiness.ps1 `
   -ReleaseDir .\ `
-  -Manifest "SHA256SUMS-v0.1.2-rc2"
+  -Manifest "SHA256SUMS-v0.1.2-rc3"
 ```
 
 On Linux:
 
 ```sh
-./check-release-readiness.sh --release-dir . --manifest SHA256SUMS-v0.1.2-rc2
+./check-release-readiness.sh --release-dir . --manifest SHA256SUMS-v0.1.2-rc3
 ```
 
-10. Upload artifacts, the versioned `SHA256SUMS-v0.1.2-rc2` manifest,
-   `SHA256SUMS-v0.1.2-rc2.asc`, public release key, verification scripts, and
+10. Upload artifacts, the versioned `SHA256SUMS-v0.1.2-rc3` manifest,
+   `SHA256SUMS-v0.1.2-rc3.asc`, public release key, verification scripts, and
    release notes.
 
 Do not store release private keys, wallet files, RPC passwords, deployment
@@ -145,28 +148,31 @@ Before a release is promoted on seed infrastructure, record:
 
 For older bootstrap releases where a detached manifest signature is not
 present, record the release as checksum-verifiable only. For
-`v0.1.1-bootstrap` and `v0.1.2-rc2`, record them as signed pre-releases. Do not
-label any bootstrap or release candidate build as a final production release.
+`v0.1.1-bootstrap`, `v0.1.2-rc2`, and `v0.1.2-rc3`, record them as signed
+pre-releases. Do not label any bootstrap or release candidate build as a final
+production release.
 
 ## User Verification On Windows
 
 For the current release candidate, download the release package,
-`SHA256SUMS-v0.1.2-rc2`, `SHA256SUMS-v0.1.2-rc2.asc`, and
+`SHA256SUMS-v0.1.2-rc3`, `SHA256SUMS-v0.1.2-rc3.asc`, and
 `bitstar-release-key.asc` into the same folder. Import the public key, verify
 the signature, then verify the checksum file:
 
 ```powershell
 gpg --import .\bitstar-release-key.asc
-gpg --verify .\SHA256SUMS-v0.1.2-rc2.asc .\SHA256SUMS-v0.1.2-rc2
+gpg --verify .\SHA256SUMS-v0.1.2-rc3.asc .\SHA256SUMS-v0.1.2-rc3
 ```
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\verify-checksums.ps1 .\SHA256SUMS-v0.1.2-rc2
+powershell -ExecutionPolicy Bypass -File .\verify-checksums.ps1 .\SHA256SUMS-v0.1.2-rc3
 ```
 
 Only run the software if both the signature and checksum verification succeed.
 
 ## User Verification On Linux
+
+Linux currently remains on `v0.1.2-rc2` until the next Linux release candidate.
 
 ```sh
 gpg --import bitstar-release-key.asc

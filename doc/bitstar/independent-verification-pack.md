@@ -3,10 +3,12 @@
 This pack is for an independent tester who wants to verify BitStar release
 artifacts and network behavior without relying on maintainer claims.
 
-Current target release: `v0.1.2-rc2`
+Current target release: `v0.1.2-rc3` for Windows.
+
+Linux x86_64 remains on `v0.1.2-rc2` until the next Linux build.
 
 Release URL:
-`https://github.com/trainberks-maker/bitstar-core/releases/tag/v0.1.2-rc2`
+`https://github.com/trainberks-maker/bitstar-core/releases/tag/v0.1.2-rc3`
 
 Release key fingerprint:
 `5744BDF701AFDCF43983AB96B87F9907D27EC983`
@@ -36,19 +38,22 @@ datadir for this verification.
 Download these files from the release page into one folder:
 
 - `bitstar-release-key.asc`
-- `SHA256SUMS-v0.1.2-rc2`
-- `SHA256SUMS-v0.1.2-rc2.asc`
+- `SHA256SUMS-v0.1.2-rc3`
+- `SHA256SUMS-v0.1.2-rc3.asc`
 - `verify-checksums.ps1`
 - `verify-checksums.sh`
-- one or both release packages:
-  - `BitStar_Windows_v0.1.2-rc2.zip`
-  - `BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz`
+- one or both Windows release packages:
+  - `BitStar_Core_Setup_v0.1.2-rc3.exe`
+  - `BitStar_Windows_v0.1.2-rc3.zip`
+
+For Linux verification, use the `v0.1.2-rc2` release page until a Linux `rc3`
+artifact is published.
 
 Expected SHA256 values:
 
 ```text
-416c5232a7155ba85fcdfd1b4005bf184d75055433193b214cf8d7a1cf57dd46  BitStar_Windows_v0.1.2-rc2.zip
-a13e9ec2c13a97f169f6d9e3c37256c27caa878dbe08d9a971da2be05f774392  BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz
+954ed1bb71c51daef237cd0de8cf293165d38c74d0fff24e8861b5c1c343ce42  BitStar_Core_Setup_v0.1.2-rc3.exe
+491fd62654f0a883db5ed7da33c38c13a9152240441cd57540037a088eb01320  BitStar_Windows_v0.1.2-rc3.zip
 ```
 
 ## Windows Verification
@@ -58,8 +63,8 @@ Run these commands from the folder containing the downloaded release files:
 ```powershell
 gpg --import .\bitstar-release-key.asc
 gpg --fingerprint "BitStar Release"
-gpg --verify .\SHA256SUMS-v0.1.2-rc2.asc .\SHA256SUMS-v0.1.2-rc2
-powershell -ExecutionPolicy Bypass -File .\verify-checksums.ps1 .\SHA256SUMS-v0.1.2-rc2
+gpg --verify .\SHA256SUMS-v0.1.2-rc3.asc .\SHA256SUMS-v0.1.2-rc3
+powershell -ExecutionPolicy Bypass -File .\verify-checksums.ps1 .\SHA256SUMS-v0.1.2-rc3
 ```
 
 The fingerprint shown by GPG must include:
@@ -68,14 +73,14 @@ The fingerprint shown by GPG must include:
 5744BDF701AFDCF43983AB96B87F9907D27EC983
 ```
 
-Extract `BitStar_Windows_v0.1.2-rc2.zip` into a new folder and start a clean
+Extract `BitStar_Windows_v0.1.2-rc3.zip` into a new folder and start a clean
 node with a temporary datadir:
 
 ```powershell
 $Stamp = Get-Date -Format yyyyMMddHHmmss
-$Release = Join-Path $env:TEMP "bitstar-release-rc2-$Stamp"
-$DataDir = Join-Path $env:TEMP "bitstar-independent-rc2-$Stamp"
-Expand-Archive -Path .\BitStar_Windows_v0.1.2-rc2.zip -DestinationPath $Release
+$Release = Join-Path $env:TEMP "bitstar-release-rc3-$Stamp"
+$DataDir = Join-Path $env:TEMP "bitstar-independent-rc3-$Stamp"
+Expand-Archive -Path .\BitStar_Windows_v0.1.2-rc3.zip -DestinationPath $Release
 New-Item -ItemType Directory -Force -Path $DataDir | Out-Null
 & "$Release\bitstard.exe" -datadir="$DataDir" -server=1 -listen=1 `
   -addnode=seed1.bitstarcoin.org:21333 `
@@ -100,7 +105,19 @@ Pass conditions:
 - connection count is at least `1`;
 - the node stops cleanly.
 
+## Windows Installer Verification
+
+For the current Windows installer repeat, use:
+
+[external-windows-tester-gate-v0.1.2-rc3.md](external-windows-tester-gate-v0.1.2-rc3.md)
+
+That checklist covers normal install, Start Menu launcher, wallet address,
+wallet backup, optional mining smoke test, stop, and clean uninstall behavior.
+
 ## Linux Verification
+
+Linux is still verified against `v0.1.2-rc2` until a newer Linux artifact is
+published.
 
 Run these commands from the folder containing the downloaded release files:
 
@@ -142,7 +159,7 @@ temporary datadir:
 1. Start `v0.1.1-bootstrap` with a temporary datadir.
 2. Verify genesis, block height, best block, and connection count.
 3. Stop `v0.1.1-bootstrap` cleanly.
-4. Start `v0.1.2-rc2` with the same datadir.
+4. Start the current candidate with the same datadir.
 5. Confirm the new release opens the existing block database without reindex,
    reaches the same height or higher, keeps the same genesis hash, and stops
    cleanly.
@@ -159,8 +176,8 @@ BitStar independent verification
 Tester:
 Date UTC:
 Platform:
-Release tag: v0.1.2-rc2
-Release URL: https://github.com/trainberks-maker/bitstar-core/releases/tag/v0.1.2-rc2
+Release tag: v0.1.2-rc3
+Release URL: https://github.com/trainberks-maker/bitstar-core/releases/tag/v0.1.2-rc3
 Release key fingerprint observed:
 GPG manifest verification: PASS/FAIL
 Checksum verification: PASS/FAIL

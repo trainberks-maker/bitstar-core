@@ -1,6 +1,6 @@
 name: Independent verification report
 description: Publish an outside verification result for a BitStar release.
-title: "[verification] v0.1.2-rc2 on "
+title: "[verification] v0.1.2-rc3 on "
 labels: [verification, release]
 body:
   - type: markdown
@@ -56,7 +56,7 @@ body:
     id: release-tag
     attributes:
       label: Release tag
-      placeholder: v0.1.2-rc2
+      placeholder: v0.1.2-rc3
     validations:
       required: true
 
@@ -64,7 +64,7 @@ body:
     id: artifact
     attributes:
       label: Artifact tested
-      placeholder: BitStar_Windows_v0.1.2-rc2.zip or BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz
+      placeholder: BitStar_Core_Setup_v0.1.2-rc3.exe or BitStar_Windows_v0.1.2-rc3.zip
     validations:
       required: true
 

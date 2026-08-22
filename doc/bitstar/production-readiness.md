@@ -103,20 +103,23 @@ Definition of done:
   credentials, SSH private keys, or deployment tokens are bundled
 - no test wallet or chain data is bundled
 
-Current status: `v0.1.2-rc2` release-candidate binaries exist. The Windows
-launcher package and Linux x86_64 server package are published with SHA256
-checksum files, helper verification scripts, a published public release key,
-and a GPG-signed `SHA256SUMS-v0.1.2-rc2.asc` manifest. Windows clean install,
-Windows launcher, Linux x86_64 clean temporary-datadir smoke, and synthetic
-Windows and Linux upgrades from `v0.1.1-bootstrap` to `v0.1.2-rc2` are recorded in
-[clean-install-upgrade-test.md](clean-install-upgrade-test.md).
+Current status: `v0.1.2-rc3` is the current Windows release candidate. The
+Windows launcher zip and unsigned Windows installer are published with SHA256
+checksums, helper verification scripts, a published public release key, and a
+GPG-signed `SHA256SUMS-v0.1.2-rc3.asc` manifest. The Linux x86_64 server
+package remains at `v0.1.2-rc2` until the next Linux build. Windows clean
+install, Windows launcher, Linux x86_64 clean temporary-datadir smoke, and
+synthetic Windows and Linux upgrades from `v0.1.1-bootstrap` to `v0.1.2-rc2`
+are recorded in [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
 An outside-tester checklist is now available in
 [independent-verification-pack.md](independent-verification-pack.md), but no
 independent result has been archived yet.
 The Windows launcher production checklist and NSIS installer scaffold are
 documented. A Windows NSIS installer has been built, smoke-tested, included in
 the signed manifest, and published as an unsigned pre-release artifact. It has
-not been promoted as a production installer.
+not been promoted as a production installer. The current external Windows
+tester repeat is documented in
+[external-windows-tester-gate-v0.1.2-rc3.md](external-windows-tester-gate-v0.1.2-rc3.md).
 
 The current release key fingerprint is:
 
