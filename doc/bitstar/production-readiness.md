@@ -94,6 +94,8 @@ Definition of done:
 - clean install and upgrade tests pass
 - wallet backup and restore path is documented
 - operator verification record is completed for the exact artifacts
+- at least one outside tester publishes a result using
+  [independent-verification-pack.md](independent-verification-pack.md)
 - release package hygiene audit confirms no private wallets, chain data, RPC
   credentials, SSH private keys, or deployment tokens are bundled
 - no test wallet or chain data is bundled
@@ -105,6 +107,9 @@ and a GPG-signed `SHA256SUMS-v0.1.2-rc2.asc` manifest. Windows clean install,
 Windows launcher, Linux x86_64 clean temporary-datadir smoke, and synthetic
 Windows and Linux upgrades from `v0.1.1-bootstrap` to `v0.1.2-rc2` are recorded in
 [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
+An outside-tester checklist is now available in
+[independent-verification-pack.md](independent-verification-pack.md), but no
+independent result has been archived yet.
 
 The current release key fingerprint is:
 
@@ -119,10 +124,10 @@ Result: release artifacts are signed and checksum verified.
 ```
 
 This is still a signed pre-release candidate, not a final production release.
-Remaining release-engineering work includes independent verification,
-independent repeats of the Windows and Linux upgrade tests, Windows Authenticode
-signing, and a repeat of the process for every later release candidate or final
-release.
+Remaining release-engineering work includes an archived independent
+verification result, independent repeats of the Windows and Linux upgrade
+tests, Windows Authenticode signing, and a repeat of the process for every
+later release candidate or final release.
 
 Clean install, Windows launcher, and full upgrade coverage must be recorded in
 [clean-install-upgrade-test.md](clean-install-upgrade-test.md) before any release

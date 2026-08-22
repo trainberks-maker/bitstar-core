@@ -27,6 +27,8 @@ As of the `v0.1.2-rc2` release candidate:
   `Result: release artifacts are signed and checksum verified.`
 - Windows launcher clean smoke test passed.
 - Linux x86_64 clean temporary-datadir smoke test passed.
+- Windows and Linux synthetic upgrade smoke tests from `v0.1.1-bootstrap` to
+  `v0.1.2-rc2` passed.
 - Windows Authenticode code signing is still pending.
 
 See [release-signing-policy.md](release-signing-policy.md) for release key
@@ -38,6 +40,8 @@ release archives do not contain wallet data, private keys, or credentials.
 See [clean-install-upgrade-test.md](clean-install-upgrade-test.md) for the
 clean install, launcher, and upgrade test record required before a release
 candidate or final production release.
+See [independent-verification-pack.md](independent-verification-pack.md) for
+the exact checklist an outside tester can run and publish.
 See [operator-runbook.md](operator-runbook.md) for the operator-side release
 verification procedure used before installing artifacts on public seed nodes.
 
@@ -126,6 +130,7 @@ Before a release is promoted on seed infrastructure, record:
 - Windows checksum verification result
 - Linux checksum verification result
 - GPG signature verification result
+- independent verification result
 - known limitations and warnings
 
 For older bootstrap releases where a detached manifest signature is not
@@ -179,6 +184,8 @@ BitStar should not be called production-ready until:
 - the release readiness gate passes without unsigned-bootstrap mode;
 - Windows and Linux users can verify packages with documented commands;
 - the operator verification record has been completed for the exact artifacts;
+- at least one independent tester has published a verification result using
+  [independent-verification-pack.md](independent-verification-pack.md);
 - no private chain data, wallets, RPC credentials, or SSH keys are packaged;
 - release notes clearly state whether the release is bootstrap, release
   candidate, or production.

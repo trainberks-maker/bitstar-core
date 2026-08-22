@@ -162,7 +162,8 @@ testing and coordination, but it is not a final stable production release.
 
 Remaining work:
 
-- record independent third-party verification of `v0.1.2-rc2`
+- record and archive an independent third-party verification of `v0.1.2-rc2`
+  using [independent-verification-pack.md](independent-verification-pack.md)
 - repeat the Windows and Linux upgrade tests independently from the latest
   bootstrap data directories
 - remove or update pre-release warnings only when production gates are complete
@@ -177,7 +178,9 @@ production release.
 
 Remaining work:
 
-- complete independent verification of the signed artifacts
+- invite an outside tester to run
+  [independent-verification-pack.md](independent-verification-pack.md) and
+  publish the signed-artifact verification result
 - repeat the signing process for every later release candidate or final release
 - add Windows Authenticode signing when a code-signing certificate exists
 - document key rotation and maintainer responsibility
@@ -256,7 +259,8 @@ Remaining work:
 ## Recommended Next Work Order
 
 1. Record at least one independent verification of the release signature and
-   checksums.
+   checksums using
+   [independent-verification-pack.md](independent-verification-pack.md).
 2. Repeat the recorded Windows and Linux upgrade tests independently from
    earlier bootstrap data directories, and archive the results in
    [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
@@ -272,6 +276,6 @@ Remaining work:
 ## Current Recommendation
 
 Continue treating the current chain as a public bootstrap chain. Do not call it
-the final production launch until independent verification, explorer
+the final production launch until independent verification results, explorer
 improvements, third-party nodes, release-candidate testing, and public launch
 policy are complete.

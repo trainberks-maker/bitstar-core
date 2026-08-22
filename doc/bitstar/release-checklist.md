@@ -94,6 +94,9 @@ Optional later artifacts:
 - document verification commands for Windows and Linux users
 - keep [release-verification.md](release-verification.md) current for every
   public release
+- publish [independent-verification-pack.md](independent-verification-pack.md)
+  for outside testers and archive at least one independent result before
+  production promotion
 - keep [release-signing-policy.md](release-signing-policy.md) current when
   release key ownership changes
 - keep [operator-runbook.md](operator-runbook.md) current when seed, explorer,
@@ -130,6 +133,8 @@ Before a final production launch:
 - keep seed nodes online and synced
 - run `bitstar-operator-status` on each seed or pool host and archive the
   operator verification notes
+- archive at least one independent verification result from
+  [independent-verification-pack.md](independent-verification-pack.md)
 - verify explorer follows the same best block as seed1 and seed2
 - verify pool/test endpoint status is correctly labeled
 - archive the launch announcement
