@@ -137,6 +137,10 @@ The public website may display a sanitized pool dashboard from these stats. The
 dashboard is an operational signal only. It is not a balance ledger, payout
 promise, exchange signal, or profit estimate.
 
+Production pooled payouts must follow
+`doc/bitstar/pool-payout-production-plan.md` before any balance credits,
+transaction signing, or payout broadcasts are enabled.
+
 ## Check RPC Compatibility
 
 ```bash

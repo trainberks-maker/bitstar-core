@@ -191,6 +191,11 @@ Before BitStar enables a real pooled payout system, operators should complete:
 - monitoring, backups, and restore drills
 - independent review of payout code and operational controls
 
+The production payout gate is documented in
+`doc/bitstar/pool-payout-production-plan.md`. Until those requirements are met,
+the official public endpoint remains a compatibility/test pool and must not be
+described as a custodial payout pool.
+
 ## Compatibility Test Flow
 
 1. Install BitStar Core on a pool test server.
