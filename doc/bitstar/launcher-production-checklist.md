@@ -70,8 +70,16 @@ Definition of done:
 - Installer artifact has SHA256 checksum and is included in the signed manifest.
 
 Current status: installer scaffold exists; `BitStar_Core_Setup_v0.1.2-rc2.exe`
-was built, smoke-tested, included in the signed manifest, and published as
-unsigned pre-release software. It is not a production installer yet.
+was built, smoke-tested, included in the signed manifest, published as
+unsigned pre-release software, and passed the internal Windows installer
+production gate.
+
+Gate record:
+[windows-installer-production-gate-v0.1.2-rc2.md](windows-installer-production-gate-v0.1.2-rc2.md)
+
+It is not a final production installer yet because Authenticode signing,
+independent repeat testing, and fresh-profile human GUI testing are still
+pending.
 
 Build helper:
 `contrib/bitstar/release/build-windows-installer.ps1`
@@ -115,8 +123,10 @@ Definition of done:
 - Node starts after upgrade and reports the expected genesis hash.
 
 Current status: zip-package upgrade smoke test passed internally for
-`v0.1.1-bootstrap` to `v0.1.2-rc2`; installer silent install/uninstall smoke
-test passed; independent repeat and previous-installer upgrade test pending.
+`v0.1.1-bootstrap` to `v0.1.2-rc2`; installer silent install/uninstall,
+launcher start/stop, wallet backup, and data-preserving uninstall gate passed
+internally for `v0.1.2-rc2`; independent repeat and previous-installer upgrade
+test pending.
 
 ### Gate 6: Public Website
 
