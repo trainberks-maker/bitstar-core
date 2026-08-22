@@ -32,6 +32,9 @@ See [release-key-ceremony.md](release-key-ceremony.md) for creating and backing
 up the dedicated release signing key safely.
 See [release-package-audit.md](release-package-audit.md) for checking that
 release archives do not contain wallet data, private keys, or credentials.
+See [clean-install-upgrade-test.md](clean-install-upgrade-test.md) for the
+clean install, launcher, and upgrade test record required before a release
+candidate or final production release.
 See [operator-runbook.md](operator-runbook.md) for the operator-side release
 verification procedure used before installing artifacts on public seed nodes.
 
@@ -110,6 +113,9 @@ Before a release is promoted on seed infrastructure, record:
 - release signing key fingerprint
 - release readiness gate result
 - release package hygiene scan result
+- clean install test result
+- upgrade test result
+- Windows launcher smoke test result
 - Windows checksum verification result
 - Linux checksum verification result
 - GPG signature verification result

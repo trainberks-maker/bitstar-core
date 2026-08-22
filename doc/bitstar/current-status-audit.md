@@ -156,6 +156,7 @@ coordination, but they are not final stable releases.
 Remaining work:
 
 - complete clean install smoke tests for Windows and Linux `v0.1.1-bootstrap`
+  using [clean-install-upgrade-test.md](clean-install-upgrade-test.md)
 - create a release candidate tag after the build matrix is complete
 - remove or update pre-release warnings only when production gates are complete
 
@@ -246,7 +247,9 @@ Remaining work:
 
 ## Recommended Next Work Order
 
-1. Run a signed release test matrix for Windows and Linux from clean datadirs.
+1. Run a signed release test matrix for Windows and Linux from clean datadirs
+   and archive the results in
+   [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
 2. Record at least one independent verification of the release signature and
    checksums.
 3. Upgrade the explorer from status-only to block, transaction, and address

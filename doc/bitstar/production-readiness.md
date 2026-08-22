@@ -120,6 +120,10 @@ Remaining release-engineering work includes clean install and upgrade test
 records, independent verification, Windows Authenticode signing, and a repeat
 of the process for a release candidate or final release.
 
+Clean install, Windows launcher, and upgrade testing must be recorded in
+[clean-install-upgrade-test.md](clean-install-upgrade-test.md) before any
+release candidate is promoted as production-ready.
+
 ### Gate 5: Explorer
 
 Definition of done:
@@ -202,8 +206,9 @@ Current status: not ready.
 
 1. Keep seed1 and seed2 synchronized and monitored.
 2. Run the operator runbook on seed1 and seed2 after each infrastructure change.
-3. Archive the signed-release verification record and run clean Windows/Linux
-   install tests from empty datadirs.
+3. Archive the signed-release verification record and run the clean
+   Windows/Linux install and upgrade matrix in
+   [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
 4. Decide the fair launch path: continue with full disclosure, or reset once for
    a final public launch.
 5. Upgrade the explorer from status-only to block, transaction, and address

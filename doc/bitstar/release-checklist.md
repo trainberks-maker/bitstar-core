@@ -57,6 +57,10 @@ Optional later artifacts:
 - verify genesis block
 - verify the node connects to seed1 and seed2
 - verify wallet creation, address generation, backup, and restore
+- run the Windows launcher clean-install smoke test in
+  [clean-install-upgrade-test.md](clean-install-upgrade-test.md)
+- run upgrade tests from the latest public bootstrap release using
+  [clean-install-upgrade-test.md](clean-install-upgrade-test.md)
 - verify `getblocktemplate '{"rules":["segwit"]}'`
 - verify `submitblock` on a private test network
 - run the public infrastructure checks in
@@ -111,6 +115,7 @@ Release notes must include:
 - mining instructions
 - known limitations
 - wallet safety warning
+- launcher and clean-install test status
 - no exchange/listing/profit promises
 - signing key fingerprint and checksum verification instructions
 
