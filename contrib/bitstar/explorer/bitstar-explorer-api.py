@@ -12,6 +12,10 @@ HOST = "0.0.0.0"
 PORT = 8090
 CLI = ["/usr/local/bin/bitstar-cli", "-datadir=/var/lib/bitstar"]
 POOL_STATS_FILE = os.getenv("BITSTAR_POOL_STATS_FILE", "/var/lib/bitstar/pool-stats.json")
+POOL_BACKUP_STATUS_FILE = os.getenv(
+    "BITSTAR_POOL_LEDGER_BACKUP_STATUS_FILE",
+    "/var/lib/bitstar/pool-ledger-backup-status.json",
+)
 POOL_ENDPOINT = os.getenv("BITSTAR_POOL_ENDPOINT", "stratum+tcp://pool.bitstarcoin.org:3333")
 POOL_MODE = os.getenv("BITSTAR_POOL_MODE", "solo_public_test_pool")
 GENESIS_HASH = "00000c45c905ce3e3beeb9eb534650276947373d3a2a15694b4624a89bce4b49"
@@ -200,6 +204,59 @@ def public_dry_run_ledger(ledger):
     }
 
 
+def load_pool_backup_status():
+    status_path = Path(POOL_BACKUP_STATUS_FILE)
+    try:
+        data = json.loads(status_path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        data = {}
+    except Exception:
+        data = {}
+    return public_pool_backup_status(data)
+
+
+def public_pool_backup_status(status):
+    if not isinstance(status, dict):
+        status = {}
+
+    totals = status.get("verified_totals", {}) if isinstance(status.get("verified_totals"), dict) else {}
+    drill_totals = (
+        status.get("last_restore_drill_totals", {})
+        if isinstance(status.get("last_restore_drill_totals"), dict)
+        else {}
+    )
+    return {
+        "available": bool(status.get("last_backup_at")),
+        "last_backup_at": status.get("last_backup_at"),
+        "last_backup_file": Path(str(status.get("last_backup_file", ""))).name,
+        "last_backup_size_bytes": int_value(status.get("last_backup_size_bytes")),
+        "last_verify_ok": bool(status.get("last_verify_ok")),
+        "last_restore_drill_at": status.get("last_restore_drill_at"),
+        "last_restore_drill_file": Path(str(status.get("last_restore_drill_file", ""))).name,
+        "last_restore_drill_ok": bool(status.get("last_restore_drill_ok")),
+        "backup_count": int_value(status.get("backup_count")),
+        "retention_days": int_value(status.get("retention_days"), 14),
+        "verified_worker_count": int_value(status.get("verified_worker_count")),
+        "verified_totals": {
+            "submitted_shares": int_value(totals.get("submitted_shares")),
+            "accepted_shares": int_value(totals.get("accepted_shares")),
+            "candidate_blocks": int_value(totals.get("candidate_blocks")),
+            "accepted_blocks": int_value(totals.get("accepted_blocks")),
+            "rejected_blocks": int_value(totals.get("rejected_blocks")),
+            "failed_blocks": int_value(totals.get("failed_blocks")),
+        },
+        "restore_drill_totals": {
+            "submitted_shares": int_value(drill_totals.get("submitted_shares")),
+            "accepted_shares": int_value(drill_totals.get("accepted_shares")),
+            "candidate_blocks": int_value(drill_totals.get("candidate_blocks")),
+            "accepted_blocks": int_value(drill_totals.get("accepted_blocks")),
+            "rejected_blocks": int_value(drill_totals.get("rejected_blocks")),
+            "failed_blocks": int_value(drill_totals.get("failed_blocks")),
+        },
+        "updated_at": status.get("updated_at"),
+    }
+
+
 def empty_pool_summary(message):
     return {
         "available": False,
@@ -208,6 +265,7 @@ def empty_pool_summary(message):
         "endpoint": POOL_ENDPOINT,
         "accounting": public_accounting({}),
         "dry_run_ledger": public_dry_run_ledger({}),
+        "backup_status": public_pool_backup_status({}),
         "message": message,
         "generated_at": int(time.time()),
     }
@@ -228,6 +286,7 @@ def pool_summary():
     workers = public_workers(stats.get("workers", {}))
     accounting = public_accounting(stats.get("accounting", {}))
     dry_run_ledger = public_dry_run_ledger(stats.get("dry_run_ledger", {}))
+    backup_status = load_pool_backup_status()
 
     return {
         "available": True,
@@ -258,6 +317,7 @@ def pool_summary():
         "submitblock_failed": int_value(counters.get("submitblock_failed")),
         "accounting": accounting,
         "dry_run_ledger": dry_run_ledger,
+        "backup_status": backup_status,
         "workers": workers,
         "generated_at": int(time.time()),
     }

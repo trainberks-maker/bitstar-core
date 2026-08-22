@@ -33,6 +33,17 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now bitstar-stratum-pool.service
 ```
 
+Install the dry-run ledger backup helper and daily timer:
+
+```bash
+sudo install -o root -g root -m 0755 bitstar-pool-ledger-backup.py /usr/local/bin/bitstar-pool-ledger-backup.py
+sudo install -o root -g root -m 0644 bitstar-pool-ledger-backup.service /etc/systemd/system/bitstar-pool-ledger-backup.service
+sudo install -o root -g root -m 0644 bitstar-pool-ledger-backup.timer /etc/systemd/system/bitstar-pool-ledger-backup.timer
+sudo install -d -o bitstar -g bitstar -m 0750 /var/backups/bitstar/pool
+sudo systemctl daemon-reload
+sudo systemctl enable --now bitstar-pool-ledger-backup.timer
+```
+
 If a firewall is active, allow the public Stratum port:
 
 ```bash
@@ -68,16 +79,22 @@ sudo cat /var/lib/bitstar/pool-dry-run-ledger.json
 Inspect the SQLite-backed dry-run ledger:
 
 ```bash
-sudo sqlite3 /var/lib/bitstar/pool-dry-run-ledger.sqlite3 \
-  'select counter, value from dry_run_totals order by counter;'
+sudo -u bitstar /usr/local/bin/bitstar-pool-ledger-backup.py --json verify \
+  /var/lib/bitstar/pool-dry-run-ledger.sqlite3
 ```
 
-Create a safe online backup:
+Create and verify a safe online backup:
 
 ```bash
-sudo mkdir -p /var/backups/bitstar
-sudo sqlite3 /var/lib/bitstar/pool-dry-run-ledger.sqlite3 \
-  ".backup '/var/backups/bitstar/pool-dry-run-ledger-$(date -u +%Y%m%dT%H%M%SZ).sqlite3'"
+sudo systemctl start bitstar-pool-ledger-backup.service
+sudo journalctl -u bitstar-pool-ledger-backup -n 20 --no-pager
+```
+
+Run a restore drill without touching the live ledger:
+
+```bash
+sudo -u bitstar /usr/local/bin/bitstar-pool-ledger-backup.py --json restore-drill
+sudo cat /var/lib/bitstar/pool-ledger-backup-status.json
 ```
 
 Restore only during maintenance:
@@ -88,6 +105,10 @@ sudo install -o bitstar -g bitstar -m 0640 /var/backups/bitstar/pool-dry-run-led
   /var/lib/bitstar/pool-dry-run-ledger.sqlite3
 sudo systemctl start bitstar-stratum-pool
 ```
+
+The restore-drill command copies a backup to a temporary database, opens it,
+runs SQLite `quick_check`, verifies the dry-run ledger tables, and removes the
+temporary copy by default. It does not overwrite the live pool database.
 
 Important fields:
 

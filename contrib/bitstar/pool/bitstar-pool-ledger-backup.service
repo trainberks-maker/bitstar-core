@@ -1,0 +1,18 @@
+[Unit]
+Description=BitStar pool dry-run ledger backup
+After=bitstar-stratum-pool.service
+
+[Service]
+Type=oneshot
+User=bitstar
+Group=bitstar
+Environment=BITSTAR_POOL_DRY_RUN_LEDGER_DB=/var/lib/bitstar/pool-dry-run-ledger.sqlite3
+Environment=BITSTAR_POOL_LEDGER_BACKUP_DIR=/var/backups/bitstar/pool
+Environment=BITSTAR_POOL_LEDGER_BACKUP_STATUS_FILE=/var/lib/bitstar/pool-ledger-backup-status.json
+Environment=BITSTAR_POOL_LEDGER_BACKUP_RETENTION_DAYS=14
+ExecStart=/usr/local/bin/bitstar-pool-ledger-backup.py --json backup
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/bitstar /var/backups/bitstar

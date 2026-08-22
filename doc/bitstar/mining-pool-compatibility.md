@@ -163,6 +163,8 @@ The current official endpoint runs in `solo_direct_coinbase` mode:
 - the dry-run report is persisted locally in SQLite so it survives pool restarts
 - a JSON mirror is published for status/API reads, while the SQLite database is
   the operator persistence target for backups and restore drills
+- a systemd timer can create verified daily SQLite backups and publish a
+  sanitized backup/restore-drill status for the public pool dashboard
 
 The current baseline intentionally keeps these disabled:
 
