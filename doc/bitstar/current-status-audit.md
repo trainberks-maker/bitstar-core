@@ -41,7 +41,8 @@ and a production-grade pool or a clear decision to keep the pool test-only.
   - `/pool`
 - The website links the latest Windows bootstrap launcher, Linux x86_64 server
   package, and checksum verification files.
-- A Windows installer plan exists, but no installer download is published yet.
+- A Windows installer artifact is published on the GitHub release as an
+  unsigned pre-release artifact; the website download link is still pending.
 
 ### Release Artifacts
 
@@ -54,6 +55,8 @@ Latest release candidate:
 - Assets:
   - `BitStar_Windows_v0.1.2-rc2.zip`
   - `BitStar_Windows_v0.1.2-rc2.zip.sha256`
+  - `BitStar_Core_Setup_v0.1.2-rc2.exe`
+  - `BitStar_Core_Setup_v0.1.2-rc2.exe.sha256`
   - `BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz`
   - `BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz.sha256`
   - `SHA256SUMS-v0.1.2-rc2`
@@ -70,6 +73,8 @@ Current published SHA256 values:
 
 - `BitStar_Windows_v0.1.2-rc2.zip`:
   `416c5232a7155ba85fcdfd1b4005bf184d75055433193b214cf8d7a1cf57dd46`
+- `BitStar_Core_Setup_v0.1.2-rc2.exe`:
+  `b1a8d3aea370beb6126daf37e70902e53cef29ec0e7778cdfd89c033d94330ad`
 - `BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz`:
   `a13e9ec2c13a97f169f6d9e3c37256c27caa878dbe08d9a971da2be05f774392`
 
@@ -85,8 +90,9 @@ Release-candidate signature status:
 - Smoke test result: Windows launcher clean test passed; Windows and Linux
   synthetic upgrades from `v0.1.1-bootstrap` to `v0.1.2-rc2` passed; Linux
   x86_64 clean temporary-datadir smoke test passed with two seed connections.
-- Windows installer status: NSIS installer scaffold and build validation helper
-  exist; no installer artifact is published in `v0.1.2-rc2`.
+- Windows installer status: NSIS installer built, silent install/uninstall
+  smoke test passed, installer checksum is included in the signed manifest, and
+  the artifact is published as unsigned pre-release software.
 
 ### Network Parameters
 
@@ -190,17 +196,20 @@ Remaining work:
 
 ### 3. Launcher And Installer Status
 
-The Windows launcher exists and is included in the release-candidate zip. It is
-usable for testing, but it is not yet a production-grade installer flow.
+The Windows launcher exists and is included in the release-candidate zip. A
+Windows NSIS installer is also published for `v0.1.2-rc2` as unsigned
+pre-release software. It is usable for testing, but it is not yet a
+production-grade installer flow.
 
 Remaining work:
 
-- build the NSIS installer from the verified Windows package
-- test clean install, Start Menu launcher start/stop, and uninstall
-- confirm uninstall leaves `%LOCALAPPDATA%\BitStar` untouched
-- add installer checksum to the signed release manifest
+- repeat clean install, Start Menu launcher start/stop, and uninstall on a clean
+  Windows profile
+- repeat and archive installer testing independently
+- test upgrade over a previous installer once previous installer artifacts exist
 - add Windows Authenticode signing when a certificate exists
-- publish installer download only after the launcher production checklist passes
+- link the installer from the website only while clearly labeling it as unsigned
+  pre-release software
 
 ### 4. Pool Status
 

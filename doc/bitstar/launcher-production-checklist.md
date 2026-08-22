@@ -69,8 +69,9 @@ Definition of done:
 - Installer can upgrade over the previous installer without deleting user data.
 - Installer artifact has SHA256 checksum and is included in the signed manifest.
 
-Current status: installer scaffold exists; production installer artifact is not
-published yet.
+Current status: installer scaffold exists; `BitStar_Core_Setup_v0.1.2-rc2.exe`
+was built, smoke-tested, included in the signed manifest, and published as
+unsigned pre-release software. It is not a production installer yet.
 
 Build helper:
 `contrib/bitstar/release/build-windows-installer.ps1`
@@ -114,7 +115,8 @@ Definition of done:
 - Node starts after upgrade and reports the expected genesis hash.
 
 Current status: zip-package upgrade smoke test passed internally for
-`v0.1.1-bootstrap` to `v0.1.2-rc2`; independent repeat pending.
+`v0.1.1-bootstrap` to `v0.1.2-rc2`; installer silent install/uninstall smoke
+test passed; independent repeat and previous-installer upgrade test pending.
 
 ### Gate 6: Public Website
 
@@ -130,8 +132,8 @@ Definition of done:
   - verification guide.
 - Website warns when Windows code signing is not yet available.
 
-Current status: website links the current packages; installer download is not
-published yet.
+Current status: GitHub release includes the installer artifact; website
+installer link is pending.
 
 ## Required Release Record
 
@@ -160,6 +162,5 @@ Notes:
 ## Current Recommendation
 
 Keep `v0.1.2-rc2` labeled as a signed release candidate. The next practical
-launcher step is to build and test a Windows installer from the verified
-Windows package, then include that installer in the next signed release
-manifest.
+launcher step is a manual clean-profile Windows installer test and independent
+repeat before the installer is treated as production-ready.

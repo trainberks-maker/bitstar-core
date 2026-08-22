@@ -23,6 +23,7 @@ Latest recorded release-candidate checks:
 | Platform | Artifact | Clean install | Upgrade | Wallet backup | Result |
 | --- | --- | --- | --- | --- | --- |
 | Windows x86_64 | `BitStar_Windows_v0.1.2-rc2.zip` | passed | synthetic `v0.1.1-bootstrap` upgrade passed; independent repeat pending | launcher backup action smoke-tested | pre-release pass |
+| Windows x86_64 | `BitStar_Core_Setup_v0.1.2-rc2.exe` | silent installer smoke passed | previous-installer upgrade pending | data directory untouched; wallet backup manual repeat pending | pre-release pass |
 | Linux x86_64 | `BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz` | passed | synthetic `v0.1.1-bootstrap` upgrade passed; independent repeat pending | not applicable for headless package | pre-release pass |
 | Linux arm64 | `BitStar_Linux_arm64_<version>.tar.gz` | pending | pending | pending | pending |
 
@@ -74,6 +75,31 @@ Best block:
 Wallet backup path:
 Result:
 Notes:
+```
+
+## Windows Installer Smoke Test
+
+The `v0.1.2-rc2` installer is a user-mode NSIS installer built from the
+verified Windows zip package. It is published as an unsigned pre-release
+artifact, not as a final production installer.
+
+```text
+Version: v0.1.2-rc2
+Source commit: 75b5e47311269bcc0ea6eb5cf7cdb4726eac4f3f
+Artifact: BitStar_Core_Setup_v0.1.2-rc2.exe
+Artifact SHA256: b1a8d3aea370beb6126daf37e70902e53cef29ec0e7778cdfd89c033d94330ad
+Test date: 2026-08-22
+Tester: BitStar maintainer
+Installer tool: NSIS 3.12
+Install mode: silent install to a temporary user directory
+Installed file check: passed
+CLI version check: BitStar Core RPC client version v31.99.0-75b5e4731126
+Uninstall check: passed; temporary install directory removed
+Data directory check: C:\Users\bajra\AppData\Local\BitStar remained untouched
+Result: PASS
+Notes: This is an installer smoke test only. A manual clean-profile Start Menu
+launcher test, previous-installer upgrade test, and independent repeat are
+still required before production promotion.
 ```
 
 ## Linux Clean Install

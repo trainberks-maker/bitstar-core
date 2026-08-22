@@ -113,9 +113,10 @@ Windows and Linux upgrades from `v0.1.1-bootstrap` to `v0.1.2-rc2` are recorded 
 An outside-tester checklist is now available in
 [independent-verification-pack.md](independent-verification-pack.md), but no
 independent result has been archived yet.
-The Windows launcher production checklist and NSIS installer scaffold are now
-documented, but no Windows installer artifact has been promoted or published
-yet.
+The Windows launcher production checklist and NSIS installer scaffold are
+documented. A Windows NSIS installer has been built, smoke-tested, included in
+the signed manifest, and published as an unsigned pre-release artifact. It has
+not been promoted as a production installer.
 
 The current release key fingerprint is:
 
@@ -132,9 +133,9 @@ Result: release artifacts are signed and checksum verified.
 This is still a signed pre-release candidate, not a final production release.
 Remaining release-engineering work includes an archived independent
 verification result, independent repeats of the Windows and Linux upgrade
-tests, a built and clean-tested Windows installer, Windows Authenticode
-signing, and a repeat of the process for every later release candidate or
-final release.
+tests, a clean-profile manual Windows installer repeat, Windows Authenticode
+signing, and a repeat of the process for every later release candidate or final
+release.
 
 Clean install, Windows launcher, and full upgrade coverage must be recorded in
 [clean-install-upgrade-test.md](clean-install-upgrade-test.md) before any release
@@ -225,8 +226,8 @@ Current status: not ready.
 3. Archive independent signed-release verification and complete the upgrade
    matrix in
    [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
-4. Build and test the Windows installer from the verified Windows package using
-   [windows-installer-plan.md](windows-installer-plan.md).
+4. Repeat the Windows installer smoke test manually from a clean Windows
+   profile using [windows-installer-plan.md](windows-installer-plan.md).
 5. Decide the fair launch path: continue with full disclosure, or reset once for
    a final public launch.
 6. Upgrade the explorer from status-only to block, transaction, and address

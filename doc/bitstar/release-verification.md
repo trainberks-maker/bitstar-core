@@ -13,11 +13,11 @@ release notes before it is promoted as stable.
 As of the `v0.1.2-rc2` release candidate:
 
 - Windows launcher package exists.
-- Windows installer plan and build scaffold exist; installer artifact is not
-  published yet.
+- Windows installer artifact exists and is published as unsigned pre-release
+  software.
 - Linux x86_64 server package exists.
 - SHA256 checksum files and a combined `SHA256SUMS-v0.1.2-rc2` manifest exist
-  for the published packages.
+  for the published packages and installer.
 - Helper scripts exist for checksum verification and for creating/signing the
   release manifest.
 - Helper scripts exist for exporting only the public release key.
@@ -28,6 +28,7 @@ As of the `v0.1.2-rc2` release candidate:
 - The release readiness gate passes with:
   `Result: release artifacts are signed and checksum verified.`
 - Windows launcher clean smoke test passed.
+- Windows installer silent install/uninstall smoke test passed.
 - Linux x86_64 clean temporary-datadir smoke test passed.
 - Windows and Linux synthetic upgrade smoke tests from `v0.1.1-bootstrap` to
   `v0.1.2-rc2` passed.
@@ -55,8 +56,8 @@ Windows installer.
 Every serious public release should include:
 
 - `BitStar_Windows_<version>.zip`
-- `BitStar_Core_Setup_<version>.exe`, once the Windows launcher installer gate
-  is complete
+- `BitStar_Core_Setup_<version>.exe`, if the Windows launcher installer gate
+  is complete enough for pre-release testing
 - `BitStar_Linux_x86_64_<version>.tar.gz`
 - versioned checksum manifest, for example `SHA256SUMS-v0.1.2-rc2`
 - detached manifest signature, for example `SHA256SUMS-v0.1.2-rc2.asc`
@@ -83,7 +84,7 @@ On Windows:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\sign-release-manifest.ps1 `
-  -Artifacts ".\BitStar_Windows_v0.1.2-rc2.zip,.\BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz" `
+  -Artifacts ".\BitStar_Windows_v0.1.2-rc2.zip,.\BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz,.\BitStar_Core_Setup_v0.1.2-rc2.exe" `
   -Output ".\SHA256SUMS-v0.1.2-rc2" `
   -GpgKey "<release-key-fingerprint>"
 ```
@@ -93,7 +94,8 @@ On Linux:
 ```sh
 ./sign-release-manifest.sh --output SHA256SUMS-v0.1.2-rc2 --key "<release-key-fingerprint>" \
   BitStar_Windows_v0.1.2-rc2.zip \
-  BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz
+  BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz \
+  BitStar_Core_Setup_v0.1.2-rc2.exe
 ```
 
 7. Export `bitstar-release-key.asc` with the public-key helper.

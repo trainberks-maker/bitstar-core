@@ -86,6 +86,19 @@ Expected output:
 BitStar_Core_Setup_v0.1.2-rc2.exe
 ```
 
+## Current Test Artifact
+
+The `v0.1.2-rc2` installer was built with NSIS 3.12 from the verified Windows
+zip package and published as unsigned pre-release software.
+
+```text
+Artifact: BitStar_Core_Setup_v0.1.2-rc2.exe
+SHA256: b1a8d3aea370beb6126daf37e70902e53cef29ec0e7778cdfd89c033d94330ad
+Signed manifest: SHA256SUMS-v0.1.2-rc2
+Smoke test: silent install/uninstall to a temporary user directory passed
+Production status: not production-ready; code signing and independent repeat pending
+```
+
 ## Release Rules
 
 The installer should not be published as production until:

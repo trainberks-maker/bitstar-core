@@ -94,7 +94,7 @@ if (!$gpgPath) {
 }
 
 $signaturePath = "$outputPath.asc"
-$gpgArgs = @("--armor", "--detach-sign", "--output", $signaturePath)
+$gpgArgs = @("--batch", "--yes", "--armor", "--detach-sign", "--output", $signaturePath)
 if (![string]::IsNullOrWhiteSpace($GpgKey)) {
     $gpgArgs += @("--local-user", $GpgKey)
 }
