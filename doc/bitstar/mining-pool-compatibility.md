@@ -211,9 +211,9 @@ described as a custodial payout pool.
 ## Current Limitations
 
 - The official endpoint is a public solo-style test pool, not a full payout pool.
-- The `v0.1.1-bootstrap` release has a GPG-signed `SHA256SUMS.asc`, but
-  reproducible build verification and independent verification are still
-  pending.
+- The `v0.1.2-rc2` release candidate has a GPG-signed
+  `SHA256SUMS-v0.1.2-rc2.asc`, but reproducible build verification and
+  independent verification are still pending.
 - DNS seed infrastructure is not active; documented static seed nodes are used.
 - The bootstrap build still carries a pre-release warning.
 - Pool dashboard counters are operational status signals, not balances.

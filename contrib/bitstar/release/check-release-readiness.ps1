@@ -57,6 +57,28 @@ function Resolve-GpgPath {
 $failed = $false
 $warned = $false
 $releasePath = Resolve-Path -LiteralPath $ReleaseDir
+
+if ($Manifest -eq "SHA256SUMS") {
+    $manifestCandidates = @(
+        Get-ChildItem -LiteralPath $releasePath -File -Filter "SHA256SUMS*" |
+            Where-Object {
+                $_.Name -notlike "*.asc" -and
+                $_.Name -notlike "*.sha256"
+            } |
+            Sort-Object Name
+    )
+
+    if ($manifestCandidates.Count -eq 1) {
+        $Manifest = $manifestCandidates[0].Name
+    } elseif ($manifestCandidates.Count -gt 1) {
+        Fail "multiple checksum manifests found; pass -Manifest explicitly"
+        $manifestCandidates | ForEach-Object {
+            Write-Host "        $($_.Name)"
+        }
+        exit 1
+    }
+}
+
 $manifestPath = Join-Path $releasePath $Manifest
 $signaturePath = "$manifestPath.asc"
 

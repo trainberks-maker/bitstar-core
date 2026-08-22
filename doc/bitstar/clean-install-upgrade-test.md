@@ -18,14 +18,23 @@ package.
 | Linux x86_64 | `BitStar_Linux_x86_64_<version>.tar.gz` | pending | pending | pending | pending |
 | Linux arm64 | `BitStar_Linux_arm64_<version>.tar.gz` | pending | pending | pending | pending |
 
+Latest recorded release-candidate checks:
+
+| Platform | Artifact | Clean install | Upgrade | Wallet backup | Result |
+| --- | --- | --- | --- | --- | --- |
+| Windows x86_64 | `BitStar_Windows_v0.1.2-rc2.zip` | passed | pending independent repeat | launcher backup action smoke-tested | pre-release pass |
+| Linux x86_64 | `BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz` | passed | pending | not applicable for headless package | pre-release pass |
+| Linux arm64 | `BitStar_Linux_arm64_<version>.tar.gz` | pending | pending | pending | pending |
+
 Linux arm64 can remain pending for a bootstrap release, but it should be
 completed before a broader production launch because many VPS and small node
 operators use arm64 systems.
 
 ## Windows Clean Install
 
-1. Download the Windows zip, `SHA256SUMS`, `SHA256SUMS.asc`, and
-   `bitstar-release-key.asc` from the official release page.
+1. Download the Windows zip, `SHA256SUMS-v0.1.2-rc2`,
+   `SHA256SUMS-v0.1.2-rc2.asc`, and `bitstar-release-key.asc` from the
+   official release page.
 2. Verify the GPG signature and checksums using
    [release-verification.md](release-verification.md).
 3. Extract the zip into a new folder.
@@ -69,8 +78,8 @@ Notes:
 
 ## Linux Clean Install
 
-1. Download the Linux tarball, `SHA256SUMS`, `SHA256SUMS.asc`, and
-   `bitstar-release-key.asc`.
+1. Download the Linux tarball, `SHA256SUMS-v0.1.2-rc2`,
+   `SHA256SUMS-v0.1.2-rc2.asc`, and `bitstar-release-key.asc`.
 2. Verify the signature and checksums.
 3. Extract into a new folder.
 4. Start with an empty data directory:
@@ -99,17 +108,17 @@ mkdir -p /tmp/bitstar-clean-test
 Record the Linux result here:
 
 ```text
-Version:
-Source commit:
-Artifact SHA256:
-Test date:
-Tester:
-Clean data directory:
-Peers:
-Block height:
-Best block:
-Result:
-Notes:
+Version: v0.1.2-rc2
+Source commit: 75b5e47311269bcc0ea6eb5cf7cdb4726eac4f3f
+Artifact SHA256: a13e9ec2c13a97f169f6d9e3c37256c27caa878dbe08d9a971da2be05f774392
+Test date: 2026-08-22
+Tester: BitStar maintainer
+Clean data directory: /tmp/bitstar-linux-rc2-smoke
+Peers: 2
+Block height: 1136
+Best block: 000009f1293ce4e68983535421f0701ed424104699f0f23ae5dca6b2885cf4f5
+Result: PASS
+Notes: Headless Linux package started from a clean temporary datadir, RPC became ready, genesis and chain info matched the public network, two seed connections were observed, and the node stopped cleanly.
 ```
 
 ## Upgrade Test

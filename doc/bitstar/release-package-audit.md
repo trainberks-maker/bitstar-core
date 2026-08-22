@@ -17,15 +17,15 @@ Windows:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scan-release-package.ps1 `
   -ReleaseDir . `
-  -Artifacts "BitStar_Windows_v0.1.1-bootstrap.zip,BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz"
+  -Artifacts "BitStar_Windows_v0.1.2-rc2.zip,BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz"
 ```
 
 Linux:
 
 ```sh
 ./scan-release-package.sh --release-dir . \
-  --artifact BitStar_Windows_v0.1.1-bootstrap.zip \
-  --artifact BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz
+  --artifact BitStar_Windows_v0.1.2-rc2.zip \
+  --artifact BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz
 ```
 
 The result must be:

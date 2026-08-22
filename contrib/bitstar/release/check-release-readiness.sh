@@ -28,6 +28,29 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
+if [ "$manifest" = "SHA256SUMS" ]; then
+  candidates=""
+  for path in "${release_dir%/}"/SHA256SUMS*; do
+    [ -f "$path" ] || continue
+    base=$(basename "$path")
+    case "$base" in
+      *.asc|*.sha256) continue ;;
+    esac
+    candidates="${candidates}${base}
+"
+  done
+
+  candidate_count=$(printf '%s' "$candidates" | sed '/^$/d' | wc -l | tr -d ' ')
+  if [ "$candidate_count" -eq 1 ]; then
+    manifest=$(printf '%s' "$candidates" | sed '/^$/d' | sed -n '1p')
+  elif [ "$candidate_count" -gt 1 ]; then
+    echo "FAIL    multiple checksum manifests found; pass --manifest explicitly"
+    printf '%s' "$candidates" | sed '/^$/d;s/^/        /'
+    echo "Result: not production-ready."
+    exit 1
+  fi
+fi
+
 fail() {
   echo "FAIL    $1"
   failed=1

@@ -84,8 +84,8 @@ Optional later artifacts:
 - publish SHA256 checksums for every artifact
 - sign the checksum file or release manifest
 - use `contrib/bitstar/release/sign-release-manifest.ps1` or
-  `contrib/bitstar/release/sign-release-manifest.sh` to create `SHA256SUMS`
-  and `SHA256SUMS.asc`
+  `contrib/bitstar/release/sign-release-manifest.sh` to create a versioned
+  manifest, for example `SHA256SUMS-v0.1.2-rc2`, and its `.asc` signature
 - run `contrib/bitstar/release/check-release-readiness.ps1` or
   `contrib/bitstar/release/check-release-readiness.sh` without unsigned
   bootstrap mode and archive the result

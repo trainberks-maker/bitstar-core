@@ -98,10 +98,10 @@ Definition of done:
   credentials, SSH private keys, or deployment tokens are bundled
 - no test wallet or chain data is bundled
 
-Current status: bootstrap binaries exist. The Windows launcher package and
-Linux x86_64 server package are published for `v0.1.1-bootstrap`, with SHA256
+Current status: `v0.1.2-rc2` release-candidate binaries exist. The Windows
+launcher package and Linux x86_64 server package are published with SHA256
 checksum files, helper verification scripts, a published public release key,
-and a GPG-signed `SHA256SUMS.asc` manifest.
+and a GPG-signed `SHA256SUMS-v0.1.2-rc2.asc` manifest.
 
 The current release key fingerprint is:
 
@@ -109,16 +109,16 @@ The current release key fingerprint is:
 5744BDF701AFDCF43983AB96B87F9907D27EC983
 ```
 
-The bootstrap release readiness gate passes with:
+The release-candidate readiness gate passes with:
 
 ```text
 Result: release artifacts are signed and checksum verified.
 ```
 
-This is still a signed bootstrap pre-release, not a final production release.
-Remaining release-engineering work includes clean install and upgrade test
-records, independent verification, Windows Authenticode signing, and a repeat
-of the process for a release candidate or final release.
+This is still a signed pre-release candidate, not a final production release.
+Remaining release-engineering work includes independent verification, upgrade
+test records, Windows Authenticode signing, and a repeat of the process for
+every later release candidate or final release.
 
 Clean install, Windows launcher, and upgrade testing must be recorded in
 [clean-install-upgrade-test.md](clean-install-upgrade-test.md) before any
@@ -206,8 +206,8 @@ Current status: not ready.
 
 1. Keep seed1 and seed2 synchronized and monitored.
 2. Run the operator runbook on seed1 and seed2 after each infrastructure change.
-3. Archive the signed-release verification record and run the clean
-   Windows/Linux install and upgrade matrix in
+3. Archive independent signed-release verification and complete the upgrade
+   matrix in
    [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
 4. Decide the fair launch path: continue with full disclosure, or reset once for
    a final public launch.

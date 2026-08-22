@@ -123,22 +123,23 @@ Windows:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\sign-release-manifest.ps1 `
-  -Artifacts ".\BitStar_Windows_v0.1.1-bootstrap.zip,.\BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz" `
+  -Artifacts ".\BitStar_Windows_v0.1.2-rc2.zip,.\BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz" `
+  -Output ".\SHA256SUMS-v0.1.2-rc2" `
   -GpgKey "<release-key-fingerprint>"
 ```
 
 Linux:
 
 ```sh
-./sign-release-manifest.sh --key "<release-key-fingerprint>" \
-  BitStar_Windows_v0.1.1-bootstrap.zip \
-  BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz
+./sign-release-manifest.sh --output SHA256SUMS-v0.1.2-rc2 --key "<release-key-fingerprint>" \
+  BitStar_Windows_v0.1.2-rc2.zip \
+  BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz
 ```
 
 Expected outputs:
 
-- `SHA256SUMS`
-- `SHA256SUMS.asc`
+- `SHA256SUMS-v0.1.2-rc2`
+- `SHA256SUMS-v0.1.2-rc2.asc`
 - `bitstar-release-key.asc`, created by the public-key export helper
 
 ## Verify Before Publishing
@@ -146,7 +147,7 @@ Expected outputs:
 Verify the detached signature:
 
 ```sh
-gpg --verify SHA256SUMS.asc SHA256SUMS
+gpg --verify SHA256SUMS-v0.1.2-rc2.asc SHA256SUMS-v0.1.2-rc2
 ```
 
 Run the release readiness gate.
@@ -154,13 +155,15 @@ Run the release readiness gate.
 Windows:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\check-release-readiness.ps1 -ReleaseDir .\
+powershell -ExecutionPolicy Bypass -File .\check-release-readiness.ps1 `
+  -ReleaseDir .\ `
+  -Manifest "SHA256SUMS-v0.1.2-rc2"
 ```
 
 Linux:
 
 ```sh
-./check-release-readiness.sh --release-dir .
+./check-release-readiness.sh --release-dir . --manifest SHA256SUMS-v0.1.2-rc2
 ```
 
 The result must be:
@@ -177,8 +180,8 @@ promote the release as production.
 Upload these public files:
 
 - release artifacts
-- `SHA256SUMS`
-- `SHA256SUMS.asc`
+- versioned checksum manifest, for example `SHA256SUMS-v0.1.2-rc2`
+- detached manifest signature, for example `SHA256SUMS-v0.1.2-rc2.asc`
 - `bitstar-release-key.asc`
 - release notes
 - verification scripts

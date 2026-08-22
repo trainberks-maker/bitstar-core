@@ -5,25 +5,28 @@ users should verify them before running a node, wallet, miner, or pool.
 
 ## Current Status
 
-The `v0.x-bootstrap` releases are public bootstrap releases, not final
-production releases. A production release must have signed checksums and clear
+The `v0.x-bootstrap` and `v0.x-rcN` releases are public bootstrap or release
+candidate releases, not final production releases. A production release must
+have signed checksums, clean test records, independent verification, and clear
 release notes before it is promoted as stable.
 
-As of the `v0.1.1-bootstrap` bootstrap release:
+As of the `v0.1.2-rc2` release candidate:
 
 - Windows launcher package exists.
 - Linux x86_64 server package exists.
-- SHA256 checksum files and a combined `SHA256SUMS` manifest exist for the
-  published packages.
+- SHA256 checksum files and a combined `SHA256SUMS-v0.1.2-rc2` manifest exist
+  for the published packages.
 - Helper scripts exist for checksum verification and for creating/signing the
   release manifest.
 - Helper scripts exist for exporting only the public release key.
-- Signed `SHA256SUMS.asc` manifest is published.
+- Signed `SHA256SUMS-v0.1.2-rc2.asc` manifest is published.
 - Public release key `bitstar-release-key.asc` is published.
 - Release key fingerprint:
   `5744BDF701AFDCF43983AB96B87F9907D27EC983`
 - The release readiness gate passes with:
   `Result: release artifacts are signed and checksum verified.`
+- Windows launcher clean smoke test passed.
+- Linux x86_64 clean temporary-datadir smoke test passed.
 - Windows Authenticode code signing is still pending.
 
 See [release-signing-policy.md](release-signing-policy.md) for release key
@@ -44,8 +47,8 @@ Every serious public release should include:
 
 - `BitStar_Windows_<version>.zip`
 - `BitStar_Linux_x86_64_<version>.tar.gz`
-- `SHA256SUMS`
-- `SHA256SUMS.asc`
+- versioned checksum manifest, for example `SHA256SUMS-v0.1.2-rc2`
+- detached manifest signature, for example `SHA256SUMS-v0.1.2-rc2.asc`
 - `bitstar-release-key.asc`
 - release notes with source commit, status, network parameters, and warnings
 
@@ -68,16 +71,17 @@ On Windows:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\sign-release-manifest.ps1 `
-  -Artifacts ".\BitStar_Windows_v0.1.1-bootstrap.zip,.\BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz" `
+  -Artifacts ".\BitStar_Windows_v0.1.2-rc2.zip,.\BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz" `
+  -Output ".\SHA256SUMS-v0.1.2-rc2" `
   -GpgKey "<release-key-fingerprint>"
 ```
 
 On Linux:
 
 ```sh
-./sign-release-manifest.sh --key "<release-key-fingerprint>" \
-  BitStar_Windows_v0.1.1-bootstrap.zip \
-  BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz
+./sign-release-manifest.sh --output SHA256SUMS-v0.1.2-rc2 --key "<release-key-fingerprint>" \
+  BitStar_Windows_v0.1.2-rc2.zip \
+  BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz
 ```
 
 6. Export `bitstar-release-key.asc` with the public-key helper.
@@ -87,16 +91,19 @@ On Linux:
 On Windows:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\check-release-readiness.ps1 -ReleaseDir .\
+powershell -ExecutionPolicy Bypass -File .\check-release-readiness.ps1 `
+  -ReleaseDir .\ `
+  -Manifest "SHA256SUMS-v0.1.2-rc2"
 ```
 
 On Linux:
 
 ```sh
-./check-release-readiness.sh --release-dir .
+./check-release-readiness.sh --release-dir . --manifest SHA256SUMS-v0.1.2-rc2
 ```
 
-9. Upload artifacts, `SHA256SUMS`, `SHA256SUMS.asc`, public release key, and
+9. Upload artifacts, the versioned `SHA256SUMS-v0.1.2-rc2` manifest,
+   `SHA256SUMS-v0.1.2-rc2.asc`, public release key, verification scripts, and
    release notes.
 
 Do not store release private keys, wallet files, RPC passwords, deployment
@@ -121,24 +128,25 @@ Before a release is promoted on seed infrastructure, record:
 - GPG signature verification result
 - known limitations and warnings
 
-For older bootstrap releases where `SHA256SUMS.asc` is not present, record the
-release as checksum-verifiable only. For `v0.1.1-bootstrap`, record it as a
-signed bootstrap pre-release. Do not label any bootstrap build as a final
-production release.
+For older bootstrap releases where a detached manifest signature is not
+present, record the release as checksum-verifiable only. For
+`v0.1.1-bootstrap` and `v0.1.2-rc2`, record them as signed pre-releases. Do not
+label any bootstrap or release candidate build as a final production release.
 
 ## User Verification On Windows
 
-Download the release package, `SHA256SUMS`, `SHA256SUMS.asc`, and
+For the current release candidate, download the release package,
+`SHA256SUMS-v0.1.2-rc2`, `SHA256SUMS-v0.1.2-rc2.asc`, and
 `bitstar-release-key.asc` into the same folder. Import the public key, verify
 the signature, then verify the checksum file:
 
 ```powershell
 gpg --import .\bitstar-release-key.asc
-gpg --verify .\SHA256SUMS.asc .\SHA256SUMS
+gpg --verify .\SHA256SUMS-v0.1.2-rc2.asc .\SHA256SUMS-v0.1.2-rc2
 ```
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\verify-checksums.ps1 .\SHA256SUMS
+powershell -ExecutionPolicy Bypass -File .\verify-checksums.ps1 .\SHA256SUMS-v0.1.2-rc2
 ```
 
 Only run the software if both the signature and checksum verification succeed.
@@ -147,8 +155,8 @@ Only run the software if both the signature and checksum verification succeed.
 
 ```sh
 gpg --import bitstar-release-key.asc
-gpg --verify SHA256SUMS.asc SHA256SUMS
-sh ./verify-checksums.sh SHA256SUMS
+gpg --verify SHA256SUMS-v0.1.2-rc2.asc SHA256SUMS-v0.1.2-rc2
+sh ./verify-checksums.sh SHA256SUMS-v0.1.2-rc2
 ```
 
 If the signature fails, stop. If any checksum fails, delete the artifact and
@@ -167,7 +175,7 @@ BitStar should not be called production-ready until:
 
 - the release signing key fingerprint is published;
 - `bitstar-release-key.asc` is published for the release;
-- `SHA256SUMS` and `SHA256SUMS.asc` are published for the release;
+- a signed checksum manifest is published for the release;
 - the release readiness gate passes without unsigned-bootstrap mode;
 - Windows and Linux users can verify packages with documented commands;
 - the operator verification record has been completed for the exact artifacts;

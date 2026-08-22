@@ -36,8 +36,8 @@ Important ports:
 - Never describe the current pool as a custodial payout pool.
 - Never enable automatic pooled payouts until the payout production gate in
   [pool-payout-production-plan.md](pool-payout-production-plan.md) is complete.
-- Never call a release production-ready while `SHA256SUMS.asc`, release notes,
-  and verification instructions are missing or incomplete.
+- Never call a release production-ready while the signed checksum manifest,
+  release notes, and verification instructions are missing or incomplete.
 
 ## Quick Operator Status
 
@@ -190,28 +190,30 @@ Windows user check:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scan-release-package.ps1 `
   -ReleaseDir . `
-  -Artifacts "BitStar_Windows_v0.1.1-bootstrap.zip,BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz"
-powershell -ExecutionPolicy Bypass -File .\verify-checksums.ps1 .\SHA256SUMS
+  -Artifacts "BitStar_Windows_v0.1.2-rc2.zip,BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz"
+powershell -ExecutionPolicy Bypass -File .\verify-checksums.ps1 .\SHA256SUMS-v0.1.2-rc2
 gpg --import .\bitstar-release-key.asc
-gpg --verify .\SHA256SUMS.asc .\SHA256SUMS
-powershell -ExecutionPolicy Bypass -File .\check-release-readiness.ps1 -ReleaseDir .\
+gpg --verify .\SHA256SUMS-v0.1.2-rc2.asc .\SHA256SUMS-v0.1.2-rc2
+powershell -ExecutionPolicy Bypass -File .\check-release-readiness.ps1 `
+  -ReleaseDir .\ `
+  -Manifest "SHA256SUMS-v0.1.2-rc2"
 ```
 
 Linux user check:
 
 ```bash
 ./scan-release-package.sh --release-dir . \
-  --artifact BitStar_Windows_v0.1.1-bootstrap.zip \
-  --artifact BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz
-sh ./verify-checksums.sh SHA256SUMS
+  --artifact BitStar_Windows_v0.1.2-rc2.zip \
+  --artifact BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz
+sh ./verify-checksums.sh SHA256SUMS-v0.1.2-rc2
 gpg --import bitstar-release-key.asc
-gpg --verify SHA256SUMS.asc SHA256SUMS
-./check-release-readiness.sh --release-dir .
+gpg --verify SHA256SUMS-v0.1.2-rc2.asc SHA256SUMS-v0.1.2-rc2
+./check-release-readiness.sh --release-dir . --manifest SHA256SUMS-v0.1.2-rc2
 ```
 
-For the current `v0.1.1-bootstrap` release, `SHA256SUMS`,
-`SHA256SUMS.asc`, and `bitstar-release-key.asc` are published. The release key
-fingerprint is:
+For the current `v0.1.2-rc2` release candidate,
+`SHA256SUMS-v0.1.2-rc2`, `SHA256SUMS-v0.1.2-rc2.asc`, and
+`bitstar-release-key.asc` are published. The release key fingerprint is:
 
 ```text
 5744BDF701AFDCF43983AB96B87F9907D27EC983

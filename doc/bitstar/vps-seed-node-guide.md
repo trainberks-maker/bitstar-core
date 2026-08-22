@@ -27,15 +27,15 @@ bitstard -version
 bitstar-cli -version
 ```
 
-For the bootstrap release, Linux x86_64 binaries are also published on the
-GitHub release page:
+For the current release candidate, Linux x86_64 binaries are also published on
+the GitHub release page:
 
 ```bash
 curl -L -o bitstar-linux.tar.gz \
-  https://github.com/trainberks-maker/bitstar-core/releases/download/v0.1.1-bootstrap/BitStar_Linux_x86_64_v0.1.1-bootstrap.tar.gz
+  https://github.com/trainberks-maker/bitstar-core/releases/download/v0.1.2-rc2/BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz
 tar -xzf bitstar-linux.tar.gz
-sudo install -m 0755 BitStar_Linux_x86_64_v0.1.1-bootstrap/bin/bitstard /usr/local/bin/bitstard
-sudo install -m 0755 BitStar_Linux_x86_64_v0.1.1-bootstrap/bin/bitstar-cli /usr/local/bin/bitstar-cli
+sudo install -m 0755 BitStar_Linux_x86_64_v0.1.2-rc2/bin/bitstard /usr/local/bin/bitstard
+sudo install -m 0755 BitStar_Linux_x86_64_v0.1.2-rc2/bin/bitstar-cli /usr/local/bin/bitstar-cli
 ```
 
 ## Create Service User And Directories
@@ -149,10 +149,10 @@ Seed node DNS records must stay `DNS only`, not proxied through Cloudflare,
 because BitStar P2P traffic uses TCP `21333`, not HTTP/HTTPS.
 
 As of August 22, 2026, both public seed nodes are synchronized at public block
-height `5` with best block hash:
+height `1136` with best block hash:
 
 ```text
-00000e7ed0c7df4e0db2d66c8d0031042e1ad66f5a8e3bf3e23a8e6a151c502d
+000009f1293ce4e68983535421f0701ed424104699f0f23ae5dca6b2885cf4f5
 ```
 
 ## Information To Record
