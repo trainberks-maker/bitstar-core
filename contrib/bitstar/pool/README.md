@@ -10,9 +10,11 @@ The server works as a solo test pool:
 - the pool builds block templates through local `bitstar-cli`
 - the default bootstrap share difficulty is `0.00010`
 - if a miner finds a valid block, the coinbase output pays the miner address
-- no payout accounting, balances, web dashboard, vardiff, or custody is provided
+- no pooled payout accounting, balances, vardiff, or custody is provided
 - a local operator stats file tracks submitted, rejected, accepted, and
   block-candidate shares
+- an optional local JSONL history file records periodic stats snapshots for
+  operator review; it is not a payout ledger
 
 ## Install On A Seed Or Pool VPS
 
@@ -45,6 +47,12 @@ Read the local stats snapshot:
 sudo cat /var/lib/bitstar/pool-stats.json
 ```
 
+Read the periodic stats history:
+
+```bash
+sudo tail -n 5 /var/lib/bitstar/pool-stats-history.jsonl
+```
+
 Important fields:
 
 - `submitted_shares`: miner shares received by the pool
@@ -52,11 +60,18 @@ Important fields:
 - `rejected_low_difficulty`: shares below the configured pool share difficulty
 - `candidate_blocks`: shares strong enough to be submitted as possible blocks
 - `submitblock_success`: candidate blocks accepted by `bitstard`
+- `accounting.mode`: currently `solo_direct_coinbase`
+- `accounting.auto_payouts_enabled`: currently `false`
+- `accounting.custody_enabled`: currently `false`
 
 Miner output such as `Submitted Diff ...` only means the miner sent shares to
 the Stratum server. It does not mean a BitStar block was mined unless the pool
 stats show `candidate_blocks` and `submitblock_success`, and the public chain
 height increases.
+
+The public website may display a sanitized pool dashboard from these stats. The
+dashboard is an operational signal only. It is not a balance ledger, payout
+promise, exchange signal, or profit estimate.
 
 ## Check RPC Compatibility
 

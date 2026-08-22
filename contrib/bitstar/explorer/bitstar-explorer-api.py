@@ -129,12 +129,27 @@ def public_workers(workers):
     return rows[:10]
 
 
+def public_accounting(accounting):
+    if not isinstance(accounting, dict):
+        accounting = {}
+
+    return {
+        "mode": accounting.get("mode", "solo_direct_coinbase"),
+        "auto_payouts_enabled": bool(accounting.get("auto_payouts_enabled")),
+        "custody_enabled": bool(accounting.get("custody_enabled")),
+        "coinbase_maturity_confirmations": int_value(accounting.get("coinbase_maturity_confirmations"), 100),
+        "history_snapshots_enabled": bool(accounting.get("history_snapshots_enabled")),
+        "history_interval_seconds": int_value(accounting.get("history_interval_seconds")),
+    }
+
+
 def empty_pool_summary(message):
     return {
         "available": False,
         "pool": "BitStar Stratum solo test pool",
         "mode": POOL_MODE,
         "endpoint": POOL_ENDPOINT,
+        "accounting": public_accounting({}),
         "message": message,
         "generated_at": int(time.time()),
     }
@@ -153,6 +168,7 @@ def pool_summary():
     counters = stats.get("counters", {}) if isinstance(stats.get("counters"), dict) else {}
     connections = stats.get("connections", {}) if isinstance(stats.get("connections"), dict) else {}
     workers = public_workers(stats.get("workers", {}))
+    accounting = public_accounting(stats.get("accounting", {}))
 
     return {
         "available": True,
@@ -181,6 +197,7 @@ def pool_summary():
         "submitblock_success": int_value(counters.get("submitblock_success")),
         "submitblock_rejected": int_value(counters.get("submitblock_rejected")),
         "submitblock_failed": int_value(counters.get("submitblock_failed")),
+        "accounting": accounting,
         "workers": workers,
         "generated_at": int(time.time()),
     }

@@ -577,6 +577,8 @@ class StratumServer:
         extranonce2_size: int,
         refresh_seconds: int,
         stats_file: str,
+        stats_history_file: str,
+        stats_history_seconds: int,
     ) -> None:
         self.rpc = rpc
         self.host = host
@@ -589,8 +591,11 @@ class StratumServer:
         self._client_counter = secrets.randbits(31)
         self.started_at = time.time()
         self.stats_file = stats_file
+        self.stats_history_file = stats_history_file
+        self.stats_history_seconds = stats_history_seconds
         self._stats_dirty = True
         self._last_stats_write = 0.0
+        self._last_stats_history_write = 0.0
         self.counters: dict[str, int] = {
             "total_connections": 0,
             "active_connections_peak": 0,
@@ -763,27 +768,58 @@ class StratumServer:
                 "active": len(self.clients),
                 "authorized": sum(1 for client in self.clients if client.authorized),
             },
+            "accounting": {
+                "mode": "solo_direct_coinbase",
+                "auto_payouts_enabled": False,
+                "custody_enabled": False,
+                "coinbase_maturity_confirmations": 100,
+                "history_snapshots_enabled": bool(self.stats_history_file),
+                "history_interval_seconds": self.stats_history_seconds if self.stats_history_file else 0,
+            },
             "counters": dict(self.counters),
             "workers": self.workers,
         }
 
+    def write_stats_history(self, snapshot: dict[str, Any], now: float) -> None:
+        if not self.stats_history_file or self.stats_history_seconds <= 0:
+            return
+        if now - self._last_stats_history_write < self.stats_history_seconds:
+            return
+
+        path = Path(self.stats_history_file)
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("a", encoding="utf-8") as handle:
+                handle.write(json.dumps(snapshot, separators=(",", ":"), sort_keys=True))
+                handle.write("\n")
+            self._last_stats_history_write = now
+        except Exception:
+            logging.exception("failed to append stats history file %s", path)
+
     def write_stats(self, force: bool = False) -> None:
-        if not self.stats_file:
+        if not self.stats_file and not self.stats_history_file:
             return
         now = time.time()
         if not force and (not self._stats_dirty or now - self._last_stats_write < 2):
             return
 
-        path = Path(self.stats_file)
-        try:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            tmp_path = path.with_suffix(path.suffix + ".tmp")
-            tmp_path.write_text(json.dumps(self.stats_snapshot(), indent=2, sort_keys=True), encoding="utf-8")
-            tmp_path.replace(path)
+        snapshot = self.stats_snapshot()
+        stats_written = True
+        if self.stats_file:
+            path = Path(self.stats_file)
+            try:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                tmp_path = path.with_suffix(path.suffix + ".tmp")
+                tmp_path.write_text(json.dumps(snapshot, indent=2, sort_keys=True), encoding="utf-8")
+                tmp_path.replace(path)
+            except Exception:
+                stats_written = False
+                logging.exception("failed to write stats file %s", path)
+
+        self.write_stats_history(snapshot, now)
+        if stats_written:
             self._last_stats_write = now
             self._stats_dirty = False
-        except Exception:
-            logging.exception("failed to write stats file %s", path)
 
     async def build_job(self, payout_address: str, extranonce1: str) -> Job:
         template = await asyncio.to_thread(self.rpc.getblocktemplate)
@@ -920,6 +956,17 @@ def parse_args() -> argparse.Namespace:
         default=os.getenv("BITSTAR_POOL_STATS_FILE", "/var/lib/bitstar/pool-stats.json"),
         help="Write a local JSON stats snapshot for operators. Use an empty value to disable.",
     )
+    parser.add_argument(
+        "--stats-history-file",
+        default=os.getenv("BITSTAR_POOL_STATS_HISTORY_FILE", ""),
+        help="Append periodic JSONL stats snapshots for operator accounting review. Empty disables history.",
+    )
+    parser.add_argument(
+        "--stats-history-seconds",
+        type=int,
+        default=int(os.getenv("BITSTAR_POOL_STATS_HISTORY_SECONDS", "60")),
+        help="Minimum seconds between stats history snapshots.",
+    )
     return parser.parse_args()
 
 
@@ -962,6 +1009,8 @@ def main() -> None:
         extranonce2_size=args.extranonce2_size,
         refresh_seconds=args.refresh_seconds,
         stats_file=args.stats_file,
+        stats_history_file=args.stats_history_file,
+        stats_history_seconds=args.stats_history_seconds,
     )
     asyncio.run(server.serve())
 

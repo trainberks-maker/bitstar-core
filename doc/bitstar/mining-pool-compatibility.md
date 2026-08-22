@@ -6,15 +6,17 @@ software is production-ready for BitStar.
 
 ## Status
 
-As of August 21, 2026:
+As of the public bootstrap launch:
 
 - public seed nodes are online
 - P2P port `21333` is reachable on seed1 and seed2
 - RPC remains private and bound to localhost on seed nodes
 - `getmininginfo` is available on seed1 and seed2
 - `getblocktemplate` is available on seed1 and seed2 with segwit rules
-- public chain height is `5`
-- next template height is `6`
+- the public Stratum test endpoint is open at `pool.bitstarcoin.org:3333`
+- live chain height should be verified on `https://bitstarcoin.org/explorer`
+- live sanitized pool stats are published through the explorer API when the pool
+  stats file is available
 
 The bootstrap build still prints a pre-release warning. Do not use it for
 custody, merchant payments, exchange deposits, or guaranteed production mining.
@@ -147,6 +149,35 @@ worker username. If a valid block is found, the coinbase reward is paid directly
 to that address after normal coinbase maturity. The test pool does not custody
 miner balances and does not implement automatic pooled payouts.
 
+## Production Pool Baseline
+
+The current official endpoint runs in `solo_direct_coinbase` mode:
+
+- miners use a valid `bst1` address as the Stratum username
+- candidate block coinbase outputs pay that address directly
+- coinbase rewards become spendable only after 100 confirmations
+- the pool writes a local JSON stats snapshot for operators
+- the pool can append periodic JSONL history snapshots for review
+- the public API exposes sanitized counters and accounting flags only
+
+The current baseline intentionally keeps these disabled:
+
+- custodial miner balances
+- automatic pooled payouts
+- payout-address changes managed by the pool
+- exchange, broker, liquidity, or profit guarantees
+
+Before BitStar enables a real pooled payout system, operators should complete:
+
+- a documented reward method such as solo, PPS, PPLNS, or proportional
+- a durable database-backed share and payout ledger
+- coinbase maturity handling before payouts are released
+- minimum payout rules, dust handling, and fee policy
+- dry-run payout reports before any live transaction is broadcast
+- signed release builds for pool and node binaries
+- monitoring, backups, and restore drills
+- independent review of payout code and operational controls
+
 ## Compatibility Test Flow
 
 1. Install BitStar Core on a pool test server.
@@ -161,10 +192,12 @@ miner balances and does not implement automatic pooled payouts.
 
 ## Current Limitations
 
-- No pool has been certified as official.
-- Release signing and reproducible build workflow are still pending.
+- The official endpoint is a public solo-style test pool, not a full payout pool.
+- Release signing exists as a workflow, but reproducible release verification is
+  still pending.
 - DNS seed infrastructure is not active; documented static seed nodes are used.
 - The bootstrap build still carries a pre-release warning.
+- Pool dashboard counters are operational status signals, not balances.
 - Exchange listing, liquidity, and market support are not guaranteed.
 
 Report compatibility issues through the public GitHub issue tracker.
