@@ -59,6 +59,9 @@ Optional later artifacts:
 - verify wallet creation, address generation, backup, and restore
 - verify `getblocktemplate '{"rules":["segwit"]}'`
 - verify `submitblock` on a private test network
+- run the public infrastructure checks in
+  [operator-runbook.md](operator-runbook.md) before installing the release on
+  seed nodes
 - confirm no private wallets, chain data, RPC credentials, or SSH keys are
   packaged
 
@@ -76,6 +79,8 @@ Optional later artifacts:
   public release
 - keep [release-signing-policy.md](release-signing-policy.md) current when
   release key ownership changes
+- keep [operator-runbook.md](operator-runbook.md) current when seed, explorer,
+  pool, or backup operations change
 - keep private signing keys offline
 - label Windows builds as not code-signed until an Authenticode certificate is
   available
@@ -105,6 +110,8 @@ Before a final production launch:
 - publish release artifacts and checksums before public mining starts
 - publish exact launch date and time in UTC
 - keep seed nodes online and synced
+- run `bitstar-operator-status` on each seed or pool host and archive the
+  operator verification notes
 - verify explorer follows the same best block as seed1 and seed2
 - verify pool/test endpoint status is correctly labeled
 - archive the launch announcement

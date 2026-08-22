@@ -15,6 +15,8 @@ until the project completes the release and launch gates below.
 See [current-status-audit.md](current-status-audit.md) for the latest
 point-in-time audit of public services, release artifacts, and remaining
 production gaps.
+Use [operator-runbook.md](operator-runbook.md) as the daily operating checklist
+for seed nodes, explorer API, test pool, backups, and release verification.
 
 As of August 22, 2026, seed1 and seed2 are synchronized at height `5` with best
 block:
@@ -74,6 +76,7 @@ Definition of done:
 - node services start automatically after reboot
 - logs are rotated
 - disk, memory, CPU, and uptime alerts are active
+- `bitstar-operator-status` is installed and used for daily checks
 - chain height and best hash match across seed nodes
 - at least one independent third-party node has joined and synced
 
@@ -90,6 +93,7 @@ Definition of done:
 - checksums or release manifests are signed
 - clean install and upgrade tests pass
 - wallet backup and restore path is documented
+- operator verification record is completed for the exact artifacts
 - no test wallet or chain data is bundled
 
 Current status: bootstrap binaries exist. The Windows launcher package and
@@ -143,6 +147,7 @@ Definition of done:
   the repository
 - at least one external reviewer checks the BitStar-specific patches
 - known limitations are listed publicly
+- operator runbook is current and has been followed for the public seed nodes
 
 Current status: operational hardening is partially complete; external review is
 pending.
@@ -178,7 +183,7 @@ Current status: not ready.
 ## Immediate Next Steps
 
 1. Keep seed1 and seed2 synchronized and monitored.
-2. Update docs to clearly mark the current network as public bootstrap.
+2. Run the operator runbook on seed1 and seed2 after each infrastructure change.
 3. Create the dedicated release signing key, publish its fingerprint, and
    publish `SHA256SUMS.asc` for the current release.
 4. Decide the fair launch path: continue with full disclosure, or reset once for

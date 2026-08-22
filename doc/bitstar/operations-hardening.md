@@ -3,6 +3,10 @@
 This document records the operational baseline for public BitStar seed nodes,
 the explorer API, and the public solo/test pool.
 
+For the practical daily operating procedure, restarts, incident response,
+backup drills, and release verification checks, use
+[operator-runbook.md](operator-runbook.md).
+
 ## Live Baseline
 
 Checked on August 21, 2026.
@@ -97,6 +101,7 @@ Monitor at minimum:
 - CPU usage below 70% for sustained periods
 - explorer API returns HTTP 200
 - pool port `3333` reachable while pool is advertised
+- `bitstar-operator-status` produces a clean daily status report on each host
 
 ### Pool Safety
 
@@ -141,4 +146,4 @@ contrib/bitstar/ops/install-ops-hardening.sh
 ```
 
 It installs SSH hardening, logrotate, a healthcheck timer, systemd restart
-limits, and a swapfile for memory safety.
+limits, the `bitstar-operator-status` helper, and a swapfile for memory safety.

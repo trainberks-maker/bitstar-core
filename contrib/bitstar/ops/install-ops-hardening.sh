@@ -24,6 +24,7 @@ systemctl reload ssh || systemctl reload sshd
 
 install_file "$SCRIPT_DIR/bitstar-logrotate" /etc/logrotate.d/bitstar 0644
 install_file "$SCRIPT_DIR/bitstar-healthcheck.sh" /usr/local/bin/bitstar-healthcheck 0755
+install_file "$SCRIPT_DIR/bitstar-operator-status.sh" /usr/local/bin/bitstar-operator-status 0755
 install_file "$SCRIPT_DIR/bitstar-healthcheck.service" /etc/systemd/system/bitstar-healthcheck.service 0644
 install_file "$SCRIPT_DIR/bitstar-healthcheck.timer" /etc/systemd/system/bitstar-healthcheck.timer 0644
 

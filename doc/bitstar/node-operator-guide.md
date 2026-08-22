@@ -3,6 +3,11 @@
 This guide is for running a BitStar Core node during bootstrap testing and later
 public launch preparation.
 
+For public seed and pool infrastructure, also use
+[operator-runbook.md](operator-runbook.md). It contains the daily checks,
+restart procedure, backup drill, and release verification procedure used for
+seed1, seed2, explorer, and the solo/test pool.
+
 ## Status
 
 BitStar Core is pre-release software. The current bootstrap binaries are for

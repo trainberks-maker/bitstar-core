@@ -8,6 +8,7 @@ bootstrap nodes.
 - SSH hardening drop-in
 - BitStar debug log rotation
 - BitStar healthcheck script and systemd timer
+- BitStar operator status helper
 - systemd restart-limit drop-ins
 - 2 GB swapfile, unless swap already exists
 
@@ -21,6 +22,18 @@ sudo ./install-ops-hardening.sh
 ```
 
 The script is idempotent and can be re-run after updates.
+
+## Operator Status
+
+After installation, run:
+
+```bash
+sudo /usr/local/bin/bitstar-operator-status
+```
+
+The helper reports service status, local RPC height/hash/connections, listening
+ports, and pool backup/restore-drill status when present. It is intended for
+the daily checks in `doc/bitstar/operator-runbook.md`.
 
 ## Safety Notes
 
