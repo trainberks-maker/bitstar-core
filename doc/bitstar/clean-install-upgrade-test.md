@@ -22,7 +22,7 @@ Latest recorded release-candidate checks:
 
 | Platform | Artifact | Clean install | Upgrade | Wallet backup | Result |
 | --- | --- | --- | --- | --- | --- |
-| Windows x86_64 | `BitStar_Windows_v0.1.2-rc2.zip` | passed | pending independent repeat | launcher backup action smoke-tested | pre-release pass |
+| Windows x86_64 | `BitStar_Windows_v0.1.2-rc2.zip` | passed | synthetic `v0.1.1-bootstrap` upgrade passed; independent repeat pending | launcher backup action smoke-tested | pre-release pass |
 | Linux x86_64 | `BitStar_Linux_x86_64_v0.1.2-rc2.tar.gz` | passed | pending | not applicable for headless package | pre-release pass |
 | Linux arm64 | `BitStar_Linux_arm64_<version>.tar.gz` | pending | pending | pending | pending |
 
@@ -153,6 +153,25 @@ After best block:
 Wallet backup verified:
 Result:
 Notes:
+```
+
+```text
+Old version: v0.1.1-bootstrap
+New version: v0.1.2-rc2
+Source commit: 75b5e47311269bcc0ea6eb5cf7cdb4726eac4f3f
+Test date: 2026-08-22
+Tester: BitStar maintainer
+Test data directory: C:\Users\bajra\Documents\Codex\2026-08-21\https-github-com-bitcoin-bitcoin-https\outputs\upgrade-test-v0.1.1-to-v0.1.2-rc2-20260822-160210\data
+Before height: 967
+After height: 1136
+Before best block: 000009747c95aabad1a2380d14c1919be7f269552a30b090f5d5b1ed086dda60
+After best block: 000009f1293ce4e68983535421f0701ed424104699f0f23ae5dca6b2885cf4f5
+Before peers: 2
+After peers: 2
+Genesis hash verified: 00000c45c905ce3e3beeb9eb534650276947373d3a2a15694b4624a89bce4b49
+Wallet backup verified: not applicable; no wallet was loaded in this synthetic upgrade test
+Result: PASS
+Notes: v0.1.1-bootstrap opened a fresh test datadir, synced from public seeds, stopped cleanly, and v0.1.2-rc2 reopened the same datadir without reindex or wallet changes. This is an internal synthetic upgrade smoke test; it still needs an independent repeat and Linux upgrade coverage before production promotion.
 ```
 
 ## Release Gate

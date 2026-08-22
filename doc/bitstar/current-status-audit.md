@@ -81,7 +81,8 @@ Release-candidate signature status:
 - Public key: `bitstar-release-key.asc` is published.
 - Readiness gate result:
   `Result: release artifacts are signed and checksum verified.`
-- Smoke test result: Windows launcher clean test passed; Linux x86_64 clean
+- Smoke test result: Windows launcher clean test passed; Windows synthetic
+  upgrade from `v0.1.1-bootstrap` to `v0.1.2-rc2` passed; Linux x86_64 clean
   temporary-datadir smoke test passed with two seed connections.
 
 ### Network Parameters
@@ -162,7 +163,8 @@ testing and coordination, but it is not a final stable production release.
 Remaining work:
 
 - record independent third-party verification of `v0.1.2-rc2`
-- complete upgrade testing from the latest bootstrap data directories
+- repeat the Windows upgrade test independently and complete Linux upgrade
+  testing from the latest bootstrap data directories
 - remove or update pre-release warnings only when production gates are complete
 
 ### 2. Signing And Verification
@@ -255,8 +257,9 @@ Remaining work:
 
 1. Record at least one independent verification of the release signature and
    checksums.
-2. Complete upgrade testing from earlier bootstrap data directories and archive
-   the results in [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
+2. Repeat the recorded Windows upgrade test independently, complete Linux
+   upgrade testing from earlier bootstrap data directories, and archive the
+   results in [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
 3. Upgrade the explorer from status-only to block, transaction, and address
    lookup.
 4. Keep the current pool labeled as solo/test, or build a real dashboard and

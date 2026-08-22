@@ -101,7 +101,10 @@ Definition of done:
 Current status: `v0.1.2-rc2` release-candidate binaries exist. The Windows
 launcher package and Linux x86_64 server package are published with SHA256
 checksum files, helper verification scripts, a published public release key,
-and a GPG-signed `SHA256SUMS-v0.1.2-rc2.asc` manifest.
+and a GPG-signed `SHA256SUMS-v0.1.2-rc2.asc` manifest. Windows clean install,
+Windows launcher, Linux x86_64 clean temporary-datadir smoke, and a synthetic
+Windows upgrade from `v0.1.1-bootstrap` to `v0.1.2-rc2` are recorded in
+[clean-install-upgrade-test.md](clean-install-upgrade-test.md).
 
 The current release key fingerprint is:
 
@@ -116,13 +119,14 @@ Result: release artifacts are signed and checksum verified.
 ```
 
 This is still a signed pre-release candidate, not a final production release.
-Remaining release-engineering work includes independent verification, upgrade
-test records, Windows Authenticode signing, and a repeat of the process for
-every later release candidate or final release.
+Remaining release-engineering work includes independent verification, an
+independent repeat of the Windows upgrade test, Linux upgrade coverage, Windows
+Authenticode signing, and a repeat of the process for every later release
+candidate or final release.
 
-Clean install, Windows launcher, and upgrade testing must be recorded in
-[clean-install-upgrade-test.md](clean-install-upgrade-test.md) before any
-release candidate is promoted as production-ready.
+Clean install, Windows launcher, and full upgrade coverage must be recorded in
+[clean-install-upgrade-test.md](clean-install-upgrade-test.md) before any release
+candidate is promoted as production-ready.
 
 ### Gate 5: Explorer
 
