@@ -8,6 +8,12 @@ Public endpoints:
 - `GET /healthz`
 - `GET /api/summary`
 - `GET /api/block/<height-or-hash>`
+- `GET /api/pool`
+
+`/api/pool` reads the local pool stats file, defaults to
+`/var/lib/bitstar/pool-stats.json`, and returns a sanitized public summary.
+It does not expose node RPC credentials, miner IP addresses, or the private RPC
+port.
 
 Example deployment:
 
