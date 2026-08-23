@@ -5,6 +5,7 @@ required before the project can be described as production-ready.
 
 Date: 2026-08-22
 Updated: 2026-08-23 for external mining/pool smoke verification
+Updated: 2026-08-23 for Windows launcher wallet-load repeat finding
 
 ## Classification
 
@@ -120,6 +121,14 @@ Release-candidate signature status:
   - Wallet backup: PASS
   - Miner share acceptance: PASS
   - Final result: PASS for external share-acceptance smoke testing
+- Post-`v0.1.2-rc3` launcher source fix:
+  - a Windows portable launcher repeat found that option `3` failed when
+    `wallet1` already existed but was not loaded;
+  - the source now loads an existing wallet before creating a new one, refuses
+    to overwrite wallet data, and saves the mining address to
+    `Desktop\bitstar-address.txt`;
+  - the published `v0.1.2-rc3` artifacts remain pre-fix, so the next package or
+    installer candidate must be rebuilt and tested before production promotion.
 
 ### Network Parameters
 
@@ -238,11 +247,21 @@ Windows NSIS installer is also published for `v0.1.2-rc3` as unsigned
 pre-release software. It is usable for testing, but it is not yet a
 production-grade installer flow.
 
+Current gate finding:
+
+- `v0.1.2-rc3` portable launcher status/start/data-folder/stop paths worked in
+  repeat testing;
+- option `3` failed on an existing unloaded `wallet1` directory;
+- this is fixed in source after `v0.1.2-rc3`, but not in the already published
+  artifacts.
+
 Remaining work:
 
 - run and archive the clean-profile Windows installer production promotion
   repeat in
   [windows-installer-production-promotion-v0.1.2-rc3.md](windows-installer-production-promotion-v0.1.2-rc3.md)
+- rebuild the Windows package or installer with the launcher wallet-load fix
+  before asking normal users to repeat the launcher gate
 - test upgrade over a previous installer once previous installer artifacts exist
 - add Windows Authenticode signing when a certificate exists
 - link the installer from the website only while clearly labeling it as unsigned

@@ -10,6 +10,45 @@ passed for the release candidate. This promotion repeat is still required
 because normal Windows users should be able to install, launch, back up, stop,
 and uninstall BitStar without using developer commands.
 
+## 2026-08-23 Portable Launcher Repeat Finding
+
+A repeat against the Windows portable `v0.1.2-rc3` package found that launcher
+status, data-folder open, wallet backup, GUI warning, and node stop all behaved
+as expected, but option `3` did not handle an existing unloaded `wallet1`
+gracefully.
+
+Observed failure:
+
+```text
+Wallet file verification failed. Failed to create database path
+'...\BitStar\wallets\wallet1'. Database already exists.
+WARNING: Could not load or create wallet 'wallet1'.
+```
+
+Root cause:
+
+- the launcher attempted `createwallet wallet1` after `loadwallet wallet1`
+  failed;
+- when the wallet directory already existed, `createwallet` correctly refused
+  to overwrite it;
+- the launcher did not retry the safe existing-wallet path or save the printed
+  mining address for normal users.
+
+Source fix:
+
+- load `wallet1` when it already exists;
+- create `wallet1` only when it is absent;
+- never overwrite an existing wallet directory;
+- save the generated mining address to `Desktop\bitstar-address.txt`;
+- make wallet backup load the default wallet if no wallet is already loaded.
+
+Gate impact:
+
+- the published `v0.1.2-rc3` artifacts remain pre-fix;
+- production promotion remains **HOLD**;
+- the next Windows package or installer candidate must include this launcher
+  fix and repeat the checks below.
+
 ## Scope
 
 Use a clean Windows profile, Windows Sandbox, or a disposable Windows VM.

@@ -127,6 +127,99 @@ function Invoke-BitStarCli {
     }
 }
 
+function Invoke-BitStarCliCapture {
+    param([string[]]$Arguments)
+
+    Require-Cli
+    $raw = @(& $Cli "-datadir=$DataDir" @Arguments 2>&1)
+    $exitCode = $LASTEXITCODE
+    $lines = @($raw | ForEach-Object { $_.ToString() })
+    $newline = [Environment]::NewLine
+    $text = $lines -join $newline
+
+    [pscustomobject]@{
+        ExitCode = $exitCode
+        Text = $text
+        Lines = $lines
+    }
+}
+
+function Get-LoadedBitStarWallets {
+    $result = Invoke-BitStarCliCapture -Arguments @("listwallets")
+    if ($result.ExitCode -ne 0) {
+        throw "Could not list loaded wallets. $($result.Text)"
+    }
+
+    if ([string]::IsNullOrWhiteSpace($result.Text)) {
+        return @()
+    }
+
+    return @($result.Text | ConvertFrom-Json)
+}
+
+function Test-BitStarWalletExists {
+    $walletDirResult = Invoke-BitStarCliCapture -Arguments @("listwalletdir")
+    if ($walletDirResult.ExitCode -eq 0 -and -not [string]::IsNullOrWhiteSpace($walletDirResult.Text)) {
+        try {
+            $walletDir = $walletDirResult.Text | ConvertFrom-Json
+            foreach ($wallet in @($walletDir.wallets)) {
+                $name = [string]$wallet.name
+                if ($name -eq $WalletName -or (Split-Path -Leaf $name) -eq $WalletName) {
+                    return $true
+                }
+            }
+        }
+        catch {
+            Write-Verbose "Could not parse listwalletdir output: $($_.Exception.Message)"
+        }
+    }
+
+    $walletPaths = @(
+        (Join-Path (Join-Path $DataDir "wallets") $WalletName),
+        (Join-Path $DataDir $WalletName)
+    )
+
+    foreach ($path in $walletPaths) {
+        if (Test-Path -LiteralPath $path) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Ensure-BitStarWalletLoaded {
+    $loadedWallets = @(Get-LoadedBitStarWallets)
+    if ($loadedWallets -contains $WalletName) {
+        return
+    }
+
+    $load = Invoke-BitStarCliCapture -Arguments @("loadwallet", $WalletName)
+    if ($load.ExitCode -eq 0 -or $load.Text -match "already loaded") {
+        return
+    }
+
+    if (Test-BitStarWalletExists) {
+        throw "Wallet '$WalletName' exists but could not be loaded. The launcher will not overwrite it. Details: $($load.Text)"
+    }
+
+    $create = Invoke-BitStarCliCapture -Arguments @("createwallet", $WalletName)
+    if ($create.ExitCode -eq 0) {
+        return
+    }
+
+    if ($create.Text -match "already exists|Database already exists") {
+        $retry = Invoke-BitStarCliCapture -Arguments @("loadwallet", $WalletName)
+        if ($retry.ExitCode -eq 0 -or $retry.Text -match "already loaded") {
+            return
+        }
+
+        throw "Wallet '$WalletName' exists but could not be loaded. The launcher will not overwrite it. Details: $($retry.Text)"
+    }
+
+    throw "Could not load or create wallet '$WalletName'. Details: $($create.Text)"
+}
+
 function Test-RpcReady {
     try {
         Require-Cli
@@ -212,7 +305,18 @@ function Backup-BitStarWallets {
         return
     }
 
-    $wallets = @(Invoke-BitStarCli -Arguments @("listwallets") | ConvertFrom-Json)
+    $wallets = @(Get-LoadedBitStarWallets)
+    if ($wallets.Count -eq 0) {
+        try {
+            Ensure-BitStarWalletLoaded
+            $wallets = @(Get-LoadedBitStarWallets)
+        }
+        catch {
+            Write-Warning $_.Exception.Message
+            return
+        }
+    }
+
     if ($wallets.Count -eq 0) {
         Write-Warning "No loaded wallets were found."
         return
@@ -252,38 +356,33 @@ function Get-OrCreate-BitStarWalletAddress {
         return
     }
 
-    Require-Cli
-    $loadedWallets = @(& $Cli "-datadir=$DataDir" "listwallets" | ConvertFrom-Json)
-    if (-not ($loadedWallets -contains $WalletName)) {
-        $loadWalletExitCode = 1
-        $previousErrorActionPreference = $ErrorActionPreference
-        try {
-            $ErrorActionPreference = "Continue"
-            & $Cli "-datadir=$DataDir" "loadwallet" $WalletName *>$null
-            $loadWalletExitCode = $LASTEXITCODE
-        }
-        finally {
-            $ErrorActionPreference = $previousErrorActionPreference
-        }
-
-        if ($loadWalletExitCode -ne 0) {
-            & $Cli "-datadir=$DataDir" "createwallet" $WalletName | Out-Host
-            if ($LASTEXITCODE -ne 0) {
-                throw "Could not load or create wallet '$WalletName'."
-            }
-        }
-    }
+    Ensure-BitStarWalletLoaded
 
     $address = & $Cli "-datadir=$DataDir" "-rpcwallet=$WalletName" "getnewaddress" "" "bech32"
     if ($LASTEXITCODE -ne 0) {
         throw "Could not create a receiving address for wallet '$WalletName'."
     }
 
+    $desktop = [Environment]::GetFolderPath("Desktop")
+    if ([string]::IsNullOrWhiteSpace($desktop)) {
+        $desktop = Join-Path $env:USERPROFILE "Desktop"
+    }
+
+    $addressFile = Join-Path $desktop "bitstar-address.txt"
+    $addressRecord = @(
+        "# BitStar mining address",
+        "wallet=$WalletName",
+        "address=$address",
+        "pool=pool.bitstarcoin.org:3333"
+    )
+    Set-Content -LiteralPath $addressFile -Value $addressRecord -Encoding ASCII
+
     Write-Host ""
     Write-Host "BitStar wallet address"
     Write-Host "----------------------"
     Write-Host "Wallet:  $WalletName"
     Write-Host "Address: $address"
+    Write-Host "Saved:   $addressFile"
     Write-Host ""
     Write-Host "Use this address for mining:"
     Write-Host ".\cpuminer-avx2.exe -a sha256d -o stratum+tcp://pool.bitstarcoin.org:3333 -u $address -p x -t 2"
@@ -319,7 +418,7 @@ function Show-Menu {
         Write-Host ""
         Write-Host "1. Start node"
         Write-Host "2. Show status"
-        Write-Host "3. Create/load wallet + show address"
+        Write-Host "3. Create/load wallet + show/save address"
         Write-Host "4. Backup loaded wallet"
         Write-Host "5. Open wallet/GUI if included"
         Write-Host "6. Open data folder"
