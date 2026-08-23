@@ -35,6 +35,8 @@ As of the `v0.1.2-rc3` release candidate:
   a Linux `v0.1.2-rc3` upgrade repeat still needs to be archived.
 - External Windows verification report #1 passed and is accepted as closing
   the `v0.1.2-rc3` external Windows tester gate.
+- External mining/pool smoke verification passed for share acceptance against
+  `pool.bitstarcoin.org:3333`; this does not certify a production payout pool.
 - Windows Authenticode code signing is still pending.
 
 See [release-signing-policy.md](release-signing-policy.md) for release key
@@ -50,6 +52,8 @@ See [independent-verification-pack.md](independent-verification-pack.md) for
 the exact checklist an outside tester can run and publish.
 See [external-windows-tester-gate-v0.1.2-rc3.md](external-windows-tester-gate-v0.1.2-rc3.md)
 for the closed external Windows tester gate.
+See [external-mining-pool-verification-v0.1.2-rc3.md](external-mining-pool-verification-v0.1.2-rc3.md)
+for the external mining/pool share-acceptance smoke record.
 See [windows-installer-production-promotion-v0.1.2-rc3.md](windows-installer-production-promotion-v0.1.2-rc3.md)
 for the clean-profile Windows installer repeat required before installer
 promotion.

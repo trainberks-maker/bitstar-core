@@ -17,6 +17,9 @@ As of the public bootstrap launch:
 - live chain height should be verified on `https://bitstarcoin.org/explorer`
 - live sanitized pool stats are published through the explorer API when the pool
   stats file is available
+- an external Windows miner has connected to the public endpoint and received
+  accepted shares; see
+  [external-mining-pool-verification-v0.1.2-rc3.md](external-mining-pool-verification-v0.1.2-rc3.md)
 
 The bootstrap build still prints a pre-release warning. Do not use it for
 custody, merchant payments, exchange deposits, or guaranteed production mining.
@@ -149,6 +152,9 @@ worker username. If a valid block is found, the coinbase reward is paid directly
 to that address after normal coinbase maturity. The test pool does not custody
 miner balances and does not implement automatic pooled payouts.
 
+The current external share-acceptance record is documented in
+[external-mining-pool-verification-v0.1.2-rc3.md](external-mining-pool-verification-v0.1.2-rc3.md).
+
 ## Production Pool Baseline
 
 The current official endpoint runs in `solo_direct_coinbase` mode:
@@ -211,9 +217,10 @@ described as a custodial payout pool.
 ## Current Limitations
 
 - The official endpoint is a public solo-style test pool, not a full payout pool.
-- The `v0.1.2-rc2` release candidate has a GPG-signed
-  `SHA256SUMS-v0.1.2-rc2.asc`, but reproducible build verification and
-  independent verification are still pending.
+- The `v0.1.2-rc3` release candidate has a GPG-signed
+  `SHA256SUMS-v0.1.2-rc3.asc`; one external Windows verification report and one
+  external mining/pool smoke record have passed, but reproducible build
+  verification and broader independent review are still pending.
 - DNS seed infrastructure is not active; documented static seed nodes are used.
 - The bootstrap build still carries a pre-release warning.
 - Pool dashboard counters are operational status signals, not balances.

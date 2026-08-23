@@ -279,6 +279,13 @@ Notes:
     `0000001a97af45aef7d8503dfc5124cb9e653b8fd75459135b408ccf1e844c7b`
   - Observed connection count: `2`
   - Final result: PASS
+- 2026-08-23: Supplemental external mining/pool smoke record:
+  [external-mining-pool-verification-v0.1.2-rc3.md](external-mining-pool-verification-v0.1.2-rc3.md)
+  - Platform: Windows
+  - Public pool endpoint: `pool.bitstarcoin.org:3333`
+  - Wallet backup created: PASS
+  - Miner connected and received accepted shares: PASS
+  - Final result: PASS for external share-acceptance smoke testing
 
 ## Promotion Rule
 

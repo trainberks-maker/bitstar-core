@@ -4,6 +4,7 @@ This audit records the current public state of BitStar and the work still
 required before the project can be described as production-ready.
 
 Date: 2026-08-22
+Updated: 2026-08-23 for external mining/pool smoke verification
 
 ## Classification
 
@@ -109,6 +110,16 @@ Release-candidate signature status:
   - Final result: PASS
 - External Windows tester gate status: closed for `v0.1.2-rc3` with one
   external Windows report passed and reviewed.
+- External mining/pool smoke record:
+  [external-mining-pool-verification-v0.1.2-rc3.md](external-mining-pool-verification-v0.1.2-rc3.md)
+  - Platform: Windows
+  - Public pool endpoint: `pool.bitstarcoin.org:3333`
+  - Public payout/mining address:
+    `bst1qpeqa3uqc9nfn28qr8tnhzkhph83fgph8srkx8k`
+  - Wallet created or loaded: PASS
+  - Wallet backup: PASS
+  - Miner share acceptance: PASS
+  - Final result: PASS for external share-acceptance smoke testing
 
 ### Network Parameters
 
@@ -242,6 +253,13 @@ Remaining work:
 The current pool endpoint is a solo/test Stratum compatibility endpoint. It is
 not a full public mining pool.
 
+Current verification:
+
+- external Windows mining smoke test passed on 2026-08-23
+- an external miner connected to `pool.bitstarcoin.org:3333`
+- the pool accepted shares for a valid `bst1` address
+- this verifies pool compatibility, not production payout accounting
+
 Remaining work before an official production pool:
 
 - worker dashboard
@@ -312,17 +330,19 @@ Remaining work:
 
 1. Treat the `v0.1.2-rc3` external Windows tester gate as closed based on
    independent verification report #1.
-2. Run the Windows installer production promotion repeat from a clean Windows
+2. Treat the external mining/pool smoke gate as passed for share acceptance,
+   while keeping the endpoint labeled as solo/test.
+3. Run the Windows installer production promotion repeat from a clean Windows
    profile and archive the result.
-3. Repeat the recorded Windows and Linux upgrade tests independently from
+4. Repeat the recorded Windows and Linux upgrade tests independently from
    earlier bootstrap data directories, and archive the results in
    [clean-install-upgrade-test.md](clean-install-upgrade-test.md).
-4. Upgrade the explorer from status-only to block, transaction, and address
+5. Upgrade the explorer from status-only to block, transaction, and address
    lookup.
-5. Keep the current pool labeled as solo/test, or build a real dashboard and
+6. Keep the current pool labeled as solo/test, or build a real dashboard and
    payout accounting system before calling it official.
-6. Invite independent node operators and miners.
-7. Decide final fair-launch policy: continue current bootstrap chain with full
+7. Invite independent node operators and miners.
+8. Decide final fair-launch policy: continue current bootstrap chain with full
    disclosure, or perform one final reset after signed release artifacts are
    ready.
 

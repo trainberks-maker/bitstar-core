@@ -175,8 +175,10 @@ Definition of done:
   maturity, worker stats, and abuse limits
 - no official pool is announced until payout accounting is tested
 
-Current status: solo/test Stratum endpoint is live; production pool system is
-pending.
+Current status: solo/test Stratum endpoint is live. An external Windows miner
+has connected to `pool.bitstarcoin.org:3333` and received accepted shares; see
+[external-mining-pool-verification-v0.1.2-rc3.md](external-mining-pool-verification-v0.1.2-rc3.md).
+The production pool system is still pending.
 
 ### Gate 7: Security Review
 
@@ -241,4 +243,6 @@ Current status: not ready.
    search.
 7. Keep the current pool labeled as solo/test until a payout/accounting system
    exists.
-8. Invite independent node operators to join and verify the network.
+8. Archive optional additional external mining reports from different networks
+   and machines.
+9. Invite independent node operators to join and verify the network.

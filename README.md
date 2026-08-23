@@ -67,6 +67,7 @@ before public coordination.
 - [Windows installer rc3 gate](doc/bitstar/windows-installer-production-gate-v0.1.2-rc3.md)
 - [Windows installer rc3 promotion repeat](doc/bitstar/windows-installer-production-promotion-v0.1.2-rc3.md)
 - [External Windows tester gate](doc/bitstar/external-windows-tester-gate-v0.1.2-rc3.md)
+- [External mining pool verification](doc/bitstar/external-mining-pool-verification-v0.1.2-rc3.md)
 - [Operations hardening](doc/bitstar/operations-hardening.md)
 
 The broader upstream Bitcoin Core developer documentation remains available in
